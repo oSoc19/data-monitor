@@ -2,12 +2,15 @@ const express = require ('express')
 const fs = require('fs')
 const parse = require('./parserToJson')
 const cleaner = require('./jsonCleaner')
+const cors = require('cors')
 
 
 let data;
 parse('http://opendata.ndw.nu/brugopeningen.xml.gz').then(result => data = cleaner(result));
 
 let app = express();
+
+app.use(cors());
 // let file = fs.readFileSync('sample.json', 'utf8');
 
 // let datac = cleaner(data)
