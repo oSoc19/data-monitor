@@ -11,7 +11,11 @@ function cleanBridgeData(obj) {
             bridge = {
                 "id" : hash(coord.longitude + "," + coord.latitude),
                 "location": coord,
+                "status" : true,
                 "situationRecords": []
+            }
+            if (Math.round(Math.random())) {
+                bridge.status = false;
             }
             data.push(bridge);
         }
