@@ -1,9 +1,14 @@
 import React from 'react'
 import './App.sass'
-import Map from './screens/Map'
+import Map from './pages/Map'
 
 function App() {
-  return <Map />
+  return (
+    <React.Fragment>
+      {/* <Header /> */}
+      <Map />
+    </React.Fragment>
+  )
 }
 
 export default App
