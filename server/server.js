@@ -13,7 +13,7 @@ let app = express();
 // let datac = cleaner(data)
 
 app.listen(8080, () => {
-    console.log("Connected on port 8080")
+    // console.log("Connected on port 8080")
 });
 
 app.get("/", (req, res, next) => {

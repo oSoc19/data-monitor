@@ -14,7 +14,9 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "fetch": "^1.1.0",
     "http": "0.0.0",
+    "node-fetch": "^2.6.0",
     "string-hash": "^1.1.3",
     "xml2js": "^0.4.19",
     "zlib": "^1.0.5"
