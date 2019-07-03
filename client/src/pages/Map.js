@@ -75,7 +75,7 @@ export default class Map extends Component {
           <div id="map"></div>
           {bridges &&
             bridges.map(bridge => {
-              this.renderMarker(bridge.location)
+              return this.renderMarker(bridge.location)
             })}
         </div>
       </div>
