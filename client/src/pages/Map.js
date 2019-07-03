@@ -78,6 +78,9 @@ export default class Map extends Component {
               this.renderMarker(bridge.location)
             })}
         </div>
+        <div className="header">  
+          <p>this is a header</p>
+        </div>
       </div>
     )
   }
