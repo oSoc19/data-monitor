@@ -1,15 +1,19 @@
+const hash = require('string-hash')
+
 function cleanBridgeData(obj) {
-    let data = {};
+    let data = [];
     let bridges = obj["@graph"].d2LogicalModel.payloadPublication.situation;
     bridges.forEach(element => {
         let coord = element.situationRecord.groupOfLocations.locationForDisplay;
         // console.log(coord);
-        let bridge = data[coord.longitude + "," + coord.latitude]
-        if (bridge === undefined) {
+        let bridge = findBridge(data, coord.longitude + "," + coord.latitude);
+        if (bridge === null) {
             bridge = {
+                "id" : hash(coord.longitude + "," + coord.latitude),
+                "location": coord,
                 "situationRecords": []
             }
-            data[coord.longitude + "," + coord.latitude] = bridge
+            data.push(bridge);
         }
         let now = new Date();
         let situationRecordTime = new Date(element.situationRecord.validity.validityTimeSpecification.overallEndTime);
@@ -19,6 +23,16 @@ function cleanBridgeData(obj) {
     });
     // console.log(bridges)
     return data;
+}
+
+function findBridge(bridges, str) {
+    let id = hash(str);
+    bridges.forEach(element => {
+        if (element.id === id) {
+            return id
+        }
+    });
+    return null;
 }
 
 module.exports = cleanBridgeData;
