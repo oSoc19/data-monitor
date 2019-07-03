@@ -1,0 +1,30 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "Backend for data-monitor",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oSoc19/data-monitor.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "fetch": "^1.1.0",
+    "http": "0.0.0",
+    "node-fetch": "^2.6.0",
+    "string-hash": "^1.1.3",
+    "xml2js": "^0.4.19",
+    "zlib": "^1.0.5"
+  },
+  "bugs": {
+    "url": "https://github.com/oSoc19/data-monitor/issues"
+  },
+  "homepage": "https://github.com/oSoc19/data-monitor#readme"
+}
