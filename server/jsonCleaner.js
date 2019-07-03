@@ -16,9 +16,13 @@ function cleanBridgeData(obj) {
             data.push(bridge);
         }
         let now = new Date();
-        let situationRecordTime = new Date(element.situationRecord.validity.validityTimeSpecification.overallEndTime);
-        if (situationRecordTime.getTime() >= now.getTime()) {
-            bridge.situationRecords.push(element.situationRecord)
+        let situationRecordTime =  element.situationRecord.validity.validityTimeSpecification.overallEndTime;
+        if(situationRecordTime != undefined) {
+            situationRecordTime = situationRecordTime.substring(0, situationRecordTime.length-1)
+            situationRecordTime = new Date(situationRecordTime);
+            if (situationRecordTime.getTime() >= now.getTime()) {
+                bridge.situationRecords.push(element.situationRecord)
+            }
         }
     });
     // console.log(bridges)

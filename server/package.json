@@ -14,6 +14,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "express": "^4.17.1",
     "http": "0.0.0",
     "string-hash": "^1.1.3",
     "xml2js": "^0.4.19",
