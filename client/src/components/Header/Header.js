@@ -15,6 +15,10 @@ export default class Header extends Component {
           <img className="header-brand_logo" src={logo} alt="" />
           <h1 className="header-brand_name">Liquid Traffic</h1>
         </div>
+        <div className="header_nav">
+          <a href="/map">Map</a>
+          <a href="/dashboard">Dashboard</a>
+        </div>
       </div>
     )
   }
