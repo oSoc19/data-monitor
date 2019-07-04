@@ -9,7 +9,7 @@ function cleanBridgeData(obj) {
         if (bridge === null) {
             bridge = {
                 "id": hash(coord.longitude + "," + coord.latitude),
-                "location": coord,
+                "location": getGeoJsonFromLoc(coord),
                 "status": false,
                 "situationRecords": []
             }
@@ -40,6 +40,16 @@ function findBridge(bridges, str) {
         }
     });
     return null;
+}
+
+function getGeoJsonFromLoc(coords) {
+    return {
+        "type": "Feature",
+        "geometry": {
+            "type": "Point",
+            "coordinates": [coords.longitude, coords.latitude]
+        }
+    }
 }
 
 module.exports = cleanBridgeData;
