@@ -1,4 +1,5 @@
-const hash = require('string-hash')
+const hash = require('string-hash');
+const geoJson = require('geojson');
 
 function cleanBridgeData(obj) {
     let data = [];
@@ -9,7 +10,9 @@ function cleanBridgeData(obj) {
         if (bridge === null) {
             bridge = {
                 "id": hash(coord.longitude + "," + coord.latitude),
-                "location": getGeoJsonFromLoc(coord),
+                "location": geoJson.parse(coord, {
+                    Point: ['latitude', 'longitude']
+                }),
                 "status": false,
                 "situationRecords": []
             }
@@ -40,16 +43,6 @@ function findBridge(bridges, str) {
         }
     });
     return null;
-}
-
-function getGeoJsonFromLoc(coords) {
-    return {
-        "type": "Feature",
-        "geometry": {
-            "type": "Point",
-            "coordinates": [coords.longitude, coords.latitude]
-        }
-    }
 }
 
 module.exports = cleanBridgeData;
