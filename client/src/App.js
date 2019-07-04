@@ -3,6 +3,8 @@ import './App.sass'
 import Header from './components/Header/'
 import LeafletMap from './pages/LeafletMap'
 
+import 'leaflet/dist/leaflet.css'
+
 function App() {
   return (
     <React.Fragment>
