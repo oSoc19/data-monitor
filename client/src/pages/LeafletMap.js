@@ -1,9 +1,21 @@
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
-import 'leaflet/dist/leaflet.css'
 import './LeafletMap.sass'
+import 'leaflet/dist/leaflet.css'
+
+import GeoJSON from 'geojson'
+
 import L from 'leaflet'
-import { Map, Marker, Popup, TileLayer } from 'react-leaflet'
+import { Map, Marker, Popup, TileLayer, withLeaflet } from 'react-leaflet'
+import { HexbinLayer } from 'react-leaflet-d3'
+const WrappedHexbinLayer = withLeaflet(HexbinLayer)
+
+const options = {
+  colorScaleExtent: [1, undefined],
+  radiusScaleExtent: [1, undefined],
+  colorRange: ['#f7fbff', '#ff0000'],
+  radiusRange: [5, 12]
+}
 
 const coordinates = [52.1326, 5.2913]
 const mapBoxToken =
@@ -41,7 +53,8 @@ export const bridgeClosedIcon = new L.Icon({
 
 class LeafletMap extends Component {
   state = {
-    bridges: null
+    bridges: null,
+    geoJsonBridges: null
   }
 
   componentDidMount() {
@@ -58,37 +71,63 @@ class LeafletMap extends Component {
       })
   }
 
+  parseToGeoJson = () => {
+    const { bridges } = this.state
+    console.log(bridges)
+    const geoJsonBridges = bridges.map(bridge => {
+      return (bridge = {
+        lat: bridge.location.latitude,
+        lng: bridge.location.longitude
+      })
+    })
+
+    var data = [
+      {
+        name: 'Location A',
+        category: 'Store',
+        street: 'Market',
+        lat: 39.984,
+        lng: -75.343
+      },
+      {
+        name: 'Location B',
+        category: 'House',
+        street: 'Broad',
+        lat: 39.284,
+        lng: -75.833
+      },
+      {
+        name: 'Location C',
+        category: 'Office',
+        street: 'South',
+        lat: 39.123,
+        lng: -74.534
+      }
+    ]
+    console.log(geoJsonBridges)
+    console.log(
+      GeoJSON.parse(geoJsonBridges, {
+        Point: ['lat', 'lng'],
+        include: ['name']
+      })
+    )
+    return GeoJSON.parse(geoJsonBridges, {
+      Point: ['lat', 'lng'],
+      include: ['name']
+    })
+  }
+
   render() {
     const { bridges } = this.state
     return (
-      <Map center={coordinates} zoom={12} className="map">
+      <Map center={coordinates} zoom={10} id="map">
         <TileLayer
           attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
           url={tileSetUrl}
         />
-        {bridges &&
-          bridges.map(bridge => {
-            return (
-              <Marker
-                icon={bridge.status ? bridgeOpenIcon : bridgeClosedIcon}
-                position={[bridge.location.latitude, bridge.location.longitude]}
-              >
-                <Popup>{bridge.status ? 'open' : 'closed'}</Popup>
-              </Marker>
-            )
-            // return (
-            //   <Marker
-            //     position={[bridge.location.latitude, bridge.location.longitude]}
-            //   ></Marker>
-            // )
-          })}
-        {/* <Marker position={coordinates}>
-          <Popup>
-            <span>
-              A pretty CSS3 popup. <br /> Easily customizable.
-            </span>
-          </Popup>
-        </Marker> */}
+        {bridges && (
+          <WrappedHexbinLayer data={this.parseToGeoJson()} {...options} />
+        )}
       </Map>
     )
   }
