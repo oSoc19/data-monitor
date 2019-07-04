@@ -10,16 +10,14 @@ parse('http://opendata.ndw.nu/brugopeningen.xml.gz').then(result => data = clean
 
 app.use(cors());
 
-app.listen(8080, () => {
-});
+app.listen(8080, () => {});
 
-app.get("/", (req, res, next) => {
-});
+app.get("/", (req, res, next) => {});
 
 app.get("/api/bridges", (req, res, next) => {
     res.json(data);
 });
 
-app.use(function (req, res) {
+app.use(function(req, res) {
     res.status(404);
 });
