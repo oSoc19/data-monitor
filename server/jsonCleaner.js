@@ -1,5 +1,4 @@
 const hash = require('string-hash');
-const geoJson = require('geojson');
 
 function cleanBridgeData(obj) {
     let data = [];
@@ -10,9 +9,7 @@ function cleanBridgeData(obj) {
         if (bridge === null) {
             bridge = {
                 "id": hash(coord.longitude + "," + coord.latitude),
-                "location": geoJson.parse(coord, {
-                    Point: ['latitude', 'longitude']
-                }),
+                "location": coord,
                 "status": false,
                 "situationRecords": []
             }
