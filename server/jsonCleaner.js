@@ -2,7 +2,7 @@ const hash = require('string-hash')
 
 function cleanBridgeData(obj) {
     let data = [];
-    let bridges = obj["@graph"].d2LogicalModel.payloadPublication.situation;
+    let bridges = obj.d2LogicalModel.payloadPublication.situation;
     bridges.forEach(element => {
         let coord = element.situationRecord.groupOfLocations.locationForDisplay;
         let bridge = findBridge(data, coord.longitude + "," + coord.latitude);

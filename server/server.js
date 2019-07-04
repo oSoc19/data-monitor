@@ -17,18 +17,15 @@ app.listen(8080, () => {
     let location;
     locationFinder(52.4715154435141, 4.81342942207674).then(res => {
         return res.json();
-    }).then(json => {
-        console.log(json)
     });
 });
 
-app.get("/", (req, res, next) => {
-});
+app.get("/", (req, res, next) => {});
 
 app.get("/api/bridges", (req, res, next) => {
     res.json(data);
 });
 
-app.use(function (req, res) {
+app.use(function(req, res) {
     res.status(404);
 });
