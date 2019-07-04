@@ -25,7 +25,6 @@ function parse(url) {
                 if (err) {
                     reject(new Error(`error while parsing xml.\n ${JSON.stringify(err)}`));
                 }
-		console.log(result)
                 resolve(result.Envelope.Body);
             });
         })
