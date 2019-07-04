@@ -34,33 +34,33 @@ String.prototype.removeSufix = function (prefix) {
 function parse(url, baseuri, sourceOptions) {
     return new Promise((resolve, reject) => {
         // Get the requested source datafeed and unzip the body
-            getGzipped(url, response => {
-                response = response.removePrefix(prefix);
-                response = response.removeSufix(sufix);
-                // Options for parsing the xml
-                const parser = new xml2js.Parser({
-                    mergeAttrs: true,
-                    explicitArray: false,
-                    tagNameProcessors: [xml2js.processors.stripPrefix],
-                    attrNameProcessors: [xml2js.processors.stripPrefix],
-                    attrValueProcessors: [xml2js.processors.stripPrefix]
+        getGzipped(url, response => {
+            response = response.removePrefix(prefix);
+            response = response.removeSufix(sufix);
+            // Options for parsing the xml
+            const parser = new xml2js.Parser({
+                mergeAttrs: true,
+                explicitArray: false,
+                tagNameProcessors: [xml2js.processors.stripPrefix],
+                attrNameProcessors: [xml2js.processors.stripPrefix],
+                attrValueProcessors: [xml2js.processors.stripPrefix]
+            });
+
+            // Parse the body of the request as xml to json with options
+            parser.parseString(response, (err, result) => {
+                if (err) {
+                    reject(new Error(`error while parsing xml.\n ${JSON.stringify(err)}`));
+                }
+
+                const data = addLinksToIds(result, baseuri);
+
+                resolve({
+                    "@context": context,
+                    "@graph": data
                 });
-
-                // Parse the body of the request as xml to json with options
-                parser.parseString(response, (err, result) => {
-                    if (err) {
-                        reject(new Error(`error while parsing xml.\n ${JSON.stringify(err)}`));
-                    }
-
-                    const data = addLinksToIds(result, baseuri);
-
-                    resolve({
-                        "@context": context,
-                        "@graph": data
-                    });
-                });
-            })
+            });
         })
+    })
 
 }
 
@@ -103,7 +103,7 @@ function getGzipped(url, callback) {
 
         gunzip.on('data', function (data) {
             // decompression chunk ready, add it to the buffer
-            buffer.push(data.toString())
+            buffer.push(data.toString());
 
         }).on("end", function () {
             // response and decompression complete, join the buffer and return
@@ -114,8 +114,8 @@ function getGzipped(url, callback) {
             callback(e);
         })
     }).on('error', function (e) {
-        callback(e)
+        callback(e);
     });
 }
 
-module.exports = parse
+module.exports = parse;
