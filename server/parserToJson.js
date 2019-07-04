@@ -2,18 +2,6 @@ const xml2js = require('xml2js');
 const http = require("http");
 const zlib = require("zlib");
 
-const prefix = '<?xml version="1.0" encoding="UTF-8"?><SOAP:Envelope xmlns:SOAP="http://schemas.xmlsoap.org/soap/envelope/"><SOAP:Body>'
-const sufix = '</SOAP:Body></SOAP:Envelope>'
-// Remove the SOAP Envelope and Body
-String.prototype.removePrefix = function(prefix) {
-    const hasPrefix = this.indexOf(prefix) === 0;
-    return hasPrefix ? this.substr(prefix.length) : this.toString();
-};
-String.prototype.removeSufix = function(prefix) {
-    const hasPrefix = this.indexOf(prefix) === this.length - prefix.length;
-    return hasPrefix ? this.substr(0, this.length - prefix.length) : this.toString();
-};
-
 /**
  * Parse a xml datex2 feed into a json-ld feed
  * @param  {string} source  a valid URL that goes to an xml datex2 feed
@@ -23,8 +11,6 @@ function parse(url) {
     return new Promise((resolve, reject) => {
         // Get the requested source datafeed and unzip the body
         getGzipped(url, response => {
-            response = response.removePrefix(prefix);
-            response = response.removeSufix(sufix);
             // Options for parsing the xml
             const parser = new xml2js.Parser({
                 mergeAttrs: true,
@@ -39,7 +25,8 @@ function parse(url) {
                 if (err) {
                     reject(new Error(`error while parsing xml.\n ${JSON.stringify(err)}`));
                 }
-                resolve(result);
+		console.log(result)
+                resolve(result.Envelope.Body);
             });
         })
     })
