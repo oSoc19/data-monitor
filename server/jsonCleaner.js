@@ -11,7 +11,7 @@ function cleanBridgeData(obj) {
             bridge = {
                 "id" : hash(coord.longitude + "," + coord.latitude),
                 "location": coord,
-                "status" : true,
+                "status" : false,
                 "situationRecords": []
             }
             if (Math.round(Math.random())) {
@@ -20,12 +20,16 @@ function cleanBridgeData(obj) {
             data.push(bridge);
         }
         let now = new Date();
-        let situationRecordTime =  element.situationRecord.validity.validityTimeSpecification.overallEndTime;
-        if(situationRecordTime != undefined) {
-            situationRecordTime = situationRecordTime.substring(0, situationRecordTime.length-1)
-            situationRecordTime = new Date(situationRecordTime);
-            if (situationRecordTime.getTime() >= now.getTime()) {
-                bridge.situationRecords.push(element.situationRecord)
+        let startTime = element.situationRecord.validity.validityTimeSpecification.overallStartTime;
+        let endTime =  element.situationRecord.validity.validityTimeSpecification.overallEndTime;
+        if(endTime != undefined && startTime != undefined) {
+            endTime = endTime.substring(0, endTime.length-1) // remove the last character
+            endTime = new Date(endTime);
+            startTime = startTime.substring(0, startTime.length-1);
+            startTime = new Date(startTime);
+            if (endTime.getTime() >= now.getTime()) {
+                bridge.situationRecords.push(element.situationRecord);
+                bridge.status = (startTime.getTime() <= now.getTime()) ? true:false
             }
         }
     });
