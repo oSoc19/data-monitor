@@ -1,12 +1,7 @@
-const fetch = require('node-fetch')
+const fetch = require('node-fetch');
 
-function findLocation(lat, long){
-    // let options = {
-    //     url: "https://nominatim.openstreetmap.org/reverse.php?lat="+lat+"&lon="+long+"&format=json"
-    // }
-
-    
-    return fetch("https://nominatim.openstreetmap.org/reverse.php?lat="+lat+"&lon="+long+"&format=json");
+async function findLocation(lat, long) {
+    return await fetch('https://nominatim.openstreetmap.org/reverse.php?lat=' + lat + '&lon=' + long + '&format=json');
 }
 
-module.exports = findLocation
+module.exports = findLocation;
