@@ -3,7 +3,6 @@ import './App.sass'
 import Header from './components/Header/'
 import LeafletMap from './pages/LeafletMap'
 
-import Map from './pages/LeafletMap'
 import Dashboard from './pages/Dashboard'
 import Home from './pages/Home'
 

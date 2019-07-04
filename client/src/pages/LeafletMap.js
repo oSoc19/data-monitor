@@ -11,10 +11,10 @@ import { HexbinLayer } from 'react-leaflet-d3'
 const WrappedHexbinLayer = withLeaflet(HexbinLayer)
 
 const options = {
-  colorScaleExtent: [1, undefined],
-  radiusScaleExtent: [1, undefined],
-  colorRange: ['#f7fbff', '#ff0000'],
-  radiusRange: [5, 12]
+  colorScaleExtent: [1, 50],
+  radiusScaleExtent: [1, 50],
+  colorRange: ['#fff', '#ff0000'],
+  radiusRange: [5, 50]
 }
 
 const coordinates = [52.1326, 5.2913]
