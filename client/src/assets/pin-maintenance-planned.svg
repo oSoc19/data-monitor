@@ -1,0 +1,43 @@
+<svg id="Laag_1" data-name="Laag 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 71.28 98.42">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #1f668e;
+      }
+
+      .cls-2, .cls-3 {
+        fill: #fff;
+      }
+
+      .cls-3 {
+        stroke: #fff;
+        stroke-miterlimit: 10;
+        stroke-width: 0.5px;
+      }
+    </style>
+  </defs>
+  <title>pin-plannedmaintenance</title>
+  <g>
+    <path class="cls-1" d="M71.11,22A35.69,35.69,0,0,0,35.45,57.67c0,24.39,31.89,60.21,33.25,61.71a3.2,3.2,0,0,0,4.77,0c1.37-1.52,33.26-37.32,33.26-61.71A35.66,35.66,0,0,0,71.11,22Z" transform="translate(-35.45 -22.03)"/>
+    <g>
+      <g>
+        <path class="cls-2" d="M89.53,60.88h-1v-1.6H87v1.6H76.38v-1.6h-1.6v1.6h-1a2.41,2.41,0,0,0-2.4,2.41V77.4a2.41,2.41,0,0,0,2.4,2.41H89.53a2.41,2.41,0,0,0,2.41-2.41V63.29A2.41,2.41,0,0,0,89.53,60.88Zm.8,16.52a.8.8,0,0,1-.8.8H73.81a.8.8,0,0,1-.8-.8V66.82H90.33Zm0-12.19H73V63.29a.8.8,0,0,1,.8-.8h1v1.6h1.6v-1.6H87v1.6h1.61v-1.6h1a.8.8,0,0,1,.8.8Z" transform="translate(-35.45 -22.03)"/>
+        <rect class="cls-2" x="39.01" y="46.47" width="1.6" height="1.6"/>
+        <rect class="cls-2" x="42.22" y="46.47" width="1.6" height="1.6"/>
+        <rect class="cls-2" x="45.42" y="46.47" width="1.6" height="1.6"/>
+        <rect class="cls-2" x="48.63" y="46.47" width="1.6" height="1.6"/>
+        <rect class="cls-2" x="51.84" y="46.47" width="1.6" height="1.6"/>
+        <rect class="cls-2" x="39.01" y="49.68" width="1.6" height="1.6"/>
+        <rect class="cls-2" x="42.22" y="49.68" width="1.6" height="1.6"/>
+        <rect class="cls-2" x="45.42" y="49.68" width="1.6" height="1.6"/>
+        <rect class="cls-2" x="48.63" y="49.68" width="1.6" height="1.6"/>
+        <rect class="cls-2" x="39.01" y="52.89" width="1.6" height="1.6"/>
+        <rect class="cls-2" x="42.22" y="52.89" width="1.6" height="1.6"/>
+        <rect class="cls-2" x="45.42" y="52.89" width="1.6" height="1.6"/>
+        <rect class="cls-2" x="48.63" y="52.89" width="1.6" height="1.6"/>
+        <rect class="cls-2" x="51.84" y="49.68" width="1.6" height="1.6"/>
+      </g>
+      <path class="cls-3" d="M69.29,63.65H60.65a1.26,1.26,0,0,1-1.22-1.59l1.71-6.25H75.05l.55,1.85h1.72l.09,1.42h.76l-1.49-4.36s0,0,0-.06L74.86,48l-.06-.2-2-7.31a1.59,1.59,0,0,0-1.54-1.18H64.93a1.59,1.59,0,0,0-1.54,1.18l-3.56,13-.31,1.13L54.91,71.51H51.17a.94.94,0,0,0-.93.94V75a.93.93,0,0,0,.93.93H69.29ZM64.81,42.37a1.6,1.6,0,0,1,1.54-1.17h3.48a1.61,1.61,0,0,1,1.55,1.17l1.3,4.76H63.51Z" transform="translate(-35.45 -22.03)"/>
+    </g>
+  </g>
+</svg>
