@@ -1,12 +1,14 @@
 import React from 'react'
 import './App.sass'
-import Map from './pages/Map'
+import Header from './components/Header/'
+import LeafletMap from './pages/LeafletMap'
 
 function App() {
   return (
     <React.Fragment>
-      {/* <Header /> */}
-      <Map />
+      <Header />
+      {/* <Map /> */}
+      <LeafletMap />
     </React.Fragment>
   )
 }

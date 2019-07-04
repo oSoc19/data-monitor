@@ -14,6 +14,9 @@ function cleanBridgeData(obj) {
                 "status" : false,
                 "situationRecords": []
             }
+            if (Math.round(Math.random())) {
+                bridge.status = false;
+            }
             data.push(bridge);
         }
         let now = new Date();
