@@ -11,8 +11,8 @@ let app = express();
 let template = {
   situationVersionTime: 'situation/situationVersionTime'
 }
-// parse('http://opendata.ndw.nu/brugopeningen.xml.gz', template).then(result => console.log(result));
-parse('http://opendata.ndw.nu/wegwerkzaamheden.xml.gz', template).then(result => data = result);
+parse('http://opendata.ndw.nu/brugopeningen.xml.gz', template).then(result => console.log(result));
+// parse('http://opendata.ndw.nu/wegwerkzaamheden.xml.gz', template).then(result => data = result);
 
 app.use(cors());
 
