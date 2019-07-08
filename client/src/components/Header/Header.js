@@ -3,13 +3,11 @@ import React, { Component } from 'react'
 import logo from '../../assets/logo.svg'
 import './Header.sass'
 
-import { Map, Home, PieChart } from 'react-feather'
+import { NavLink } from 'react-router-dom'
+
+import { Map, Grid, Info, Activity } from 'react-feather'
 
 export default class Header extends Component {
-  static propTypes = {
-    prop: PropTypes
-  }
-
   render() {
     return (
       <div className="header-wrapper">
@@ -19,15 +17,18 @@ export default class Header extends Component {
             <h1 className="header-brand_name">Liquid Traffic</h1>
           </div>
           <div className="header-nav">
-            <a href="/" className="header-nav_link">
-              Home
-            </a>
-            <a href="/map" className="header-nav_link">
+            <NavLink to="/map" className="header-nav_link">
               <Map />
-            </a>
-            <a href="/dashboard" className="header-nav_link">
-              <PieChart />
-            </a>
+            </NavLink>
+            <NavLink to="/dashboard" className="header-nav_link">
+              <Grid />
+            </NavLink>
+            <NavLink to="/quality-monitor" className="header-nav_link">
+              <Activity />
+            </NavLink>
+            <NavLink to="/info" className="header-nav_link">
+              <Info />
+            </NavLink>
           </div>
         </div>
       </div>

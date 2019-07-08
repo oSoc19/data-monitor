@@ -1,45 +1,29 @@
-import L from 'leaflet'
-import 'leaflet.markercluster'
 import React, { Component } from 'react'
+import ReactMapGL, { Marker, NavigationControl } from 'react-map-gl'
+
+import GeoJSON from 'geojson'
+
 import './Map.sass'
 
-export default class Map extends Component {
+import Pin from '../components/Pin'
+
+const TOKEN =
+  'pk.eyJ1IjoiaGVrdHIiLCJhIjoiY2p4b2hzZTRlMDZobTNkbnQ2aGl4bXhyaSJ9.UvL3Brt2D11Lq63z9KyjLQ'
+
+class Map extends Component {
   state = {
     bridges: [],
-    map: null
+    viewport: {
+      latitude: 52.1326,
+      longitude: 5.2913,
+      zoom: 10,
+      bearing: 0,
+      pitch: 0
+    }
   }
 
   componentDidMount() {
-    this.map = this.renderMap()
-    let cluster = L.markerClusterGroup({
-      disableClusteringAtZoom: 13
-    })
-    this.map.addLayer(cluster)
     this.getBridges()
-  }
-
-  renderMap = () => {
-    let map = L.map('map', {
-      center: [52.1326, 5.2913],
-      zoom: 8
-    })
-
-    L.tileLayer(
-      'https://api.mapbox.com/styles/v1/mapbox/streets-v9/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiaXNsYWQiLCJhIjoiY2pqbzZiczU0MTV5aTNxcnM5bWY1Nnp4YSJ9.C9UeB-y3MTGiU8Lv7_m5dQ',
-      {
-        attribution:
-          'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>'
-      }
-    ).addTo(map)
-    L.circle([52.1326, 5.29313], {
-      color: 'red',
-      fillColor: '#f03',
-      fillOpacity: 0.5,
-      radius: 500
-    }).addTo(map)
-
-    this.setState({ map })
-    return map
   }
 
   getBridges = () => {
@@ -52,33 +36,62 @@ export default class Map extends Component {
       })
   }
 
-  renderMarker = location => {
-    L.marker([location.latitude, location.longitude]).addTo(this.state.map)
+  renderBridges = () => {
+    const { bridges } = this.state
+    return bridges.map(bridge => {
+      return (
+        <Marker
+          latitude={parseFloat(bridge.location.latitude)}
+          longitude={parseFloat(bridge.location.longitude)}
+        >
+          <Pin size={20} />
+        </Marker>
+      )
+    })
   }
 
-  render() {
+  parseToGeoJson = () => {
     const { bridges } = this.state
+    console.log(bridges)
+    const geoJsonBridges = bridges.map(bridge => {
+      return (bridge = {
+        lat: bridge.location.latitude,
+        lng: bridge.location.longitude
+      })
+    })
+
+    return GeoJSON.parse(geoJsonBridges, {
+      Point: ['lat', 'lng'],
+      include: ['name']
+    })
+  }
+
+  _updateViewport = viewport => {
+    this.setState({ viewport })
+  }
+  render() {
+    const { bridges, viewport } = this.state
     return (
-      <div>
-        <h1>Map</h1>
-        <div className="leaflet-container">
-          <link
-            rel="stylesheet"
-            href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css"
-            integrity="sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh7cOI1bkDwLqdLw3Zg0cRJAAQ=="
-            crossOrigin=""
-          />
-          <link
-            rel="stylesheet"
-            href="https://unpkg.com/leaflet.markercluster@1.3.0/dist/MarkerCluster.css"
-          />
-          <div id="map"></div>
-          {bridges &&
-            bridges.map(bridge => {
-              return this.renderMarker(bridge.location)
-            })}
+      <ReactMapGL
+        {...viewport}
+        width="100%"
+        height="100%"
+        className="map"
+        mapStyle="mapbox://styles/hektr/cjxug0x2101zy1dju90m1xgcm"
+        onViewportChange={this._updateViewport}
+        mapboxApiAccessToken={TOKEN}
+        {...viewport}
+      >
+        <Marker latitude={37.785164} longitude={100}>
+          <Pin size={100} />
+        </Marker>
+        {bridges && this.renderBridges()}
+        <div className="nav">
+          <NavigationControl onViewportChange={this._updateViewport} />
         </div>
-      </div>
+      </ReactMapGL>
     )
   }
 }
+
+export default Map
