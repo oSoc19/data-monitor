@@ -41,4 +41,4 @@ const roadMaintenance = (sequelize, DataTypes) => {
   return RoadMaintenance;
 };
 
-export default roadMaintenance;
+module.exports = roadMaintenance;

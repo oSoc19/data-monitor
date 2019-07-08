@@ -1,11 +1,7 @@
 const http = require('http');
 const zlib = require('zlib');
 const xtreamer = require('xtreamer');
-const {
-  transform
-} = require('camaro');
-
-
+const parseString = require('xml2js').parseString;
 /**
  * Parse a xml datex2 feed into a json-ld feed
  * @param  {string} source  a valid URL that goes to an xml datex2 feed
@@ -23,10 +19,11 @@ function parse(url, template) {
       res.pipe(gunzip).pipe(xtreamerTransform);
       let situations = [];
       xtreamerTransform.on('data', data => {
-        (async function() {
-          let result = await transform(data.toString(), template);
+        //XML2JS
+        let xmlSituation = data.toString();
+        parseString(xmlSituation, (err, result) => {
           situations.push(result);
-        })()
+        })
       });
       xtreamerTransform.on('end', () => {
         console.log('END');
