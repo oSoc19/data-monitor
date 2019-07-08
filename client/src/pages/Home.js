@@ -3,7 +3,7 @@ import React from 'react'
 export default function Home() {
   return (
     <div>
-      <h1>home</h1>
+      <a href="/map">Map</a>
     </div>
   )
 }

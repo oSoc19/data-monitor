@@ -6,10 +6,6 @@ import './Header.sass'
 import { Map, Home, PieChart } from 'react-feather'
 
 export default class Header extends Component {
-  static propTypes = {
-    prop: PropTypes
-  }
-
   render() {
     return (
       <div className="header-wrapper">
