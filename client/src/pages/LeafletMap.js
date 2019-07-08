@@ -14,7 +14,7 @@ const options = {
   colorScaleExtent: [1, 50],
   radiusScaleExtent: [1, 50],
   colorRange: ['#fff', '#ff0000'],
-  radiusRange: [5, 50]
+  radiusRange: [1, 10]
 }
 
 const coordinates = [52.1326, 5.2913]
@@ -81,13 +81,6 @@ class LeafletMap extends Component {
       })
     })
 
-    console.log(geoJsonBridges)
-    console.log(
-      GeoJSON.parse(geoJsonBridges, {
-        Point: ['lat', 'lng'],
-        include: ['name']
-      })
-    )
     return GeoJSON.parse(geoJsonBridges, {
       Point: ['lat', 'lng'],
       include: ['name']
@@ -103,7 +96,11 @@ class LeafletMap extends Component {
           url={tileSetUrl}
         />
         {bridges && (
-          <WrappedHexbinLayer data={this.parseToGeoJson()} {...options} />
+          <WrappedHexbinLayer
+            className="hexbin-hexagon"
+            data={this.parseToGeoJson()}
+            {...options}
+          />
         )}
       </Map>
     )
