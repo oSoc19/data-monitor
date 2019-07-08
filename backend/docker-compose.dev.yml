@@ -1,0 +1,12 @@
+version: "3.4"
+services:
+  api:
+    volumes:
+      - ./api:/usr/src/app
+    ports:
+      - 8888:8080
+      - 9229:9229
+    environment:
+      - "NODE_ENV=development"
+    command: >
+      sh -c "npm install && node --inspect=0.0.0.0 server.js"

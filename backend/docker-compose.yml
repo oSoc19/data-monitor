@@ -1,0 +1,15 @@
+version: "3.4"
+services:
+  api:
+    build: ./api
+    links:
+      - database:database
+    ports:
+      - 8080:8080
+  database:
+    build: ./database
+    environment:
+      - "POSTGRES_PASSWORD=postgres"
+      - "POSTGRES_USER=postgres"
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
