@@ -12,7 +12,7 @@ docker-compose build
 
 ### Running
 ```
-docker-compose run
+docker-compose up
 ```
 
 ### Stopping
@@ -37,6 +37,14 @@ The development mode depends on the type of service. The config of each service 
 Always make sure you build your images before.
 
 ### Running in devlop mode
+```
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+```
 
+Each service has will have its specific quirks.
 
 ### api service
+To go and debug this, use chrome and go to
+```
+
+```
