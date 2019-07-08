@@ -3,6 +3,8 @@ import React, { Component } from 'react'
 import './LeafletMap.sass'
 import 'leaflet/dist/leaflet.css'
 
+import Legend from '../components/Legend'
+
 import GeoJSON from 'geojson'
 
 import L from 'leaflet'
@@ -90,19 +92,22 @@ class LeafletMap extends Component {
   render() {
     const { bridges } = this.state
     return (
-      <Map center={coordinates} zoom={10} id="map">
-        <TileLayer
-          attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-          url={tileSetUrl}
-        />
-        {bridges && (
-          <WrappedHexbinLayer
-            className="hexbin-hexagon"
-            data={this.parseToGeoJson()}
-            {...options}
+      <React.Fragment>
+        <Legend />
+        <Map center={coordinates} zoom={10} id="map">
+          <TileLayer
+            attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+            url={tileSetUrl}
           />
-        )}
-      </Map>
+          {bridges && (
+            <WrappedHexbinLayer
+              className="hexbin-hexagon"
+              data={this.parseToGeoJson()}
+              {...options}
+            />
+          )}
+        </Map>
+      </React.Fragment>
     )
   }
 }
