@@ -46,5 +46,5 @@ Each service has will have its specific quirks.
 ### api service
 To go and debug this, use chrome and go to
 ```
-
+chrome://inspect/#devices
 ```
