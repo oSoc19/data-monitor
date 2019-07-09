@@ -22,7 +22,8 @@
     "node-fetch": "^2.6.0",
     "string-hash": "^1.1.3",
     "xml2js": "^0.4.19",
-    "zlib": "^1.0.5"
+    "zlib": "^1.0.5",
+    "supervisor": "^0.12.0"
   },
   "bugs": {
     "url": "https://github.com/oSoc19/data-monitor/issues"
