@@ -1,44 +1,42 @@
 const express = require('express');
-const {
-  models,
-  sequelize,
-  createSituation
-} = require('./models/index.js');
 const parse = require('./parserToJson');
 const cleaner = require('./jsonCleaner');
 const cors = require('cors');
 
 const locationFinder = require('./locationFinder');
 
+let data;
 let app = express();
 
-let template = {
-  situationVersionTime: 'situation/situationVersionTime'
-}
-parse('http://opendata.ndw.nu/brugopeningen.xml.gz', template)
-  .then(situations => {
-    situations.forEach( (situation) => {
-      console.log(situation.situation);
-      createSituation(situation.situation);
-    });
-  });
-// parse('http://opendata.ndw.nu/wegwerkzaamheden.xml.gz', template).then(result => data = result);
+parse('http://opendata.ndw.nu/brugopeningen.xml.gz').then(result => data = cleaner(result));
+// parse('http://opendata.ndw.nu/wegwerkzaamheden.xml.gz').then(result => data = result);
 
 app.use(cors());
 
-sequelize.sync().then(() => {
-  app.listen(8080, () => {
-    console.log('API Server listening on port 8080');
-  });
+app.listen(8080, () => {
+    let location;
+    locationFinder(52.4715154435141, 4.81342942207674).then(res => {
+        return res.json();
+    });
 });
 
-app.get("/", (req, res, next) => {});
+app.get("/", async (req, res, next) => {
+  let id = req.query.id;
+  let location = req.query.location;
+
+  let str =""
+
+  str += (id === undefined) ? "" : id
+  str += " "
+  str += (location === undefined) ? "" : location
+
+  res.send(str)
+});
 
 app.get("/api/bridges", (req, res, next) => {
-  res.json(data);
+    res.json(data);
 });
 
 app.use(function(req, res) {
-  res.status(404);
+    res.status(404);
 });
-
