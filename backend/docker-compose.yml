@@ -6,6 +6,10 @@ services:
       - database:database
     ports:
       - 8080:8080
+  fetch_data:
+    build: ./fetchData
+    links:
+      - database:database
   database:
     build: ./database
     environment:

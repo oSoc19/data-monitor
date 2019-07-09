@@ -1,6 +1,5 @@
-const models = require('./index');
 const bridgeSituationRecord = (sequelize, DataTypes) => {
-  const BridgeSituationRecord = sequelize.define('bridgeSituationRecord', {
+  const BridgeSituationRecord = sequelize.define('bridge_situation_record', {
     id: {
       type: DataTypes.STRING,
       primaryKey: true,
@@ -17,8 +16,8 @@ const bridgeSituationRecord = (sequelize, DataTypes) => {
 		}
   });
  
-	BridgeSituationRecord.associate = models => {
-		BridgeSituationRecord.belongsTo(models.Bridge, { as: bridgeSituation });
+  bridgeSituationRecord.associate = models => {
+    BridgeSituationRecord.belongsTo(models.bridge);
   };
 
   return BridgeSituationRecord;
