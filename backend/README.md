@@ -66,3 +66,11 @@ To take these into account, you can run:
 ```
 docker-compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.override.yml up -d  # will start in daemon mode
 ```
+Please note: there are shorter ways, but leave em like it is for now.
+
+
+### useful commands
+Connect locally from your machine to database (assumes an update docker-compose.override.yml)
+```
+ psql -h localhost -p 5432 -U postgres
+```
