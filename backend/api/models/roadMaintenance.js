@@ -3,7 +3,7 @@ const roadMaintenance = (sequelize, DataTypes) => {
     id: {
       type: DataTypes.STRING,
       unique: true
-    }
+    },
     type: {
       type: DataTypes.STRING
     },
