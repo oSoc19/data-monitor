@@ -17,6 +17,7 @@ const models = {
 
 Object.keys(models).forEach(key => {
   if ('associate' in models[key]) {
+		console.log(models[key])
     models[key].associate(models);
   }
 });
@@ -39,11 +40,15 @@ const addBridge = async situation => {
     }
   });
   if (!bridge) {
-	 await models.Bridge.create({
+    let bridgeEntry = await models.Bridge.create({
       id: id,
       longitude: location.longitude,
-      latitude: location.latitude
-    })
+      latitude: location.latitude,
+      bridgeSituationRecord: [{
+        id: situation.situationRecord['$'].id,
+      }]
+    });
+		bridgeEntry.save();
   }
 };
 

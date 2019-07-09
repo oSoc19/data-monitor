@@ -13,9 +13,9 @@ const bridge = (sequelize, DataTypes) => {
     }
   });
 
-  // bridge.associate = models => {
-  //   User.hasMany(models.BridgeRecord);
-  // };
+  bridge.associate = models => {
+    Bridge.hasMany(models.bridgeSituationRecord);
+  };
 
   return Bridge;
 };

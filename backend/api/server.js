@@ -24,10 +24,15 @@ sequelize.sync({
   }
   parse('http://opendata.ndw.nu/brugopeningen.xml.gz', template)
     .then(situations => {
-      (async () => {
-        await addBridge(situations[0].situation);
-        await addBridge(situations[0].situation);
-      })();
+			(async () => {
+				await addBridge(situations[0].situation);
+			})();
+			// (async () => {
+			// 	for(let situation of situations) {
+			// 		await addBridge(situation.situation);
+			// 	}
+      //
+			// })();
       // parse('http://opendata.ndw.nu/wegwerkzaamheden.xml.gz', template).then(result => data = result);
       app.listen(8080, () => {
         console.log('API Server listening on port 8080');
