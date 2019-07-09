@@ -9,4 +9,4 @@ services:
     environment:
       - "NODE_ENV=development"
     command: >
-      sh -c "npm install && node --inspect=0.0.0.0 server.js"
+      sh -c "npm install && supervisor -w . --inspect=0.0.0.0:9229 server.js"

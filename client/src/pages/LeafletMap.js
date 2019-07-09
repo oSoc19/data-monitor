@@ -34,19 +34,19 @@ L.Icon.Default.mergeOptions({
   shadowUrl: require('leaflet/dist/images/marker-shadow.png')
 })
 
-export const bridgeOpenIcon = new L.Icon({
-  iconUrl: require('../assets/icons/bridge-open.svg'),
-  iconRetinaUrl: require('../assets/icons/bridge-open.svg'),
-  iconAnchor: [5, 55],
-  popupAnchor: [10, -44]
-})
+// export const bridgeOpenIcon = new L.Icon({
+//   iconUrl: require('../assets/icons/bridge-open.svg'),
+//   iconRetinaUrl: require('../assets/icons/bridge-open.svg'),
+//   iconAnchor: [5, 55],
+//   popupAnchor: [10, -44]
+// })
 
-export const bridgeClosedIcon = new L.Icon({
-  iconUrl: require('../assets/icons/bridge-closed.svg'),
-  iconRetinaUrl: require('../assets/icons/bridge-closed.svg'),
-  iconAnchor: [20, 40],
-  popupAnchor: [0, -35]
-})
+// export const bridgeClosedIcon = new L.Icon({
+//   iconUrl: require('../assets/icons/bridge-closed.svg'),
+//   iconRetinaUrl: require('../assets/icons/bridge-closed.svg'),
+//   iconAnchor: [20, 40],
+//   popupAnchor: [0, -35]
+// })
 
 // const bridgeOpen = L.divIcon({
 //   className: 'custom icon',

@@ -1,11 +1,14 @@
 import React, { Component } from 'react'
-import ReactMapGL, { Marker, NavigationControl } from 'react-map-gl'
+import ReactMapGL, { Marker, NavigationControl, Popup } from 'react-map-gl'
+import DeckGL, { ArcLayer } from 'deck.gl'
 
 import GeoJSON from 'geojson'
 
 import './Map.sass'
 
 import Pin from '../components/Pin'
+
+import Legend from '../components/Legend'
 
 const TOKEN =
   'pk.eyJ1IjoiaGVrdHIiLCJhIjoiY2p4b2hzZTRlMDZobTNkbnQ2aGl4bXhyaSJ9.UvL3Brt2D11Lq63z9KyjLQ'
@@ -65,7 +68,6 @@ class Map extends Component {
       include: ['name']
     })
   }
-
   _updateViewport = viewport => {
     this.setState({ viewport })
   }
@@ -77,14 +79,27 @@ class Map extends Component {
         width="100%"
         height="100%"
         className="map"
-        mapStyle="mapbox://styles/hektr/cjxug0x2101zy1dju90m1xgcm"
+        mapStyle="mapbox://styles/hektr/cjxuhbxj10twt1cnz2ztmv8x1"
         onViewportChange={this._updateViewport}
         mapboxApiAccessToken={TOKEN}
         {...viewport}
       >
-        <Marker latitude={37.785164} longitude={100}>
-          <Pin size={100} />
-        </Marker>
+        <DeckGL
+          viewState={viewport}
+          layers={[
+            new ArcLayer({
+              data: [
+                {
+                  sourcePosition: [52.1326, 5.2913],
+                  targetPosition: [-122.45669, 37.781]
+                }
+              ],
+              strokeWidth: 4,
+              getSourceColor: x => [0, 0, 255],
+              getTargetColor: x => [0, 255, 0]
+            })
+          ]}
+        />
         {bridges && this.renderBridges()}
         <div className="nav">
           <NavigationControl onViewportChange={this._updateViewport} />
