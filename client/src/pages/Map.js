@@ -1,25 +1,23 @@
 import React, { Component } from 'react'
-import ReactMapGL, { Marker, NavigationControl, Popup } from 'react-map-gl'
-import DeckGL, { ArcLayer } from 'deck.gl'
-
-import GeoJSON from 'geojson'
+import ReactMapGL, { Marker } from 'react-map-gl'
+import DeckGL, { ScatterplotLayer } from 'deck.gl'
 
 import './Map.sass'
-
 import Pin from '../components/Pin'
-
 import Legend from '../components/Legend'
 
-const TOKEN =
-  'pk.eyJ1IjoiaGVrdHIiLCJhIjoiY2p4b2hzZTRlMDZobTNkbnQ2aGl4bXhyaSJ9.UvL3Brt2D11Lq63z9KyjLQ'
+import { Mapbox } from '../config'
+
+import { GeoJson } from '../utilities'
 
 class Map extends Component {
   state = {
     bridges: [],
+    province: [],
     viewport: {
-      latitude: 52.1326,
-      longitude: 5.2913,
-      zoom: 10,
+      latitude: 52.153,
+      longitude: 5.5196,
+      zoom: 7.1,
       bearing: 0,
       pitch: 0
     }
@@ -27,16 +25,21 @@ class Map extends Component {
 
   componentDidMount() {
     this.getBridges()
+    this.getProvinceBoundingBox('Amsterdam')
   }
 
-  getBridges = () => {
-    fetch('http://82.196.10.230:8080/api/bridges')
-      .then(res => {
-        return res.json()
-      })
-      .then(bridges => {
-        this.setState({ bridges })
-      })
+  getProvinceBoundingBox = async province => {
+    let res = await fetch(
+      `https://nominatim.openstreetmap.org/search.php?q=${province}&polygon_geojson=1&format=json`
+    )
+    let data = await res.json()
+    this.setState({ province: data })
+  }
+
+  getBridges = async () => {
+    let res = await fetch('http://82.196.10.230:8080/api/bridges')
+    let bridges = await res.json()
+    this.setState({ bridges })
   }
 
   renderBridges = () => {
@@ -53,59 +56,56 @@ class Map extends Component {
     })
   }
 
-  parseToGeoJson = () => {
+  renderScatterPlotLayer = () => {
     const { bridges } = this.state
-    console.log(bridges)
-    const geoJsonBridges = bridges.map(bridge => {
+    const data = bridges.map(bridge => {
       return (bridge = {
-        lat: bridge.location.latitude,
-        lng: bridge.location.longitude
+        location: [
+          parseFloat(bridge.location.longitude),
+          parseFloat(bridge.location.latitude)
+        ],
+        message: 'test'
       })
     })
 
-    return GeoJSON.parse(geoJsonBridges, {
-      Point: ['lat', 'lng'],
-      include: ['name']
+    return new ScatterplotLayer({
+      data,
+      getPosition: d => d.location,
+      getRadius: 10000,
+      getFillColor: [255, 255, 0],
+      opacity: 0.5,
+      radiusMinPixels: 0.25,
+      radiusMaxPixels: 30,
+      // Enable picking
+      pickable: true
     })
   }
-  _updateViewport = viewport => {
-    this.setState({ viewport })
-  }
+
   render() {
     const { bridges, viewport } = this.state
-    return (
-      <ReactMapGL
-        {...viewport}
-        width="100%"
-        height="100%"
-        className="map"
-        mapStyle="mapbox://styles/hektr/cjxuhbxj10twt1cnz2ztmv8x1"
-        onViewportChange={this._updateViewport}
-        mapboxApiAccessToken={TOKEN}
-        {...viewport}
-      >
-        <DeckGL
-          viewState={viewport}
-          layers={[
-            new ArcLayer({
-              data: [
-                {
-                  sourcePosition: [52.1326, 5.2913],
-                  targetPosition: [-122.45669, 37.781]
-                }
-              ],
-              strokeWidth: 4,
-              getSourceColor: x => [0, 0, 255],
-              getTargetColor: x => [0, 255, 0]
-            })
-          ]}
-        />
-        {bridges && this.renderBridges()}
-        <div className="nav">
-          <NavigationControl onViewportChange={this._updateViewport} />
-        </div>
-      </ReactMapGL>
-    )
+    if (bridges) {
+      return (
+        <ReactMapGL
+          {...viewport}
+          width="100%"
+          height="100%"
+          maxPitch={85}
+          onViewportChange={viewport => this.setState({ viewport })}
+          mapboxApiAccessToken={Mapbox.token}
+        >
+          <Legend/>
+          <DeckGL
+            layers={[this.renderScatterPlotLayer()]}
+            initialViewState={viewport}
+            controller
+          >
+            {/* <StaticMap mapboxApiAccessToken={TOKEN}></StaticMap> */}
+          </DeckGL>
+        </ReactMapGL>
+      )
+    } else {
+      return <div>Loading</div>
+    }
   }
 }
 
