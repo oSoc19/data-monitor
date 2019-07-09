@@ -1,4 +1,4 @@
-t express = require('express');
+const express = require('express');
 const {
   models,
   sequelize,

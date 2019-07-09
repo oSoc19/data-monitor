@@ -1,18 +1,18 @@
 const Sequelize = require('sequelize');
+const crypto = require('crypto');
 require('dotenv').config();
 
 const sequelize = new Sequelize(
   process.env.DATABASE,
   process.env.DATABASE_USER,
-  process.env.DATABASE_PASSWORD,
-  {
+  process.env.DATABASE_PASSWORD, {
     host: 'database',
     dialect: 'postgres',
   },
 );
 
 const models = {
-  Situation: sequelize.import('./situation'),
+  Bridge: sequelize.import('./bridge'),
 };
 
 Object.keys(models).forEach(key => {
@@ -30,8 +30,26 @@ const createSituation = async (situation) => {
   })
 };
 
+const addBridge = async situation => {
+  let location = situation.situationRecord.groupOfLocations.locationForDisplay;
+  let id = crypto.createHash('sha1').update(location.longitude + location.latitude).digest('hex');
+  let bridge = await models.Bridge.findOne({
+    where: {
+      id: id
+    }
+  });
+  if (!bridge) {
+	 await models.Bridge.create({
+      id: id,
+      longitude: location.longitude,
+      latitude: location.latitude
+    })
+  }
+};
+
 module.exports = {
   sequelize: sequelize,
   models: models,
-  createSituation: createSituation
+  createSituation: createSituation,
+  addBridge: addBridge
 }
