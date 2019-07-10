@@ -91,3 +91,4 @@ const addBridgeEvent = async situation => {
 //     }
 //   }
 // };
+sequelize.exports = models
