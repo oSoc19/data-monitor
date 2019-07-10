@@ -10,9 +10,13 @@
   "license": "MIT",
   "dependencies": {
     "dotenv": "^8.0.0",
+    "geojson": "^0.5.0",
     "pg": "^7.11.0",
     "sequelize": "^5.9.4",
     "xml2js": "^0.4.19",
     "xtreamer": "^1.1.2"
+  },
+  "devDependencies": {
+    "eslint": "^6.0.1"
   }
 }
