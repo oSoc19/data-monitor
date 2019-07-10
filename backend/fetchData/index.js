@@ -71,3 +71,5 @@ const addBridge = async situation => {
     }
   }
 };
+
+sequelize.exports = models
