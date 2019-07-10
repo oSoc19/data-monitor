@@ -2,8 +2,6 @@ node_modules/
 .eslintrc
 .DS_Store
 *~
-.env
-
 docker-compose.override.yml
 /backend/data/*
 .editorconfig
