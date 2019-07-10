@@ -24,19 +24,6 @@ Object.keys(models).forEach(key => {
   }
 });
 
-sequelize.sync({
-    force: true
-  })
-  .then(() => {
-    parse('http://opendata.ndw.nu/brugopeningen.xml.gz')
-      .then(situations => {
-        (async () => {
-          for (let situation of situations) {
-            await addBridgeEvent(situation.situation);
-          }
-        })();
-      })
-  })
 
 const addBridgeEvent = async situation => {
   let location = situation.situationRecord.groupOfLocations.locationForDisplay;

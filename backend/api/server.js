@@ -1,9 +1,10 @@
 const express = require('express')
 const cors = require('cors')
+const geojson = require('geojson');
 const Sequelize = require('sequelize')
 const op = Sequelize.Op
 
-const models = require('./index')
+const models = require('./fetchData/index');
 
 // const locationFinder = require('./locationFinder');
 
@@ -40,7 +41,7 @@ app.get('/api/bridgeopenings/', async (req, res, next) => {
     end = '9999-12-01'
 
   let output = await models.BridgeEvent.findAll({
-    attributes: ['id', 'version', 'geoJsonLocation'],
+    attributes: ['id', 'version', 'location'],
     where: {
       startTime: {
         [op.gt]: new Date(start)
@@ -50,7 +51,15 @@ app.get('/api/bridgeopenings/', async (req, res, next) => {
       }
     }
   })
-  res.send(output)
+	for(let i = 0; i < output.length; i++) {
+		output[i] = geojson.parse(output[i].dataValues, {Point: 'location'});
+	}
+	let featureCollection = {
+  "type": "FeatureCollection",
+  "features": output
+}
+	
+res.send(featureCollection);
 })
 
 app.get('/api/bridgeopenings/:id', (req, res, next) => {
