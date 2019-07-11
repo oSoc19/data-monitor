@@ -15,6 +15,7 @@ const sequelize = new Sequelize(
 
 const models = {
   BridgeEvent: sequelize.import('./models/bridgeEvent.js'),
+  BridgeEventCheck: sequelize.import('./models/bridgeEventCheck.js'),
 };
 
 Object.keys(models).forEach(key => {
