@@ -18,43 +18,71 @@ const sequelize = new Sequelize(
 
 app.use(cors())
 
-sequelize.sync({ force: true })
+sequelize.sync({
+    force: true
+  })
   .then(() => {
     app.listen(8080, () => {
       console.log('API Server listening on port 8080')
     })
   })
 
-app.get("/", (req, res, next) => { })
+app.get("/", (req, res, next) => {})
+
+app.get('/api/bridges/', async (req, res, next) => {
+  let bridges = await models.Bridge.findAll({
+    raw: true
+  });
+	for (let i = 0; i < bridges.length; i++) {
+    bridges[i] = geojson.parse(bridges[i], {
+      Point: 'location'
+    });
+  }
+
+  let featureCollection = {
+    "type": "FeatureCollection",
+    "features": bridges
+  }
+  res.send(featureCollection);
+
+})
 
 
 app.get('/api/bridgeopenings/', async (req, res, next) => {
   let start = req.query.startTime
   let end = req.query.endTime
+  let bridgeId = req.query.id
 
   if (start === undefined)
     start = 0
   if (end === undefined)
     end = '9999-12-01'
+	console.log(bridgeId)
 
-  let output = await models.BridgeEvent.findAll({
-    attributes: ['id', 'version', 'location'],
+	if(bridgeId === undefined) {
+		res.send({});
+	}
+  let bridgeEvents = await models.BridgeEvent.findAll({
+    raw: true,
+    attributes: ['id', 'version', 'startTime', 'endTime'],
     where: {
+      bridgeId: bridgeId,
       startTime: {
         [op.gt]: new Date(start)
       },
       endTime: {
-        [op.lt]: new Date(end)
-      }
+        [op.lt]: new Date(end),
+      },
     },
-    order: [['id', 'ASC']]
-  })
-  for (let i = 0; i < output.length; i++) {
-    output[i] = geojson.parse(output[i].dataValues, { Point: 'location' });
+  });
+  for (let bridgeEvent of bridgeEvents) {
+    bridgeEvent = geojson.parse(bridgeEvent, {
+      Point: 'location'
+    });
   }
   let featureCollection = {
     "type": "FeatureCollection",
-    "features": output
+    "features": bridgeEvents
   }
   res.send(featureCollection);
 })
@@ -73,16 +101,25 @@ app.get('/api/bridgeopenings/:id', (req, res, next) => {
 app.get('/api/qa/bridgeopenings/summary/country/:country', (req, res, next) => {
   let aggregate = {
     "name": req.params.country,
-    "children": [
-      {
+    "children": [{
         "name": "Oost-Nederland",
-        "children":
-          [{ "name": "good", "value": 168 }, { "name": "bad", "value": 0 }]
+        "children": [{
+          "name": "good",
+          "value": 168
+        }, {
+          "name": "bad",
+          "value": 0
+        }]
       },
       {
         "name": "Noord-Nederland",
-        "children":
-          [{ "name": "good", "value": 99 }, { "name": "bad", "value": 1 }]
+        "children": [{
+          "name": "good",
+          "value": 99
+        }, {
+          "name": "bad",
+          "value": 1
+        }]
       }
     ]
   }
@@ -92,15 +129,13 @@ app.get('/api/qa/bridgeopenings/summary/country/:country', (req, res, next) => {
 app.get('/api/qa/bridgeopenings/summary/city/:city', (req, res, next) => {
   let qa = {
     "name": req.params.city,
-    "children": [
-      {
-        "id": "qa-assessment-id",
-        "situationRecordId": "situationRecordId",
-        "nameOfCheck1": "ok",
-        "check2": "nok",
-        "check3": "overruled ok"
-      }
-    ]
+    "children": [{
+      "id": "qa-assessment-id",
+      "situationRecordId": "situationRecordId",
+      "nameOfCheck1": "ok",
+      "check2": "nok",
+      "check3": "overruled ok"
+    }]
   }
   res.json(qa)
 })
@@ -115,7 +150,6 @@ app.put('/api/qa/bridgeopenings/:qaID', (req, res, next) => {
   }
 })
 
-app.use(function (req, res) {
+app.use(function(req, res) {
   res.status(404)
 })
-
