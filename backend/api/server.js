@@ -57,10 +57,10 @@ app.get('/api/bridgeopenings/', async (req, res, next) => {
     start = 0
   if (end === undefined)
     end = '9999-12-01'
-	console.log(bridgeId)
 
 	if(bridgeId === undefined) {
 		res.send({});
+		return;
 	}
   let bridgeEvents = await models.BridgeEvent.findAll({
     raw: true,
