@@ -1,6 +1,14 @@
 import React, { Component } from 'react'
 
-import { PlusCircle } from 'react-feather'
+import {
+  PlusCircle,
+  BarChart,
+  CheckCircle,
+  Circle,
+  MinusCircle,
+  AlertCircle,
+  XCircle
+} from 'react-feather'
 import './Legend.sass'
 
 class Legend extends Component {
@@ -18,15 +26,34 @@ class Legend extends Component {
       <div className="legend">
         {!collapsed && (
           <ul className="legend_list">
-            <li>Perfect quality</li>
-            <li>Good quality</li>
-            <li>Reasonable quality</li>
-            <li>Mediocre quality</li>
-            <li>Bad quality</li>
+            <h3>
+              <BarChart />
+              Data quality
+            </h3>
+            <li>
+              <CheckCircle />
+              Perfect quality
+            </li>
+            <li>
+              <Circle />
+              Good quality
+            </li>
+            <li>
+              <MinusCircle />
+              Reasonable quality
+            </li>
+            <li>
+              <AlertCircle />
+              Mediocre quality
+            </li>
+            <li>
+              <XCircle />
+              Bad quality
+            </li>
           </ul>
         )}
         <button className="legend_btn" onClick={this.toggleLegend}>
-          <PlusCircle />
+          {collapsed ? <PlusCircle /> : <XCircle />}
           Legend
         </button>
       </div>
