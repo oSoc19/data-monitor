@@ -105,6 +105,7 @@ app.get('/api/qa/bridgeopenings/summary/region/:region', (req, res, next) => {
     }
     res.json(region)
 })
+
 app.get('/api/qa/bridgeopenings/summary/province/:province', (req, res, next) => {
     let province = {
         "name": req.params.province,
@@ -136,6 +137,11 @@ app.get('/api/qa/bridgeopenings/summary/city/:city', (req, res, next) => {
     res.json(city)
 })
 
+app.get('/api/bridges/:id', (req, res, next) => {
+    
+})
+
+
 app.put('/api/qa/bridgeopenings/:qaID', (req, res, next) => {
     let payload = {
         "id": req.params.qaID,
@@ -145,6 +151,7 @@ app.put('/api/qa/bridgeopenings/:qaID', (req, res, next) => {
         "check3": "overruled ok"
     }
 })
+
 
 app.use(function (req, res) {
     res.status(404)

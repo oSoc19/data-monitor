@@ -31,13 +31,13 @@ const addBridgeEvent = async situation => {
   let situationRecord = situation.situationRecord;
   let bridgeEvent = await models.BridgeEvent.findOne({
     where: {
-			id: situationRecord['$'].id,
+      id: situationRecord['$'].id,
 			version: situationRecord['$'].version
     }
   });
   if (!bridgeEvent) {
     bridgeEvent = await models.BridgeEvent.create({
-			id: situationRecord['$'].id,
+      id: situationRecord['$'].id,
 			version: situationRecord['$'].version,
 			location: [location.longitude, location.latitude],
       creationTime: situationRecord.situationRecordCreationTime,
@@ -46,15 +46,16 @@ const addBridgeEvent = async situation => {
 			geoJsonLocation: GeoJson.parse(location, {Point: ['longitude', 'latitude']}).geometry
     })
   }
+  check(bridgeEvent)
 };
 
 // const addBridge = async situation => {
-//   let location = situation.situationRecord.groupOfLocations.locationForDisplay;
-//   let id = crypto.createHash('sha1').update(location.longitude + location.latitude).digest('hex');
-//   let bridge = await models.Bridge.findOne({
-//     where: {
-//       id: id
-//     }
+  //   let location = situation.situationRecord.groupOfLocations.locationForDisplay;
+  //   let id = crypto.createHash('sha1').update(location.longitude + location.latitude).digest('hex');
+  //   let bridge = await models.Bridge.findOne({
+    //     where: {
+      //       id: id
+      //     }
 //   });
 //   if (!bridge) {
 //     await models.Bridge.create({

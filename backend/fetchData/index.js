@@ -1,6 +1,7 @@
 const Sequelize = require('sequelize');
 const parse = require('./parserToJson.js');
 const GeoJson = require('geojson');
+const check = require('./check')
 require('dotenv').config();
 
 const sequelize = new Sequelize(
@@ -9,7 +10,8 @@ const sequelize = new Sequelize(
   process.env.DATABASE_PASSWORD, {
     host: 'database',
     dialect: 'postgres',
-  },
+    logging: false
+  }
 );
 
 
@@ -46,6 +48,7 @@ const addBridgeEvent = async situation => {
 			geoJsonLocation: GeoJson.parse(location, {Point: ['longitude', 'latitude']}).geometry
     })
   }
+  check(bridgeEvent);
 };
 
 sequelize.sync({
