@@ -50,38 +50,4 @@ const addBridgeEvent = async situation => {
   check(bridgeEvent)
 };
 
-<<<<<<< HEAD
-// const addBridge = async situation => {
-  //   let location = situation.situationRecord.groupOfLocations.locationForDisplay;
-  //   let id = crypto.createHash('sha1').update(location.longitude + location.latitude).digest('hex');
-  //   let bridge = await models.Bridge.findOne({
-    //     where: {
-      //       id: id
-      //     }
-//   });
-//   if (!bridge) {
-//     await models.Bridge.create({
-//       id: id,
-//       longitude: location.longitude,
-//       latitude: location.latitude,
-//     });
-//     let situationRecord = situation.situationRecord;
-//     let bridgeSituationRecord = await models.BridgeSituationRecord.findOne({
-//       where: {
-//         id: situationRecord['$'].id
-//       }
-//     });
-//
-//     if (!bridgeSituationRecord) {
-//       bridgeSituationRecord = await models.BridgeSituationRecord.create({
-//         id: situationRecord['$'].id,
-//         creationTime: situationRecord.situationRecordCreationTime,
-//         startTime: situationRecord.validity.validityTimeSpecification.overallStartTime,
-//         endTime: situationRecord.validity.validityTimeSpecification.overallEndTime,
-//       });
-//     }
-//   }
-// };
-=======
->>>>>>> 1b93891369cf8aad1ed3db3d9fd96ac1d716f3ec
 module.exports = models

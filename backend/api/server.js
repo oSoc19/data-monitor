@@ -170,13 +170,24 @@ app.get('/api/bridges/:id', (req, res, next) => {
 })
 
 
-app.put('/api/qa/bridgeopenings/:qaID', (req, res, next) => {
-    let payload = {
-        "id": req.params.qaID,
-        "situationRecordId": "situationRecordId",
-        "nameOfCheck1": "ok",
-        "check2": "nok",
-        "check3": "overruled ok"
+app.put('/api/qa/bridgeopenings/:id', async (req, res, next) => {
+    
+    let id = req.id
+
+    let bridgeEventChecks = models.bridgeEventChecks.findOne({
+        where: {
+            bridgeEventId: id
+        }
+    })
+
+    if (!bridgeEventChecks){
+        res.send({success: false})
+    }
+    else{
+        await bridgeEventChecks.update({
+            manualIntervention: true
+        })
+        res.send({succes: true})
     }
 })
 

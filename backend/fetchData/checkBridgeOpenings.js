@@ -1,7 +1,6 @@
 
 
-const checkBridgeEvents = async bridgeEvent => {
-
+const checkAllFields = bridgeEvent => {
     let bridgeEventKeys = Object.values(bridgeEvent.dataValues)
     let count = 0
     for (let value of bridgeEventKeys) {
@@ -9,9 +8,6 @@ const checkBridgeEvents = async bridgeEvent => {
             count++
         }
     }
-    // if (count !== bridgeEventKeys.length) {
-        return ((count - 2) / (bridgeEventKeys.length - 2))
-    // }
+    return ((count - 2) / (bridgeEventKeys.length - 2))
 }
-
-module.exports = checkBridgeEvents
+module.exports = checkAllFields

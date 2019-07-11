@@ -8,6 +8,9 @@ const bridgeEventCheck = (sequelize, DataTypes) => {
         },
         checksum: {
             type: DataTypes.FLOAT
+        },
+        manualIntervention: {
+            type: DataTypes.BOOLEAN
         }
     })
 
