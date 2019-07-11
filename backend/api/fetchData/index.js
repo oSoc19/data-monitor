@@ -14,6 +14,7 @@ const sequelize = new Sequelize(
 
 
 const models = {
+  Bridge: sequelize.import('./models/bridge.js'),
   BridgeEvent: sequelize.import('./models/bridgeEvent.js'),
   BridgeEventCheck: sequelize.import('./models/bridgeEventCheck.js'),
 };
@@ -49,6 +50,7 @@ const addBridgeEvent = async situation => {
   check(bridgeEvent)
 };
 
+<<<<<<< HEAD
 // const addBridge = async situation => {
   //   let location = situation.situationRecord.groupOfLocations.locationForDisplay;
   //   let id = crypto.createHash('sha1').update(location.longitude + location.latitude).digest('hex');
@@ -80,4 +82,6 @@ const addBridgeEvent = async situation => {
 //     }
 //   }
 // };
+=======
+>>>>>>> 1b93891369cf8aad1ed3db3d9fd96ac1d716f3ec
 module.exports = models
