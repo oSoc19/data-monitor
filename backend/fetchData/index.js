@@ -48,6 +48,20 @@ const addBridgeEvent = async situation => {
   }
 };
 
+sequelize.sync({
+    force: true
+  })
+  .then(() => {
+    parse('http://opendata.ndw.nu/brugopeningen.xml.gz')
+      .then(situations => {
+        (async () => {
+          for (let situation of situations) {
+            await addBridgeEvent(situation.situation);
+          }
+        })();
+      })
+  })
+
 // const addBridge = async situation => {
 //   let location = situation.situationRecord.groupOfLocations.locationForDisplay;
 //   let id = crypto.createHash('sha1').update(location.longitude + location.latitude).digest('hex');
