@@ -1,8 +1,5 @@
 import React, { Component } from 'react'
-import ReactMapGL, {
-  Marker,
-  FlyToInterpolator
-} from 'react-map-gl'
+import ReactMapGL, { Marker, FlyToInterpolator } from 'react-map-gl'
 import DeckGL, { ScatterplotLayer, IconLayer, LayerManager } from 'deck.gl'
 import Header from '../Header'
 import Sidebar from '../Sidebar'
@@ -12,10 +9,12 @@ import Legend from '../Legend'
 import bridgeOpenIcon from './bridge-open.svg'
 import { Mapbox } from '../../config'
 
+import { MapStylePicker } from './Controls'
+
 class Map extends Component {
   state = {
     bridges: [],
-    province: [],
+    bridgeEvents: null,
     style: 'mapbox://styles/mapbox/light-v9',
     viewport: {
       latitude: 52.153,
@@ -25,6 +24,7 @@ class Map extends Component {
       zoom: 7.1,
       bearing: 0,
       pitch: 0
+      // TODO: min & max zoom
     }
   }
 
@@ -41,9 +41,17 @@ class Map extends Component {
   }
 
   getBridges = async () => {
-    let res = await fetch('http://82.196.10.230:8080/api/bridgeopenings')
+    let res = await fetch('http://82.196.10.230:8080/api/bridges')
     let bridges = await res.json()
     this.setState({ bridges: bridges.features })
+  }
+
+  getBridgeEvents = async id => {
+    let res = await fetch(
+      `http://82.196.10.230:8080/api/bridgeopenings/?id=${id}`
+    )
+    let bridgeEvents = await res.json()
+    this.setState({ bridgeEvents })
   }
 
   renderBridgeMarkers = () => {
@@ -94,7 +102,12 @@ class Map extends Component {
     const { bridges } = this.state
 
     const data = bridges.map(bridge => {
-      return bridge.geometry
+      return {
+        coordinates: bridge.geometry.coordinates,
+        id: bridge.properties.id,
+        createdAt: bridge.properties.createdAt,
+        updatedAt: bridge.properties.updatedAt
+      }
     })
 
     return new ScatterplotLayer({
@@ -105,7 +118,15 @@ class Map extends Component {
       opacity: 0.1,
       radiusMinPixels: 10,
       radiusMaxPixels: 15,
-      pickable: true
+      pickable: true,
+      // onHover: ({ object, x, y }) => {
+      //   const tooltip = object ? `${object.id}` : 'no tooltip'
+      //   console.log(tooltip)
+      // }
+      onClick: ({ object, x, y }) => {
+        const tooltip = object ? `${object.id}` : console.log('no valid point')
+        this.getBridgeEvents(object.id)
+      }
     })
   }
 
@@ -125,47 +146,73 @@ class Map extends Component {
     this.setState({ viewport })
   }
 
+  onStyleChange = style => {
+    this.setState({ style })
+  }
+
+  _onViewportChange(viewport) {
+    this.setState({
+      viewport: { ...this.state.viewport, ...viewport }
+    })
+  }
+
   render() {
-    const { bridges, viewport, style } = this.state
+    const { bridges, bridgeEvents, viewport, style } = this.state
+    const { children } = this.props
     return (
       <React.Fragment>
-        <Header />
+        {/* <Header /> */}
         <Sidebar
           onClick={e =>
             !e.target.checked
               ? console.log('no bridges')
               : console.log('bridges')
           }
-          style={{ position: 'absolute', zIndex: 5000000, left: 0, top: 0 }}
-        />
-        {/* <button
-          onClick={this._goToNYC}
           style={{
-            bottom: 0,
-            right: 0
+            position: 'absolute',
+            zIndex: 5000000,
+            left: '3rem',
+            top: '10rem',
+            borderRadius: '1rem',
+            padding: '1rem'
           }}
-        >
-          Fly to
-        </button> */}
+        />
         {bridges ? (
           <ReactMapGL
             {...viewport}
-            width="100%"
-            height="100%"
-            maxPitch={85}
-            onViewportChange={viewport => this.setState({ viewport })}
+            onViewportChange={viewport => this._onViewportChange(viewport)}
             mapboxApiAccessToken={Mapbox.token}
             mapStyle={style}
           >
-            <Legend />
+            {bridgeEvents &&
+              bridgeEvents.features.map(event => {
+                console.log(event)
+              })}
+            <MapStylePicker
+              onStyleChange={this.onStyleChange}
+              currentStyle={this.state.style}
+            />
+            {children}
             <DeckGL
-              layers={[this.renderScatterPlotLayer(), this.renderIconLayer()]}
+              layers={[
+                this.renderScatterPlotLayer() /*, this.renderIconLayer()*/
+              ]}
               initialViewState={viewport}
               controller
             ></DeckGL>
           </ReactMapGL>
         ) : (
-          <h1>Loading</h1>
+          <h1
+            style={{
+              display: 'flex',
+              width: '100vw',
+              height: '100vh',
+              justifyContent: 'center',
+              alignItems: 'center'
+            }}
+          >
+            Loading
+          </h1>
         )}
       </React.Fragment>
     )
