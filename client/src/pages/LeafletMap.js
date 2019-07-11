@@ -1,14 +1,12 @@
-import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import './LeafletMap.sass'
 import 'leaflet/dist/leaflet.css'
 
 import Legend from '../components/Legend'
-
-import GeoJSON from 'geojson'
+import Header from '../components/Header'
 
 import L from 'leaflet'
-import { Map, Marker, Popup, TileLayer, withLeaflet } from 'react-leaflet'
+import { Map, TileLayer, withLeaflet } from 'react-leaflet'
 import { HexbinLayer } from 'react-leaflet-d3'
 const WrappedHexbinLayer = withLeaflet(HexbinLayer)
 
@@ -20,11 +18,6 @@ const options = {
 }
 
 const coordinates = [52.1326, 5.2913]
-const mapBoxToken =
-  'pk.eyJ1IjoiaGVrdHIiLCJhIjoiY2p4b2hzZTRlMDZobTNkbnQ2aGl4bXhyaSJ9.UvL3Brt2D11Lq63z9KyjLQ'
-
-// mapbox "https://api.mapbox.com/styles/v1/mapbox/streets-v9/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiaGVrdHIiLCJhIjoiY2p4b2hzZTRlMDZobTNkbnQ2aGl4bXhyaSJ9.UvL3Brt2D11Lq63z9KyjLQ"
-
 const tileSetUrl = 'https://{s}.tile.osm.org/{z}/{x}/{y}.png'
 
 delete L.Icon.Default.prototype._getIconUrl
@@ -55,8 +48,7 @@ L.Icon.Default.mergeOptions({
 
 class LeafletMap extends Component {
   state = {
-    bridges: null,
-    geoJsonBridges: null
+    bridges: null
   }
 
   componentDidMount() {
@@ -64,7 +56,7 @@ class LeafletMap extends Component {
   }
 
   getBridges = () => {
-    fetch('http://82.196.10.230:8080/api/bridges')
+    fetch('http://82.196.10.230:8080/api/bridgeopenings')
       .then(res => {
         return res.json()
       })
@@ -73,26 +65,11 @@ class LeafletMap extends Component {
       })
   }
 
-  parseToGeoJson = () => {
-    const { bridges } = this.state
-    console.log(bridges)
-    const geoJsonBridges = bridges.map(bridge => {
-      return (bridge = {
-        lat: bridge.location.latitude,
-        lng: bridge.location.longitude
-      })
-    })
-
-    return GeoJSON.parse(geoJsonBridges, {
-      Point: ['lat', 'lng'],
-      include: ['name']
-    })
-  }
-
   render() {
     const { bridges } = this.state
     return (
       <React.Fragment>
+        <Header />
         <Legend />
         <Map center={coordinates} zoom={10} id="map">
           <TileLayer
@@ -102,7 +79,7 @@ class LeafletMap extends Component {
           {bridges && (
             <WrappedHexbinLayer
               className="hexbin-hexagon"
-              data={this.parseToGeoJson()}
+              data={bridges}
               {...options}
             />
           )}

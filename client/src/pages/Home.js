@@ -1,9 +1,18 @@
 import React from 'react'
 
-export default function Home() {
+import { NavLink, Redirect } from 'react-router-dom'
+
+const Home = () => {
+  // userType = localStorage.getItem('userType')
   return (
-    <div>
-      <a href="/map">Map</a>
-    </div>
+    <React.Fragment>
+      <Redirect
+        to={{
+          pathname: '/mapbox'
+        }}
+      />
+    </React.Fragment>
   )
 }
+
+export default Home
