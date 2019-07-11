@@ -16,11 +16,11 @@ const DashboardTable = () => {
             <button>
               <PlusCircle />
             </button>
-            <ul>
+            {/* <ul>
               {Object.values(regionData[province]).map(city => {
                 return <li>{city}</li>
               })}
-            </ul>
+            </ul> */}
           </div>
         )
       })}
