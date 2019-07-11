@@ -5,13 +5,13 @@ const bridgeEvent = (sequelize, DataTypes) => {
       primaryKey: true,
       unique: true
     },
-		version: {
-			type: DataTypes.INTEGER,
-			primaryKey: true
-		},
-		location: {
-			type: DataTypes.ARRAY(DataTypes.FLOAT)
-		},
+    version: {
+      type: DataTypes.INTEGER,
+      primaryKey: true
+    },
+    location: {
+      type: DataTypes.ARRAY(DataTypes.FLOAT)
+    },
     creationTime: {
       type: DataTypes.DATE
     },
@@ -20,11 +20,15 @@ const bridgeEvent = (sequelize, DataTypes) => {
     },
     endTime: {
       type: DataTypes.DATE
-		},
-		geoJsonLocation: {
-			type: DataTypes.GEOMETRY('POINT')
-		}
+    },
+    geoJsonLocation: {
+      type: DataTypes.GEOMETRY('POINT')
+    }
   });
+
+  BridgeEvent.associate = models => {
+    BridgeEvent.hasOne(models.BridgeEventCheck)
+  }
 
   return BridgeEvent;
 };
