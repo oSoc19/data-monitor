@@ -23,7 +23,7 @@ class Legend extends Component {
   render() {
     const { collapsed } = this.state
     return (
-      <div className="legend">
+      <div className="legend" style={this.props.style}>
         {!collapsed && (
           <ul className="legend_list">
             <h3>
