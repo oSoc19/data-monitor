@@ -1,39 +1,39 @@
-const express = require('express')
-const cors = require('cors')
-const geojson = require('geojson')
-const Sequelize = require('sequelize')
-const models = require('./fetchData/index')
+const express = require('express');
+const cors = require('cors');
+const geojson = require('geojson');
+const Sequelize = require('sequelize');
+const models = require('./fetchData/index');
 
-const op = Sequelize.Op
-let app = express()
+const op = Sequelize.Op;
+let app = express();
 
 const sequelize = new Sequelize(
     process.env.DATABASE,
     process.env.DATABASE_USER,
     process.env.DATABASE_PASSWORD, {
         host: 'database',
-        dialect: 'postgres',
+        dialect: 'postgres'
     },
-)
+);
 
-app.use(cors())
+app.use(cors());
 
 sequelize.sync({
     force: true
   })
   .then(() => {
     app.listen(8080, () => {
-      console.log('API Server listening on port 8080')
-    })
-	});
+      console.log('API Server listening on port 8080');
+    });
+  });
 
-app.get("/", (req, res, next) => {})
+app.get("/", (req, res, next) => {});
 
 app.get('/api/bridges/', async (req, res, next) => {
   let bridges = await models.Bridge.findAll({
     raw: true
   });
-	for (let i = 0; i < bridges.length; i++) {
+  for (let i = 0; i < bridges.length; i++) {
     bridges[i] = geojson.parse(bridges[i], {
       Point: 'location'
     });
@@ -42,26 +42,26 @@ app.get('/api/bridges/', async (req, res, next) => {
   let featureCollection = {
     "type": "FeatureCollection",
     "features": bridges
-  }
+  };
   res.send(featureCollection);
 
-})
+});
 
 
 app.get('/api/bridgeopenings/', async (req, res, next) => {
-  let start = req.query.startTime
-  let end = req.query.endTime
-  let bridgeId = req.query.id
+  let start = req.query.startTime;
+  let end = req.query.endTime;
+  let bridgeId = req.query.id;
 
   if (start === undefined)
-    start = 0
+    start = 0;
   if (end === undefined)
-    end = '9999-12-01'
+    end = '9999-12-01';
 
-	if(bridgeId === undefined) {
-		res.send({});
-		return;
-	}
+  if(bridgeId === undefined) {
+    res.send({});
+    return;
+  }
   let bridgeEvents = await models.BridgeEvent.findAll({
     raw: true,
     attributes: ['id', 'version', 'startTime', 'endTime'],
@@ -161,37 +161,37 @@ app.get('/api/qa/bridgeopenings/summary/city/:city', (req, res, next) => {
                 "check3": "overruled ok"
             }
         ]
-    }
-    res.json(city)
-})
+    };
+  res.json(city);
+});
 
 app.get('/api/bridges/:id', (req, res, next) => {
-    
-})
+
+});
 
 
 app.put('/api/qa/bridgeopenings/:id', async (req, res, next) => {
-    
-    let id = req.id
+
+  let id = req.id;
 
     let bridgeEventChecks = models.bridgeEventChecks.findOne({
         where: {
             bridgeEventId: id
         }
-    })
+    });
 
     if (!bridgeEventChecks){
-        res.send({success: false})
+      res.send({success: false});
     }
     else{
         await bridgeEventChecks.update({
             manualIntervention: true
-        })
-        res.send({succes: true})
-    }
-})
+        });
+      res.send({succes: true});
+    };
+});
 
 
 app.use(function (req, res) {
-    res.status(404)
-})
+  res.status(404);
+});
