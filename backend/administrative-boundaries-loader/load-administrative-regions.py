@@ -14,6 +14,12 @@ DATA_DIR = "data"
 
 def load_data():
     wait_for_db()
+
+    #only load once
+    if is_data_there():
+        print("We found table with data already in there, nothing to do")
+        return
+
     pathz = get_all_json_paths(DATA_DIR)
     for p in pathz:
         geojson = load_json_file(p)
@@ -61,6 +67,18 @@ def insert_record(name, level, geo):
             cursor.close()
             connection.close()
             print("PostgreSQL connection is closed")
+
+
+def is_data_there():
+    connection = psycopg2.\
+               connect(user=POSTGRES_USER,
+                       password=POSTGRES_PASSWORD,
+                       host=POSTGRES_HOST,
+                       database=DB)
+    cursor = connection.cursor()
+    query = """SELECT COUNT(*) FROM  administrative_boundaries"""
+    cursor.execute(query)
+    return cursor.rowcount > 0
 
 
 def is_db_ready():
