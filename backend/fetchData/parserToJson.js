@@ -21,7 +21,9 @@ function parse(url, template) {
       xtreamerTransform.on('data', data => {
         //XML2JS
         let xmlSituation = data.toString();
-				parseString(xmlSituation, { explicitArray: false }, (err, result) => {
+        parseString(xmlSituation, {
+          explicitArray: false
+        }, (err, result) => {
           situations.push(result);
         })
       });
@@ -36,3 +38,4 @@ function parse(url, template) {
 }
 
 module.exports = parse;
+

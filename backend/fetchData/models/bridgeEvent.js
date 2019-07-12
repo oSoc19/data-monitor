@@ -1,3 +1,9 @@
+/*
+ * A BridgeEvent indicates when a bridge will be open or close 
+ * (Note: a bridge is considered open if a boat can pass below it.
+ *  OPEN  : __/ \__
+ *  CLOSE : _______)
+ */
 const bridgeEvent = (sequelize, DataTypes) => {
   const BridgeEvent = sequelize.define('bridge_event', {
     id: {
@@ -15,6 +21,7 @@ const bridgeEvent = (sequelize, DataTypes) => {
     creationTime: {
       type: DataTypes.DATE
     },
+    // The date when the bridge will be open
     startTime: {
       type: DataTypes.DATE
     },
@@ -34,3 +41,4 @@ const bridgeEvent = (sequelize, DataTypes) => {
 };
 
 module.exports = bridgeEvent;
+

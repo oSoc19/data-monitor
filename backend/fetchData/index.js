@@ -39,7 +39,7 @@ let createCheckAllFields = async (event) => {
   let checkFields = await models.BridgeEventCheck.create({
     allFields: allFields,
     correctID: 1,
-    checksum: (allFields+1)/2,
+    checksum: (allFields + 1) / 2,
     bridgeEventId: event.id
   })
   return checkFields
@@ -71,7 +71,9 @@ const addBridgeEvent = async situation => {
       creationTime: situationRecord.situationRecordCreationTime,
       startTime: situationRecord.validity.validityTimeSpecification.overallStartTime,
       endTime: situationRecord.validity.validityTimeSpecification.overallEndTime,
-      geoJsonLocation: GeoJson.parse(location, { Point: ['longitude', 'latitude'] }).geometry,
+      geoJsonLocation: GeoJson.parse(location, {
+        Point: ['longitude', 'latitude']
+      }).geometry,
       bridgeId: bridge.id
     })
   }
@@ -79,8 +81,8 @@ const addBridgeEvent = async situation => {
 };
 
 sequelize.sync({
-  force: true
-})
+    force: true
+  })
   .then(() => {
     parse('http://opendata.ndw.nu/brugopeningen.xml.gz')
       .then(situations => {
@@ -93,3 +95,4 @@ sequelize.sync({
   })
 
 module.exports = models
+
