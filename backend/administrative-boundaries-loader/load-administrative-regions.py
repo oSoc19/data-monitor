@@ -70,15 +70,21 @@ def insert_record(name, level, geo):
 
 
 def is_data_there():
-    connection = psycopg2.\
-               connect(user=POSTGRES_USER,
-                       password=POSTGRES_PASSWORD,
-                       host=POSTGRES_HOST,
-                       database=DB)
-    cursor = connection.cursor()
-    query = """SELECT COUNT(*) FROM  administrative_boundaries"""
-    cursor.execute(query)
-    return cursor.rowcount > 0
+    try:
+        connection = psycopg2.\
+                   connect(user=POSTGRES_USER,
+                           password=POSTGRES_PASSWORD,
+                           host=POSTGRES_HOST,
+                           database=DB)
+        cursor = connection.cursor()
+        query = """SELECT COUNT(*) FROM  administrative_boundaries"""
+        cursor.execute(query)
+        return cursor.rowcount > 0
+    finally:
+        # closing database connection.
+        if(connection):
+            cursor.close()
+            connection.close()
 
 
 def is_db_ready():
