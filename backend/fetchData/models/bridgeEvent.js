@@ -55,7 +55,7 @@ const bridgeEvent = (sequelize, DataTypes) => {
         }
       });
       if (!bridge) {
-        bridge = models.Bridge.createBridge(location.longitude, location.latitude, models)
+        bridge = await models.Bridge.createBridge(location.longitude, location.latitude, models)
       }
       bridgeEvent = await BridgeEvent.create({
         id: situationRecord['$'].id,
