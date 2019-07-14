@@ -12,15 +12,18 @@ const sequelize = new Sequelize(
   }
 );
 
+// TODO: Refactor by iterate in the models folder
 const models = {
   Bridge: sequelize.import('./models/bridge.js'),
   BridgeEvent: sequelize.import('./models/bridgeEvent.js'),
   BridgeEventCheck: sequelize.import('./models/bridgeEventCheck.js'),
 };
 
+/* Make all the association between models.
+ * Ex. A bridge has multiple bridge events (hasMany)
+*/
 Object.keys(models).forEach(key => {
   if ('associate' in models[key]) {
-    console.log(models[key])
     models[key].associate(models);
   }
 });
@@ -28,13 +31,16 @@ Object.keys(models).forEach(key => {
 
 
 sequelize.sync({
-    force: true // Delete table
+    force: true // Delete database if it exits
   })
   .then(() => {
-    parse('http://opendata.ndw.nu/brugopeningen.xml.gz')
+    const bridgeOpeningsUrl = 'http://opendata.ndw.nu/brugopeningen.xml.gz'
+    parse(bridgeOpeningsUrl)
       .then(situations => {
         (async () => {
           for (let situation of situations) {
+            // Create a BridgeEvent for each situation 
+            // See XML documentation : http://docs.ndwcloud.nu/en/
             await models.BridgeEvent.addBridgeEvent(situation.situation, models);
           }
         })();

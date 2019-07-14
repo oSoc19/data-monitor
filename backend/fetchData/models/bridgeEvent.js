@@ -39,6 +39,9 @@ const bridgeEvent = (sequelize, DataTypes) => {
   }
 
 
+  /* Create a bridge event corresponding to a situation record
+   * and associate this event to a bridge. 
+   */
   BridgeEvent.addBridgeEvent = async (situation, models) => {
     let location = situation.situationRecord.groupOfLocations.locationForDisplay;
     let situationRecord = situation.situationRecord;
@@ -49,6 +52,9 @@ const bridgeEvent = (sequelize, DataTypes) => {
       }
     });
     if (!bridgeEvent) {
+      /* Try to find the bridge associate to the bridge event. If the bridge doesn't 
+       * exist, we create a new one.
+       */
       let bridge = await models.Bridge.findOne({
         where: {
           location: [location.longitude, location.latitude]
