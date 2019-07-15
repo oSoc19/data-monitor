@@ -16,6 +16,9 @@ const bridgeEventCheck = (sequelize, DataTypes) => {
     },
     manualIntervention: {
       type: DataTypes.BOOLEAN
+    },
+    comment: {
+      type: DataTypes.STRING
     }
   });
 

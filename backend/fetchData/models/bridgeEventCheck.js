@@ -15,7 +15,7 @@ const bridgeEventCheck = (sequelize, DataTypes) => {
       type: DataTypes.FLOAT
     },
     manualIntervention: {
-      type: DataTypes.STRING
+      type: DataTypes.BOOLEAN
     },
     comment: {
       type: DataTypes.STRING
