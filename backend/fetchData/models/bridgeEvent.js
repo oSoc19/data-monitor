@@ -48,6 +48,7 @@ const bridgeEvent = (sequelize, DataTypes) => {
     let bridgeEvent = await models.BridgeEvent.findOne({
       where: {
         id: situationRecord['$'].id,
+				version: situationRecord['$'].version
       }
     });
     if (!bridgeEvent) {
@@ -77,7 +78,7 @@ const bridgeEvent = (sequelize, DataTypes) => {
     }
     else{
       console.log("updating existing bridge")
-      await bridgeEvent.update({
+      bridgeEvent = await bridgeEvent.update({
         version: situationRecord['$'].version,
         location: [location.longitude, location.latitude],
         creationTime: situationRecord.situationRecordCreationTime,
@@ -88,6 +89,7 @@ const bridgeEvent = (sequelize, DataTypes) => {
         }).geometry
       })
     }
+		models.BridgeEventCheck.createCheckAllFields(bridgeEvent);
   };
 
   return BridgeEvent;

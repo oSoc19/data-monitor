@@ -39,18 +39,33 @@ const bridgeEventCheck = (sequelize, DataTypes) => {
   }
 
   BridgeEventCheck.createCheckAllFields = async (event) => {
-    let allFields = BridgeEventCheck.checkAllFields(event)
-    let checkFields = await BridgeEventCheck.create({
-      allFields: allFields,
-      correctID: 1,
-      checksum: (allFields + 1) / 2,
-      bridgeEventId: event.id
-    })
+    let allFields = BridgeEventCheck.checkAllFields(event);
+    let bridgeEventCheck = await BridgeEventCheck.findOne({
+      where: {
+        bridgeEventId: event.id
+      }
+    });
+    if (!bridgeEventCheck) {
+      let checkFields = await BridgeEventCheck.create({
+        allFields: allFields,
+        correctID: 1,
+        checksum: (allFields + 1) / 2,
+        bridgeEventId: event.id
+      })
+			return checkFields;
 
-    return checkFields
+    } else {
+      let checkFields = await bridgeEventCheck.update({
+        allFields: allFields,
+        correctID: 1,
+        checksum: (allFields + 1) / 2,
+        bridgeEventId: event.id
+      })
+			return checkFields;
+    }
+
   }
   return BridgeEventCheck;
 }
 
 module.exports = bridgeEventCheck;
-

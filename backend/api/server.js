@@ -4,6 +4,7 @@ const geojson = require('geojson');
 const Sequelize = require('sequelize');
 const models = require('./fetchData/index');
 const bodyParser = require('body-parser');
+const fs = require('fs');
 
 const op = Sequelize.Op;
 let app = express();
@@ -25,7 +26,9 @@ const sequelize = new Sequelize(
   },
 );
 
-app.get("/", (req, res, next) => { });
+const citiesByProvince = JSON.parse(fs.readFileSync('./data/dutchCities.json'));
+
+app.get("/", (req, res, next) => {});
 
 app.get('/api/bridges/', async (req, res, next) => {
   let bridges = await models.Bridge.findAll({
@@ -98,11 +101,12 @@ app.get('/api/bridgeopenings/:id', (req, res, next) => {
   })();
 });
 
-app.get('/api/qa/bridgeoepnings/summary/', async (req, res) => {
-  let provinces = ["North Holland", "South Holland", "Flevoland", "Gelderland", "North Brabant", "Overijssel", "Drenthe", "Utrecht", "Groningen", "Friesland", "Zeeland", "Limburg"]
+app.get('/api/qa/bridgeopenings/summary/', async (req, res) => {
+  // let provinces = ["North Holland", "South Holland", "Flevoland", "Gelderland", "North Brabant", "Overijssel", "Drenthe", "Utrecht", "Groningen", "Friesland", "Zeeland", "Limburg"]
+  let provinces = ["North Holland", "Flevoland", "Gelderland", "North Brabant", "Overijssel", "Drenthe", "Groningen", "Friesland", "Limburg"];
   let results = [];
   for (let province of provinces) {
-    let provinceLevel = 4
+    let provinceLevel = 4;
     let result = await intersectsBridgeEvent(province, provinceLevel);
     let ids = [];
     for (let bridgeEvent of result[0]) {
@@ -110,9 +114,34 @@ app.get('/api/qa/bridgeoepnings/summary/', async (req, res) => {
     }
     let goodBridgeEvents = await findGoodEvents(models.BridgeEventCheck, ids);
     let badBridgeEvents = await findBadEvents(models.BridgeEventCheck, ids);
+    let provinceName = province.split(' ').join('_');
     results.push({
       name: province,
-      nextUrl: `/api/qa/bridgeopenigns/summary/provinces/${province}`,
+      nextUrl: `/api/qa/bridgeopenings/summary/provinces/${provinceName}`,
+      summary: {
+        numberOfGoodEvents: goodBridgeEvents.count,
+        numberOfBadEvents: badBridgeEvents.count
+      }
+    });
+  }
+  res.send(results);
+});
+
+app.get('/api/qa/bridgeopenings/summary/provinces/:province', async (req, res) => {
+  let province = req.params.province.split('_').join(' ');
+  let results = [];
+  for (let city of citiesByProvince[province]) {
+		let cityQuery = city.replace("'", "''");
+    let citiesLevel = 8;
+    let result = await intersectsBridgeEvent(cityQuery, citiesLevel);
+    let ids = [];
+    for (let bridgeEvent of result[0]) {
+      ids.push(bridgeEvent.id);
+    }
+    let goodBridgeEvents = await findGoodEvents(models.BridgeEventCheck, ids);
+    let badBridgeEvents = await findBadEvents(models.BridgeEventCheck, ids);
+    results.push({
+      name: city,
       summary: {
         numberOfGoodEvents: goodBridgeEvents.count,
         numberOfBadEvents: badBridgeEvents.count
@@ -123,94 +152,8 @@ app.get('/api/qa/bridgeoepnings/summary/', async (req, res) => {
 });
 
 
-app.get('/api/qa/bridgeopenings/summary/country/:country', (req, res, next) => {
-  let country = {
-    "name": req.params.country,
-    "children": [{
-      "name": "Oost-Nederland",
-      "detail": "/api/qa/bridgeopenings/summary/region/Oost-Nederland",
-      "children": [{
-        "name": "good",
-        "value": 168
-      }, {
-        "name": "bad",
-        "value": 0
-      }]
-    },
-    {
-      "name": "Noord-Nederland",
-      "detail": "/api/qa/bridgeopenings/summary/region/Noord-Nederland",
-
-      "children": [{
-        "name": "good",
-        "value": 99
-      }, {
-        "name": "bad",
-        "value": 1
-      }]
-    }
-    ]
-  };
-  res.json(country);
-});
-
-app.get('/api/qa/bridgeopenings/summary/region/:region', (req, res, next) => {
-  let region = {
-    "name": req.params.region,
-    "children": [{
-      "name": "Utrecht",
-      "detail": "/api/qa/bridgeopenings/summary/province/Utrecht",
-      "children": [{
-        "name": "good",
-        "value": 168
-      }, {
-        "name": "bad",
-        "value": 0
-      }]
-    }]
-  };
-  res.json(region);
-});
-
-app.get('/api/qa/bridgeopenings/summary/province/:province', (req, res, next) => {
-  let province = {
-    "name": req.params.province,
-    "children": [{
-      "name": "Utrecht",
-      "detail": "/api/qa/bridgeopenings/summary/city/Utrecht",
-      "children": [{
-        "name": "good",
-        "value": 168
-      }, {
-        "name": "bad",
-        "value": 0
-      }]
-    }]
-  };
-  res.json(province);
-});
-
-
-app.get('/api/qa/bridgeopenings/summary/city/:city', (req, res, next) => {
-  let city = {
-    "name": req.params.city,
-    "children": [{
-      "id": "qa-assessment-id",
-      "situationRecordId": "situationRecordId",
-      "nameOfCheck1": "ok",
-      "check2": "nok",
-      "check3": "overruled ok"
-    }]
-  };
-  res.json(city);
-});
-
-app.get('/api/bridges/:id', (req, res, next) => {
-
-});
-
 app.put('/api/qa/bridgeopenings/:id', async (req, res, next) => {
-  debugger
+
   let id = req.id;
 
   let checks = models.bridgeEventCheck.findOne({
@@ -223,14 +166,14 @@ app.put('/api/qa/bridgeopenings/:id', async (req, res, next) => {
     await checks.update({
       manualIntervention: req.body.intervention,
       comment : req.body.comment
-    })
+    });
   }
-})
+});
 
 
 app.use(function (req, res) {
   res.status(404);
-})
+});
 
 
 async function intersectsBridgeEvent(boundariesName, level) {
@@ -244,13 +187,8 @@ async function intersectsBridgeEvent(boundariesName, level) {
          /* Basically we want the points of the event bridges which intersects the admin boundaries*/
          ST_Intersects(
 
-           ST_SetSRID(b."geoJsonLocation", 4326),
-
-           /* Arg 2: the coordinates of the polygon of Amsterdam.
-               Note 1: it requires to flip coordinates because the data was flipped...
-               Note 2: I need some explicit casting to 'geometry' type, because it was stored as 'geogrpahy' type
-             */
-           ST_FlipCoordinates(a.geog::geometry)::geometry)`
+           ST_FlipCoordinates(b."geoJsonLocation"),
+           a.geog)`
   );
 
 }
