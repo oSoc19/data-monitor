@@ -3,6 +3,7 @@ const cors = require('cors');
 const geojson = require('geojson');
 const Sequelize = require('sequelize');
 const models = require('./fetchData/index');
+const fs = require('fs');
 
 const op = Sequelize.Op;
 let app = express();
@@ -15,6 +16,8 @@ const sequelize = new Sequelize(
     dialect: 'postgres',
   },
 );
+
+const citiesByProvince = JSON.parse(fs.readFileSync('./data/dutchCities.json'));
 
 
 app.use(cors());
@@ -102,8 +105,9 @@ app.get('/api/bridgeopenings/:id', (req, res, next) => {
   })();
 });
 
-app.get('/api/qa/bridgeoepnings/summary/', async (req, res) => {
-  let provinces = ["North Holland", "South Holland", "Flevoland", "Gelderland", "North Brabant", "Overijssel", "Drenthe", "Utrecht", "Groningen", "Friesland", "Zeeland", "Limburg"]
+app.get('/api/qa/bridgeopenings/summary/', async (req, res) => {
+  // let provinces = ["North Holland", "South Holland", "Flevoland", "Gelderland", "North Brabant", "Overijssel", "Drenthe", "Utrecht", "Groningen", "Friesland", "Zeeland", "Limburg"]
+  let provinces = ["North Holland", "Flevoland", "Gelderland", "North Brabant", "Overijssel", "Drenthe", "Groningen", "Friesland", "Limburg"]
   let results = [];
   for (let province of provinces) {
     let provinceLevel = 4
@@ -112,11 +116,12 @@ app.get('/api/qa/bridgeoepnings/summary/', async (req, res) => {
     for (let bridgeEvent of result[0]) {
       ids.push(bridgeEvent.id);
     }
-		let goodBridgeEvents = await findGoodEvents(models.BridgeEventCheck, ids);
-		let badBridgeEvents = await findBadEvents(models.BridgeEventCheck, ids);
+    let goodBridgeEvents = await findGoodEvents(models.BridgeEventCheck, ids);
+    let badBridgeEvents = await findBadEvents(models.BridgeEventCheck, ids);
+    let provinceName = province.split(' ').join('_');
     results.push({
       name: province,
-      nextUrl: `/api/qa/bridgeopenigns/summary/provinces/${province}`,
+      nextUrl: `/api/qa/bridgeopenings/summary/provinces/${provinceName}`,
       summary: {
         numberOfGoodEvents: goodBridgeEvents.count,
         numberOfBadEvents: badBridgeEvents.count
@@ -124,6 +129,30 @@ app.get('/api/qa/bridgeoepnings/summary/', async (req, res) => {
     });
   }
   res.send(results);
+});
+
+app.get('/api/qa/bridgeopenings/summary/provinces/:province', async (req, res) => {
+  let province = req.params.province.split('_').join(' ');
+  let results = [];
+  for (let city of citiesByProvince[province]) {
+		let cityQuery = city.replace("'", "''");
+    let citiesLevel = 8;
+    let result = await intersectsBridgeEvent(cityQuery, citiesLevel);
+    let ids = [];
+    for (let bridgeEvent of result[0]) {
+      ids.push(bridgeEvent.id);
+    }
+    let goodBridgeEvents = await findGoodEvents(models.BridgeEventCheck, ids);
+    let badBridgeEvents = await findBadEvents(models.BridgeEventCheck, ids);
+    results.push({
+      name: city,
+      summary: {
+        numberOfGoodEvents: goodBridgeEvents.count,
+        numberOfBadEvents: badBridgeEvents.count
+      }
+    });
+  }
+  res.send(results)
 });
 
 
@@ -272,7 +301,7 @@ async function findGoodEvents(model, ids) {
       checksum: 1
     }
   });
-	return goodBridgeEvents;
+  return goodBridgeEvents;
 }
 
 
@@ -280,10 +309,10 @@ async function findBadEvents(model, ids) {
   let badBridgeEvents = await model.findAndCountAll({
     where: {
       bridgeEventId: ids,
-			checksum: {
-				[Sequelize.Op.ne]: 1
-			} 
+      checksum: {
+        [Sequelize.Op.ne]: 1
+      }
     }
   });
-	return badBridgeEvents;
+  return badBridgeEvents;
 }
