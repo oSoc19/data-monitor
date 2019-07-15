@@ -15,6 +15,9 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 app.use(cors());
+app.use(function(req, res) {
+  res.status(404);
+});
 app.listen(8080, () => {
   console.log('API Server listening on port 8080');
 });
@@ -201,6 +204,7 @@ app.get('/api/download/bridgeopenings/summary/city/:city', async (req, res) => {
   let result = await getAllBridgeEvents(cityName, cityLevel);
   sendCsv(result, res);
 });
+
 app.put('/api/qa/bridgeopenings/:id', async (req, res, next) => {
   let id = req.params.id;
 
@@ -210,7 +214,6 @@ app.put('/api/qa/bridgeopenings/:id', async (req, res, next) => {
     }
   });
 
-  console.log("checks", checks);
   if (checks) {
     try {
       await checks.update({
@@ -227,11 +230,6 @@ app.put('/api/qa/bridgeopenings/:id', async (req, res, next) => {
   }
 });
 
-
-app.use(function(req, res) {
-  res.status(404);
-});
-
 async function findGoodEvents(model, ids) {
   let goodBridgeEvents = await model.findAndCountAll({
     where: {
@@ -241,7 +239,6 @@ async function findGoodEvents(model, ids) {
   });
   return goodBridgeEvents;
 }
-
 
 async function findBadEvents(model, ids) {
   let badBridgeEvents = await model.findAndCountAll({
