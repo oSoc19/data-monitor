@@ -14,6 +14,7 @@ const sequelize = new Sequelize(
     host: 'database',
     dialect: 'postgres',
   },
+);
 
 
 app.use(cors());
