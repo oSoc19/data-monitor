@@ -36,22 +36,55 @@ The development mode depends on the type of service. The config of each service 
 
 Always make sure you build your images before.
 
-### Running in develop mode
+Also note: debugging API service and fetch_data service is difficult at the same time.
+
+### before developing
+You will need to make a docker-compose.override.yml, where local config will be stored.
+
+### Dev api service
+Config docker-compose.override.yml:
+```
+version: "3.4"
+services:
+  api:
+    ports:
+      - 8888:8080
+      - 9229:9229
+```
+Running
 ```
 docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d  # will start in daemon mode
 docker-compose -f docker-compose.yml -f docker-compose.dev.yml up logs -f --tail=200 # will tail logs
 docker-compose -f docker-compose.yml -f docker-compose.dev.yml restart api # if you want to restart a service, better do it in another terminal
 ```
-
-Each service has will have its specific quirks.
-
-### api service
 To go and debug this, use chrome and go to
 ```
 chrome://inspect/#devices
 ```
 
-### making configurations local to your machine.
+### Dev fetch_data service
+Config docker-compose.override.yml:
+```
+version: "3.4"
+services:
+  fetch_data:
+    ports:
+      - 8888:8080
+      - 9229:9229
+```
+Running
+```
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d  # will start in daemon mode
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml up logs -f --tail=200 # will tail logs
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml restart fetch_data # if you want to restart a service, better do it in another terminal
+```
+To go and debug this, use chrome and go to
+```
+chrome://inspect/#devices
+```
+
+
+## making configurations local to your machine.
 Suppose you want to access the DB directly, you can use a docker-compose.override.yml.
 This file will keep track of your changes, and won't be commit to git.
 

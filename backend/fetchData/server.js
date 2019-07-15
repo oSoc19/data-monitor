@@ -7,6 +7,7 @@ bridge.associateModels();
 const CRON_FREQUENCY = process.env.CRON_PATTERN || '0 */15 * * * *';
 
 app.get("/import/bridges", (req, res, next) => {
+  console.log(`Loading bridges ${new Date().toISOString()}`);
   bridge.loadBridges();
   return res.send({"Loading":"Ok"});
 });
