@@ -3,6 +3,7 @@ const cors = require('cors');
 const geojson = require('geojson');
 const Sequelize = require('sequelize');
 const models = require('./fetchData/index');
+const bodyParser = require('body-parser');
 
 const op = Sequelize.Op;
 let app = express();
@@ -16,8 +17,9 @@ const sequelize = new Sequelize(
   },
 );
 
-
+app.use(bodyParser.json())
 app.use(cors());
+
 app.listen(8080, () => {
   console.log('API Server listening on port 8080');
 
@@ -29,7 +31,7 @@ app.listen(8080, () => {
 //   .then(() => {
 //   });
 
-app.get("/", (req, res, next) => {});
+app.get("/", (req, res, next) => { });
 
 app.get('/api/bridges/', async (req, res, next) => {
   let bridges = await models.Bridge.findAll({
@@ -112,8 +114,8 @@ app.get('/api/qa/bridgeoepnings/summary/', async (req, res) => {
     for (let bridgeEvent of result[0]) {
       ids.push(bridgeEvent.id);
     }
-		let goodBridgeEvents = await findGoodEvents(models.BridgeEventCheck, ids);
-		let badBridgeEvents = await findBadEvents(models.BridgeEventCheck, ids);
+    let goodBridgeEvents = await findGoodEvents(models.BridgeEventCheck, ids);
+    let badBridgeEvents = await findBadEvents(models.BridgeEventCheck, ids);
     results.push({
       name: province,
       nextUrl: `/api/qa/bridgeopenigns/summary/provinces/${province}`,
@@ -131,28 +133,28 @@ app.get('/api/qa/bridgeopenings/summary/country/:country', (req, res, next) => {
   let country = {
     "name": req.params.country,
     "children": [{
-        "name": "Oost-Nederland",
-        "detail": "/api/qa/bridgeopenings/summary/region/Oost-Nederland",
-        "children": [{
-          "name": "good",
-          "value": 168
-        }, {
-          "name": "bad",
-          "value": 0
-        }]
-      },
-      {
-        "name": "Noord-Nederland",
-        "detail": "/api/qa/bridgeopenings/summary/region/Noord-Nederland",
+      "name": "Oost-Nederland",
+      "detail": "/api/qa/bridgeopenings/summary/region/Oost-Nederland",
+      "children": [{
+        "name": "good",
+        "value": 168
+      }, {
+        "name": "bad",
+        "value": 0
+      }]
+    },
+    {
+      "name": "Noord-Nederland",
+      "detail": "/api/qa/bridgeopenings/summary/region/Noord-Nederland",
 
-        "children": [{
-          "name": "good",
-          "value": 99
-        }, {
-          "name": "bad",
-          "value": 1
-        }]
-      }
+      "children": [{
+        "name": "good",
+        "value": 99
+      }, {
+        "name": "bad",
+        "value": 1
+      }]
+    }
     ]
   };
   res.json(country);
@@ -214,31 +216,25 @@ app.get('/api/bridges/:id', (req, res, next) => {
 });
 
 app.put('/api/qa/bridgeopenings/:id', async (req, res, next) => {
-
+  debugger
   let id = req.id;
 
-  let bridgeEventChecks = models.bridgeEventChecks.findOne({
+  let checks = models.bridgeEventCheck.findOne({
     where: {
       bridgeEventId: id
     }
   });
 
-  if (!bridgeEventChecks) {
-    res.send({
-      success: false
-    });
-  } else {
-    await bridgeEventChecks.update({
-      manualIntervention: true
+  if (checks) {
+    await checks.update({
+      manualIntervention: req.body.intervention,
+      comment : req.body.comment
     })
-    res.send({
-      succes: true
-    });
   }
 })
 
 
-app.use(function(req, res) {
+app.use(function (req, res) {
   res.status(404);
 })
 
@@ -272,7 +268,7 @@ async function findGoodEvents(model, ids) {
       checksum: 1
     }
   });
-	return goodBridgeEvents;
+  return goodBridgeEvents;
 }
 
 
@@ -280,10 +276,10 @@ async function findBadEvents(model, ids) {
   let badBridgeEvents = await model.findAndCountAll({
     where: {
       bridgeEventId: ids,
-			checksum: {
-				[Sequelize.Op.ne]: 1
-			} 
+      checksum: {
+        [Sequelize.Op.ne]: 1
+      }
     }
   });
-	return badBridgeEvents;
+  return badBridgeEvents;
 }
