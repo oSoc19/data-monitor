@@ -4,6 +4,7 @@ const cron = require('cron');
 
 let app = express();
 bridge.associateModels();
+bridge.loadBridges();
 const CRON_FREQUENCY = process.env.CRON_PATTERN || '0 */15 * * * *';
 
 app.get("/import/bridges", (req, res, next) => {

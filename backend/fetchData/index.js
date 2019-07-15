@@ -27,17 +27,47 @@ const associateModels = () => {
     if ('associate' in models[key]) {
       models[key].associate(models);
     }
-  })
+  });
 }
 
 const loadBridges = async () => {
-	associateModels();
+  await waitForDatabase();
+  associateModels();
   await sequelize.sync();
-  const bridgeOpeningsUrl = 'http://opendata.ndw.nu/brugopeningen.xml.gz'
-  const bridgeOpeningsSitutations = await parse(bridgeOpeningsUrl)
-  for (situation of bridgeOpeningsSitutations) {
+  const bridgeOpeningsUrl = 'http://opendata.ndw.nu/brugopeningen.xml.gz';
+  const bridgeOpeningsSitutations = await parse(bridgeOpeningsUrl);
+  for (let situation of bridgeOpeningsSitutations) {
     await models.BridgeEvent.addBridgeEvent(situation.situation, models);
   }
-}
-module.exports = {models, loadBridges, associateModels}
+};
 
+const waitForDatabase = async() => {
+  console.log(`----- Trying to connect to database`);
+  let counter = 0;
+  let maxAttempts = 300;
+  let sleepTimeMs = 5000;
+  while(counter < maxAttempts){
+    try{
+      await sequelize.authenticate();
+      break;
+    }
+    catch(error){
+      counter += 1;
+      console.log(`----- Database not alive, waiting ${sleepTimeMs}`);
+      await sleep(sleepTimeMs);
+    }
+  }
+
+  if(counter === maxAttempts){
+    throw('Unable to connect to datase');
+  }
+  console.log(`----- Connection ok`);
+};
+
+const sleep = (ms) => {
+    return new Promise(resolve=>{
+      setTimeout(resolve,ms);
+    });
+};
+
+module.exports = { models, loadBridges, associateModels };
