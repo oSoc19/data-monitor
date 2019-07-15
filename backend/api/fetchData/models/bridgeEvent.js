@@ -13,8 +13,7 @@ const bridgeEvent = (sequelize, DataTypes) => {
       unique: true
     },
     version: {
-      type: DataTypes.INTEGER,
-      primaryKey: true
+      type: DataTypes.INTEGER
     },
     location: {
       type: DataTypes.ARRAY(DataTypes.FLOAT)
@@ -88,7 +87,7 @@ const bridgeEvent = (sequelize, DataTypes) => {
         }).geometry
       })
     }
-		models.BridgeEventCheck.createCheckAllFields(bridgeEvent);
+    models.BridgeEventCheck.createCheckAllFields(bridgeEvent);
   };
 
   return BridgeEvent;

@@ -1,6 +1,6 @@
 const GeoJson = require('geojson');
 /*
- * A BridgeEvent indicates when a bridge will be open or close 
+ * A BridgeEvent indicates when a bridge will be open or close
  * (Note: a bridge is considered open if a boat can pass below it.
  *  OPEN  : __/ \__
  *  CLOSE : _______)
@@ -13,8 +13,7 @@ const bridgeEvent = (sequelize, DataTypes) => {
       unique: true
     },
     version: {
-      type: DataTypes.INTEGER,
-      primaryKey: true
+      type: DataTypes.INTEGER
     },
     location: {
       type: DataTypes.ARRAY(DataTypes.FLOAT)
@@ -40,7 +39,7 @@ const bridgeEvent = (sequelize, DataTypes) => {
 
 
   /* Create a bridge event corresponding to a situation record
-   * and associate this event to a bridge. 
+   * and associate this event to a bridge.
    */
   BridgeEvent.addBridgeEvent = async (situation, models) => {
     let location = situation.situationRecord.groupOfLocations.locationForDisplay;
@@ -51,7 +50,7 @@ const bridgeEvent = (sequelize, DataTypes) => {
       }
     });
     if (!bridgeEvent) {
-      /* Try to find the bridge associate to the bridge event. If the bridge doesn't 
+      /* Try to find the bridge associate to the bridge event. If the bridge doesn't
        * exist, we create a new one.
        */
       let bridge = await models.Bridge.findOne({
@@ -88,11 +87,10 @@ const bridgeEvent = (sequelize, DataTypes) => {
         }).geometry
       })
     }
-		models.BridgeEventCheck.createCheckAllFields(bridgeEvent);
+    models.BridgeEventCheck.createCheckAllFields(bridgeEvent);
   };
 
   return BridgeEvent;
 };
 
 module.exports = bridgeEvent;
-
