@@ -75,8 +75,9 @@ const bridgeEvent = (sequelize, DataTypes) => {
         bridgeId: bridge.id
       })
     }
-    else{``
-      bridgeEvent = await BridgeEvent.update({
+    else{
+      console.log("updating existing bridge")
+      await bridgeEvent.update({
         version: situationRecord['$'].version,
         location: [location.longitude, location.latitude],
         creationTime: situationRecord.situationRecordCreationTime,
