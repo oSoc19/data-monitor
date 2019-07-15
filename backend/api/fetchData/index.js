@@ -19,5 +19,25 @@ const models = {
   BridgeEventCheck: sequelize.import('./models/bridgeEventCheck.js'),
 };
 
-module.exports = models
+/* Make all the association between models.
+ * Ex. A bridge has multiple bridge events (hasMany)
+*/
+const associateModels = () => {
+  Object.keys(models).forEach(key => {
+    if ('associate' in models[key]) {
+      models[key].associate(models);
+    }
+  })
+}
+
+const loadBridges = async () => {
+	associateModels();
+  await sequelize.sync();
+  const bridgeOpeningsUrl = 'http://opendata.ndw.nu/brugopeningen.xml.gz'
+  const bridgeOpeningsSitutations = await parse(bridgeOpeningsUrl)
+  for (situation of bridgeOpeningsSitutations) {
+    await models.BridgeEvent.addBridgeEvent(situation.situation, models);
+  }
+}
+module.exports = {models, loadBridges, associateModels}
 
