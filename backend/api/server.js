@@ -167,7 +167,7 @@ app.get('/api/qa/bridgeopenings/summary/city/:city', async (req, res) => {
     ids.push(bridgeEvent.id);
   }
   let bridgeEventChecks = await models.BridgeEventCheck.findAll({
-    attributes: ['bridgeEventId', 'allFields', 'correctID', 'checksum', 'manualIntervention'],
+    attributes: ['bridgeEventId', 'allFields', 'correctID', 'checksum', 'manualIntervention', 'comment'],
     where: {
       bridgeEventId: ids
     }
@@ -175,6 +175,7 @@ app.get('/api/qa/bridgeopenings/summary/city/:city', async (req, res) => {
 
   res.send(bridgeEventChecks);
 });
+
 app.get('/api/donwload/bridgeopenings/summary/', async (req, res) => {
   let provinces = ["North Holland", "Flevoland", "Gelderland", "North Brabant", "Overijssel", "Drenthe", "Groningen", "Friesland", "Limburg"];
   let results = [];
@@ -187,14 +188,15 @@ app.get('/api/donwload/bridgeopenings/summary/', async (req, res) => {
 });
 
 app.put('/api/qa/bridgeopenings/:id', async (req, res, next) => {
-  let id = parseInt(req.params.id);
+  let id = req.params.id;
 
   let checks = await models.BridgeEventCheck.findOne({
     where: {
-      id: id
+      bridgeEventId: id
     }
   });
 
+  console.log("checks", checks);
   if (checks) {
     try{
       await checks.update({
@@ -220,16 +222,10 @@ app.use(function (req, res) {
 async function intersectsBridgeEvent(boundariesName, level) {
   return [results, metadata] = await sequelize.query(
 
-    `/* Select all columns from bridge_events, use table administrative boundaries*/
-     SELECT  b.id FROM bridge_events AS b, administrative_boundaries AS a
-
+     `SELECT  b.id FROM bridge_events AS b, administrative_boundaries AS a
        WHERE a.name = '${boundariesName}' AND a.level=${level} AND
-
-         /* Basically we want the points of the event bridges which intersects the admin boundaries*/
          ST_Intersects(
-
-           ST_FlipCoordinates(b."geoJsonLocation"),
-           a.geog)`
+           ST_FlipCoordinates(b."geoJsonLocation"), a.geog)`
   );
 
 }
