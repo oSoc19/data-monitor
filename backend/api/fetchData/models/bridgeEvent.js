@@ -1,6 +1,6 @@
 const GeoJson = require('geojson');
 /*
- * A BridgeEvent indicates when a bridge will be open or close 
+ * A BridgeEvent indicates when a bridge will be open or close
  * (Note: a bridge is considered open if a boat can pass below it.
  *  OPEN  : __/ \__
  *  CLOSE : _______)
@@ -35,24 +35,23 @@ const bridgeEvent = (sequelize, DataTypes) => {
   });
 
   BridgeEvent.associate = models => {
-    BridgeEvent.hasOne(models.BridgeEventCheck)
+    BridgeEvent.hasOne(models.BridgeEventCheck);
   }
 
 
   /* Create a bridge event corresponding to a situation record
-   * and associate this event to a bridge. 
+   * and associate this event to a bridge.
    */
   BridgeEvent.addBridgeEvent = async (situation, models) => {
     let location = situation.situationRecord.groupOfLocations.locationForDisplay;
     let situationRecord = situation.situationRecord;
     let bridgeEvent = await models.BridgeEvent.findOne({
       where: {
-        id: situationRecord['$'].id,
-        version: situationRecord['$'].version
+        id: situationRecord['$'].id
       }
     });
     if (!bridgeEvent) {
-      /* Try to find the bridge associate to the bridge event. If the bridge doesn't 
+      /* Try to find the bridge associate to the bridge event. If the bridge doesn't
        * exist, we create a new one.
        */
       let bridge = await models.Bridge.findOne({
@@ -61,7 +60,7 @@ const bridgeEvent = (sequelize, DataTypes) => {
         }
       });
       if (!bridge) {
-        bridge = await models.Bridge.createBridge(location.longitude, location.latitude, models)
+        bridge = await models.Bridge.createBridge(location.longitude, location.latitude, models);
       }
       bridgeEvent = await BridgeEvent.create({
         id: situationRecord['$'].id,
@@ -83,4 +82,3 @@ const bridgeEvent = (sequelize, DataTypes) => {
 };
 
 module.exports = bridgeEvent;
-

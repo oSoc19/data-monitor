@@ -47,8 +47,7 @@ const bridgeEvent = (sequelize, DataTypes) => {
     let situationRecord = situation.situationRecord;
     let bridgeEvent = await models.BridgeEvent.findOne({
       where: {
-        id: situationRecord['$'].id,
-				version: situationRecord['$'].version
+        id: situationRecord['$'].id
       }
     });
     if (!bridgeEvent) {
