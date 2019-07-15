@@ -88,7 +88,6 @@ const bridgeEvent = (sequelize, DataTypes) => {
         }).geometry
       })
     }
-    // console.log(createCheckAllFields(bridgeEvent))
   };
 
   return BridgeEvent;

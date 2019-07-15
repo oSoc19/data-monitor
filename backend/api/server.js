@@ -92,116 +92,120 @@ app.get('/api/bridgeopenings/', async (req, res, next) => {
 });
 
 app.get('/api/bridgeopenings/:id', (req, res, next) => {
-    (async () => {
-        let output = await models.BridgeEvent.findOne({
-            where: {
-                id: req.params.id
-            }
-        });
-      res.send(output);
-    })();
+  (async () => {
+    let output = await models.BridgeEvent.findOne({
+      where: {
+        id: req.params.id
+      }
+    });
+    res.send(output);
+  })();
 });
 
+app.get('/api/qa/bridgeoepnings/summary/', async (req, res) => {
+  let provinces = ["North Holland", "South Holland", "Flevoland", "Gelderland", "North Brabant", "Overijssel", "Drenthe", "Utrecht", "Groningen", "Friesland", "Zeeland", "Limburg"]
+  let results = [];
+  for (let province of provinces) {
+    let provinceLevel = 4
+    let result = await intersectsBridgeEvent(province, provinceLevel);
+    let ids = [];
+    for (let bridgeEvent of result[0]) {
+      ids.push(bridgeEvent.id);
+    }
+		let goodBridgeEvents = await findGoodEvents(models.BridgeEventCheck, ids);
+		let badBridgeEvents = await findBadEvents(models.BridgeEventCheck, ids);
+    results.push({
+      name: province,
+      nextUrl: `/api/qa/bridgeopenigns/summary/provinces/${province}`,
+      summary: {
+        numberOfGoodEvents: goodBridgeEvents.count,
+        numberOfBadEvents: badBridgeEvents.count
+      }
+    });
+  }
+  res.send(results);
+});
+
+
 app.get('/api/qa/bridgeopenings/summary/country/:country', (req, res, next) => {
-    let country = {
-        "name": req.params.country,
-        "children": [
-            {
-                "name": "Oost-Nederland",
-                "detail": "/api/qa/bridgeopenings/summary/region/Oost-Nederland",
-                "children":
-                    [{ "name": "good", "value": 168 }, { "name": "bad", "value": 0 }]
-            },
-            {
-                "name": "Noord-Nederland",
-                "detail": "/api/qa/bridgeopenings/summary/region/Noord-Nederland",
-                "children":
-                    [{ "name": "good", "value": 99 }, { "name": "bad", "value": 1 }]
-            }
-        ]
-    };
+  let country = {
+    "name": req.params.country,
+    "children": [{
+        "name": "Oost-Nederland",
+        "detail": "/api/qa/bridgeopenings/summary/region/Oost-Nederland",
+        "children": [{
+          "name": "good",
+          "value": 168
+        }, {
+          "name": "bad",
+          "value": 0
+        }]
+      },
+      {
+        "name": "Noord-Nederland",
+        "detail": "/api/qa/bridgeopenings/summary/region/Noord-Nederland",
+
+        "children": [{
+          "name": "good",
+          "value": 99
+        }, {
+          "name": "bad",
+          "value": 1
+        }]
+      }
+    ]
+  };
   res.json(country);
 });
 
 app.get('/api/qa/bridgeopenings/summary/region/:region', (req, res, next) => {
-    let region = {
-        "name": req.params.region,
-        "children": [
-            {
-                "name": "Utrecht",
-                "detail": "/api/qa/bridgeopenings/summary/province/Utrecht",
-                "children":
-                    [{ "name": "good", "value": 168 }, { "name": "bad", "value": 0 }]
-            }
-        ]
-    };
+  let region = {
+    "name": req.params.region,
+    "children": [{
+      "name": "Utrecht",
+      "detail": "/api/qa/bridgeopenings/summary/province/Utrecht",
+      "children": [{
+        "name": "good",
+        "value": 168
+      }, {
+        "name": "bad",
+        "value": 0
+      }]
+    }]
+  };
   res.json(region);
 });
 
 app.get('/api/qa/bridgeopenings/summary/province/:province', (req, res, next) => {
-    let province = {
-        "name": req.params.province,
-        "children": [
-            {
-                "name": "Utrecht",
-                "detail": "/api/qa/bridgeopenings/summary/city/Utrecht",
-                "children":
-                    [{ "name": "good", "value": 168 }, { "name": "bad", "value": 0 }]
-            }
-        ]
-    };
+  let province = {
+    "name": req.params.province,
+    "children": [{
+      "name": "Utrecht",
+      "detail": "/api/qa/bridgeopenings/summary/city/Utrecht",
+      "children": [{
+        "name": "good",
+        "value": 168
+      }, {
+        "name": "bad",
+        "value": 0
+      }]
+    }]
+  };
   res.json(province);
 });
 
-/**
- * Example call, mixing postgis and sequalize
- */
-app.get('/api/qa/bridgeopenings/summary/city/amsterdam', async (req, res, next) => {
-
-  let [results, metadata] = await sequelize.query(
-
-    `/* Select all columns from bridge_events, use table administrative boundaries*/
-     SELECT  b.* FROM bridge_events AS b, administrative_boundaries AS a
-
-       /* I want the admin boundaries from amsterdam */
-       WHERE a.name = 'Amsterdam' AND
-
-         /* Now it gets a little messy, because we haven't inserted the datatypes properly. */
-         /* On the plus, you get to see some of functions of POSTGIS */
-
-         /* Basically we want the points of the event bridges which intersects the admin boundaries*/
-         ST_Intersects(
-
-           /* Arg 1: is actually the geojsonlocation from the bridge event.
-               But it needed some preprocessing with SET_SetRID to specify the coordinate system exactly.
-               Also note: the "" (double quotes) for the column name of geoJsonLocation. Sequelize does this, probably because camelCased names of fields
-               We should fix this.
-            */
-           ST_SetSRID(b."geoJsonLocation", 4326),
-
-           /* Arg 2: the coordinates of the polygon of Amsterdam.
-               Note 1: it requires to flip coordinates because the data was flipped...
-               Note 2: I need some explicit casting to 'geometry' type, because it was stored as 'geogrpahy' type
-             */
-           ST_FlipCoordinates(a.geog::geometry)::geometry)
-    `
-  );
-  res.send({count: results.length});
-});
 
 app.get('/api/qa/bridgeopenings/summary/city/:city', (req, res, next) => {
-    let city = {
-        "name": req.params.city,
-        "children": [
-            {
-                "id": "qa-assessment-id",
-                "situationRecordId": "situationRecordId",
-                "nameOfCheck1": "ok",
-                "check2": "nok",
-                "check3": "overruled ok"
-            }
-        ]
-    };
+  let city = {
+    "name": req.params.city,
+    "children": [{
+      "id": "qa-assessment-id",
+      "situationRecordId": "situationRecordId",
+      "nameOfCheck1": "ok",
+      "check2": "nok",
+      "check3": "overruled ok"
+    }]
+  };
   res.json(city);
 });
 
@@ -238,3 +242,48 @@ app.use(function(req, res) {
   res.status(404);
 })
 
+
+async function intersectsBridgeEvent(boundariesName, level) {
+  return [results, metadata] = await sequelize.query(
+
+    `/* Select all columns from bridge_events, use table administrative boundaries*/
+     SELECT  b.id FROM bridge_events AS b, administrative_boundaries AS a
+
+       WHERE a.name = '${boundariesName}' AND a.level=${level} AND
+
+         /* Basically we want the points of the event bridges which intersects the admin boundaries*/
+         ST_Intersects(
+
+           ST_SetSRID(b."geoJsonLocation", 4326),
+
+           /* Arg 2: the coordinates of the polygon of Amsterdam.
+               Note 1: it requires to flip coordinates because the data was flipped...
+               Note 2: I need some explicit casting to 'geometry' type, because it was stored as 'geogrpahy' type
+             */
+           ST_FlipCoordinates(a.geog::geometry)::geometry)`
+  );
+
+}
+
+async function findGoodEvents(model, ids) {
+  let goodBridgeEvents = await model.findAndCountAll({
+    where: {
+      bridgeEventId: ids,
+      checksum: 1
+    }
+  });
+	return goodBridgeEvents;
+}
+
+
+async function findBadEvents(model, ids) {
+  let badBridgeEvents = await model.findAndCountAll({
+    where: {
+      bridgeEventId: ids,
+			checksum: {
+				[Sequelize.Op.ne]: 1
+			} 
+    }
+  });
+	return badBridgeEvents;
+}
