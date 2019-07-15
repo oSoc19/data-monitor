@@ -9,10 +9,9 @@ import Header from '../components/Header'
 const Dashboard = () => {
   return (
     <React.Fragment>
-      <Header />
-      <Activity />
+      {/* <Header /> */}
+      {/* <Activity /> */}
       <DashboardTable />
-      <div className="grid-wrapper"></div>
     </React.Fragment>
   )
 }

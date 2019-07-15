@@ -10,9 +10,9 @@ const Info = () => {
       <ul>
         <li>
           <a
-            href="https://www.ndw.nu/"
-            target="_blank"
-            rel="noopener noreferrer"
+            href='https://www.ndw.nu/'
+            target='_blank'
+            rel='noopener noreferrer'
           >
             NDW
           </a>
@@ -22,9 +22,9 @@ const Info = () => {
       <ul>
         <li>
           <a
-            href="http://opendata.ndw.nu/"
-            target="_blank"
-            rel="noopener noreferrer"
+            href='http://opendata.ndw.nu/'
+            target='_blank'
+            rel='noopener noreferrer'
           >
             Open Data NDW
           </a>
