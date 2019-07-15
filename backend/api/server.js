@@ -2,9 +2,12 @@ const express = require('express');
 const cors = require('cors');
 const geojson = require('geojson');
 const Sequelize = require('sequelize');
-const models = require('./fetchData/index');
+const models = require('./fetchData/index').models;
 const bodyParser = require('body-parser');
+
 const fs = require('fs');
+const csvStringify = require('csv-stringify');
+const associateModels = require('./fetchData/index').associateModels;
 
 const op = Sequelize.Op;
 let app = express();
@@ -27,6 +30,7 @@ const sequelize = new Sequelize(
 );
 
 const citiesByProvince = JSON.parse(fs.readFileSync('./data/dutchCities.json'));
+associateModels();
 
 app.get("/", (req, res, next) => {});
 
@@ -131,7 +135,7 @@ app.get('/api/qa/bridgeopenings/summary/provinces/:province', async (req, res) =
   let province = req.params.province.split('_').join(' ');
   let results = [];
   for (let city of citiesByProvince[province]) {
-		let cityQuery = city.replace("'", "''");
+    let cityQuery = city.replace("'", "''");
     let citiesLevel = 8;
     let result = await intersectsBridgeEvent(cityQuery, citiesLevel);
     let ids = [];
@@ -140,8 +144,10 @@ app.get('/api/qa/bridgeopenings/summary/provinces/:province', async (req, res) =
     }
     let goodBridgeEvents = await findGoodEvents(models.BridgeEventCheck, ids);
     let badBridgeEvents = await findBadEvents(models.BridgeEventCheck, ids);
+		let cityName = city.split(' ').join('_');
     results.push({
       name: city,
+			nextUrl: '/api/qa/bridgeopenings/summary/city/' + cityName,
       summary: {
         numberOfGoodEvents: goodBridgeEvents.count,
         numberOfBadEvents: badBridgeEvents.count
@@ -151,6 +157,34 @@ app.get('/api/qa/bridgeopenings/summary/provinces/:province', async (req, res) =
   res.send(results);
 });
 
+app.get('/api/qa/bridgeopenings/summary/city/:city', async (req, res) => {
+  let city = req.params.city.split('_').join(' ');
+  let cityQuery = city.replace("'", "''");
+  let cityLevel = 8;
+  let result = await intersectsBridgeEvent(cityQuery, cityLevel);
+  let ids = [];
+  for (let bridgeEvent of result[0]) {
+    ids.push(bridgeEvent.id);
+  }
+	let bridgeEventChecks = await models.BridgeEventCheck.findAll({
+		attributes: ['bridgeEventId', 'allFields', 'correctID', 'checksum', 'manualIntervention'],
+    where: {
+      bridgeEventId: ids
+    }
+	});
+
+	res.send(bridgeEventChecks);
+});
+app.get('/api/donwload/bridgeopenings/summary/', async (req, res) => {
+  let provinces = ["North Holland", "Flevoland", "Gelderland", "North Brabant", "Overijssel", "Drenthe", "Groningen", "Friesland", "Limburg"]
+  let results = [];
+  for (let province of provinces) {
+    let provinceLevel = 4
+    let result = await intersectsBridgeEvent(province, provinceLevel);
+    console.log(result);
+  }
+  res.send(results);
+})
 
 app.put('/api/qa/bridgeopenings/:id', async (req, res, next) => {
 

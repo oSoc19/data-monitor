@@ -75,7 +75,20 @@ const bridgeEvent = (sequelize, DataTypes) => {
         bridgeId: bridge.id
       })
     }
-    // console.log(createCheckAllFields(bridgeEvent))
+    else{
+      console.log("updating existing bridge")
+      bridgeEvent = await bridgeEvent.update({
+        version: situationRecord['$'].version,
+        location: [location.longitude, location.latitude],
+        creationTime: situationRecord.situationRecordCreationTime,
+        startTime: situationRecord.validity.validityTimeSpecification.overallStartTime,
+        endTime: situationRecord.validity.validityTimeSpecification.overallEndTime,
+        geoJsonLocation: GeoJson.parse(location, {
+          Point: ['longitude', 'latitude']
+        }).geometry
+      })
+    }
+		models.BridgeEventCheck.createCheckAllFields(bridgeEvent);
   };
 
   return BridgeEvent;

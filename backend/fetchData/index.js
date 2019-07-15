@@ -31,6 +31,7 @@ const associateModels = () => {
 }
 
 const loadBridges = async () => {
+	associateModels();
   await sequelize.sync();
   const bridgeOpeningsUrl = 'http://opendata.ndw.nu/brugopeningen.xml.gz'
   const bridgeOpeningsSitutations = await parse(bridgeOpeningsUrl)
