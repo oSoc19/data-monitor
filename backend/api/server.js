@@ -201,7 +201,6 @@ app.put('/api/qa/bridgeopenings/:id', async (req, res, next) => {
         manualIntervention: req.body.manualIntervention,
         comment : req.body.comment
       });
-      await checks.save();
       res.send(checks);
     }
 
