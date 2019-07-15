@@ -16,9 +16,9 @@ def load_data():
     wait_for_db()
 
     #only load once
-    # if is_data_there():
-    #     print("We found table with data already in there, nothing to do")
-    #     return
+    if is_data_there():
+        print("We found table with data already in there, nothing to do")
+        return
 
     pathz = get_all_json_paths(DATA_DIR)
     for p in pathz:
