@@ -15,9 +15,6 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 app.use(cors());
-app.use(function(req, res) {
-  res.status(404);
-});
 app.listen(8080, () => {
   console.log('API Server listening on port 8080');
 });
@@ -228,6 +225,10 @@ app.put('/api/qa/bridgeopenings/:id', async (req, res, next) => {
       });
     }
   }
+});
+
+app.use(function(req, res) {
+  res.status(404);
 });
 
 async function findGoodEvents(model, ids) {
