@@ -227,8 +227,8 @@ app.put('/api/qa/bridgeopenings/:id', async (req, res, next) => {
   }
 });
 
-app.use(function(req, res) {
-  res.status(404);
+app.use('*', function(req, res){
+  res.send({'msg': 'route not found'}, 404);
 });
 
 async function findGoodEvents(model, ids) {
