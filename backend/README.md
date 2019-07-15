@@ -53,9 +53,9 @@ services:
 ```
 Running
 ```
-docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d  # will start in daemon mode
-docker-compose -f docker-compose.yml -f docker-compose.dev.yml up logs -f --tail=200 # will tail logs
-docker-compose -f docker-compose.yml -f docker-compose.dev.yml restart api # if you want to restart a service, better do it in another terminal
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.override.yml up -d  # will start in daemon mode
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.override.yml up logs -f --tail=200 # will tail logs
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.override.yml restart api # if you want to restart a service, better do it in another terminal
 ```
 To go and debug this, use chrome and go to
 ```
@@ -74,9 +74,9 @@ services:
 ```
 Running
 ```
-docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d  # will start in daemon mode
-docker-compose -f docker-compose.yml -f docker-compose.dev.yml up logs -f --tail=200 # will tail logs
-docker-compose -f docker-compose.yml -f docker-compose.dev.yml restart fetch_data # if you want to restart a service, better do it in another terminal
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.override.yml up -d  # will start in daemon mode
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.override.yml up logs -f --tail=200 # will tail logs
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.override.yml restart api # if you want to restart a service, better do it in another terminal
 ```
 To go and debug this, use chrome and go to
 ```
