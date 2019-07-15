@@ -22,20 +22,21 @@ const models = {
 /* Make all the association between models.
  * Ex. A bridge has multiple bridge events (hasMany)
 */
-Object.keys(models).forEach(key => {
-  if ('associate' in models[key]) {
-    models[key].associate(models);
-  }
-});
-
-sequelize.sync()
-  .then(async () => {
-    const bridgeOpeningsUrl = 'http://opendata.ndw.nu/brugopeningen.xml.gz'
-    const bridgeOpeningsSitutations = await parse(bridgeOpeningsUrl)
-    for (situation of bridgeOpeningsSitutations) {
-      await models.BridgeEvent.addBridgeEvent(situation.situation, models);
+const associateModels = () => {
+  Object.keys(models).forEach(key => {
+    if ('associate' in models[key]) {
+      models[key].associate(models);
     }
   })
+}
 
-module.exports = models
+const loadBridges = async () => {
+  await sequelize.sync();
+  const bridgeOpeningsUrl = 'http://opendata.ndw.nu/brugopeningen.xml.gz'
+  const bridgeOpeningsSitutations = await parse(bridgeOpeningsUrl)
+  for (situation of bridgeOpeningsSitutations) {
+    await models.BridgeEvent.addBridgeEvent(situation.situation, models);
+  }
+}
+module.exports = {models, loadBridges, associateModels}
 

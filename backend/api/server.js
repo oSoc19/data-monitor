@@ -18,16 +18,16 @@ const sequelize = new Sequelize(
 
 
 app.use(cors());
+app.listen(8080, () => {
+  console.log('API Server listening on port 8080');
 
-sequelize.sync({
-    force: true
-  })
-  .then(() => {
-    app.listen(8080, () => {
-      console.log('API Server listening on port 8080');
+});
 
-    });
-  });
+// sequelize.sync({
+//     force: true
+//   })
+//   .then(() => {
+//   });
 
 app.get("/", (req, res, next) => {});
 
