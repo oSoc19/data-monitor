@@ -31,7 +31,7 @@ Object.keys(models).forEach(key => {
 
 
 sequelize.sync({
-    force: true // Delete database if it exits
+    // force: true // Delete database if it exits
   })
   .then(() => {
     const bridgeOpeningsUrl = 'http://opendata.ndw.nu/brugopeningen.xml.gz'
