@@ -77,7 +77,7 @@ def is_data_there():
                            host=POSTGRES_HOST,
                            database=DB)
         cursor = connection.cursor()
-        query = """SELECT COUNT(*) FROM  administrative_boundaries"""
+        query = """SELECT * FROM  administrative_boundaries"""
         cursor.execute(query)
         return cursor.rowcount > 0
     finally:
