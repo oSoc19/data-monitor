@@ -42,6 +42,6 @@ for DB in "$POSTGRES_DB"; do
       CREATE TABLE administrative_boundaries (
         id SERIAL PRIMARY KEY,
         name varchar, level integer,
-        geog geography(MULTIPOLYGON));
+        geog geometry(MULTIPOLYGON));
 EOSQL
 done

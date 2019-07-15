@@ -283,13 +283,8 @@ async function intersectsBridgeEvent(boundariesName, level) {
          /* Basically we want the points of the event bridges which intersects the admin boundaries*/
          ST_Intersects(
 
-           ST_SetSRID(b."geoJsonLocation", 4326),
-
-           /* Arg 2: the coordinates of the polygon of Amsterdam.
-               Note 1: it requires to flip coordinates because the data was flipped...
-               Note 2: I need some explicit casting to 'geometry' type, because it was stored as 'geogrpahy' type
-             */
-           ST_FlipCoordinates(a.geog::geometry)::geometry)`
+           ST_FlipCoordinates(b."geoJsonLocation"),
+           a.geog)`
   );
 
 }
