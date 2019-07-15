@@ -28,23 +28,13 @@ Object.keys(models).forEach(key => {
   }
 });
 
-
-
-sequelize.sync({
-    // force: true // Delete database if it exits
-  })
-  .then(() => {
+sequelize.sync()
+  .then(async () => {
     const bridgeOpeningsUrl = 'http://opendata.ndw.nu/brugopeningen.xml.gz'
-    parse(bridgeOpeningsUrl)
-      .then(situations => {
-        (async () => {
-          for (let situation of situations) {
-            // Create a BridgeEvent for each situation 
-            // See XML documentation : http://docs.ndwcloud.nu/en/
-            await models.BridgeEvent.addBridgeEvent(situation.situation, models);
-          }
-        })();
-      })
+    const bridgeOpeningsSitutations = await parse(bridgeOpeningsUrl)
+    for (situation of bridgeOpeningsSitutations) {
+      await models.BridgeEvent.addBridgeEvent(situation.situation, models);
+    }
   })
 
 module.exports = models
