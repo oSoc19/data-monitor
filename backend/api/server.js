@@ -144,10 +144,10 @@ app.get('/api/qa/bridgeopenings/summary/provinces/:province', async (req, res) =
     }
     let goodBridgeEvents = await findGoodEvents(models.BridgeEventCheck, ids);
     let badBridgeEvents = await findBadEvents(models.BridgeEventCheck, ids);
-		let cityName = city.split(' ').join('_');
+    let cityName = city.split(' ').join('_');
     results.push({
       name: city,
-			nextUrl: '/api/qa/bridgeopenings/summary/city/' + cityName,
+      nextUrl: '/api/qa/bridgeopenings/summary/city/' + cityName,
       summary: {
         numberOfGoodEvents: goodBridgeEvents.count,
         numberOfBadEvents: badBridgeEvents.count
@@ -166,41 +166,49 @@ app.get('/api/qa/bridgeopenings/summary/city/:city', async (req, res) => {
   for (let bridgeEvent of result[0]) {
     ids.push(bridgeEvent.id);
   }
-	let bridgeEventChecks = await models.BridgeEventCheck.findAll({
-		attributes: ['bridgeEventId', 'allFields', 'correctID', 'checksum', 'manualIntervention'],
+  let bridgeEventChecks = await models.BridgeEventCheck.findAll({
+    attributes: ['bridgeEventId', 'allFields', 'correctID', 'checksum', 'manualIntervention'],
     where: {
       bridgeEventId: ids
     }
-	});
+  });
 
-	res.send(bridgeEventChecks);
+  res.send(bridgeEventChecks);
 });
 app.get('/api/donwload/bridgeopenings/summary/', async (req, res) => {
-  let provinces = ["North Holland", "Flevoland", "Gelderland", "North Brabant", "Overijssel", "Drenthe", "Groningen", "Friesland", "Limburg"]
+  let provinces = ["North Holland", "Flevoland", "Gelderland", "North Brabant", "Overijssel", "Drenthe", "Groningen", "Friesland", "Limburg"];
   let results = [];
   for (let province of provinces) {
-    let provinceLevel = 4
+    let provinceLevel = 4;
     let result = await intersectsBridgeEvent(province, provinceLevel);
     console.log(result);
   }
   res.send(results);
-})
+});
 
 app.put('/api/qa/bridgeopenings/:id', async (req, res, next) => {
+  let id = parseInt(req.params.id);
 
-  let id = req.id;
-
-  let checks = models.bridgeEventCheck.findOne({
+  let checks = await models.BridgeEventCheck.findOne({
     where: {
-      bridgeEventId: id
+      id: id
     }
   });
 
   if (checks) {
-    await checks.update({
-      manualIntervention: req.body.intervention,
-      comment : req.body.comment
-    });
+    try{
+      await checks.update({
+        manualIntervention: req.body.manualIntervention,
+        comment : req.body.comment
+      });
+      await checks.save();
+      res.send(checks);
+    }
+
+    catch (e) {
+      console.error(e);
+      res.status(500).json({'error':  'internal server error'});
+    }
   }
 });
 
