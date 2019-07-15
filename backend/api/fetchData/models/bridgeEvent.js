@@ -35,7 +35,7 @@ const bridgeEvent = (sequelize, DataTypes) => {
 
   BridgeEvent.associate = models => {
     BridgeEvent.hasOne(models.BridgeEventCheck);
-  }
+  };
 
 
   /* Create a bridge event corresponding to a situation record
@@ -50,6 +50,7 @@ const bridgeEvent = (sequelize, DataTypes) => {
       }
     });
     if (!bridgeEvent) {
+      console.log(`Creating bridge_event ${situationRecord['$'].id}`);
       /* Try to find the bridge associate to the bridge event. If the bridge doesn't
        * exist, we create a new one.
        */
@@ -72,10 +73,10 @@ const bridgeEvent = (sequelize, DataTypes) => {
           Point: ['longitude', 'latitude']
         }).geometry,
         bridgeId: bridge.id
-      })
+      });
     }
     else{
-      console.log("updating existing bridge")
+      console.log(`Updating bridge_event ${situationRecord['$'].id}`);
       bridgeEvent = await bridgeEvent.update({
         version: situationRecord['$'].version,
         location: [location.longitude, location.latitude],
@@ -85,7 +86,7 @@ const bridgeEvent = (sequelize, DataTypes) => {
         geoJsonLocation: GeoJson.parse(location, {
           Point: ['longitude', 'latitude']
         }).geometry
-      })
+      });
     }
     models.BridgeEventCheck.createCheckAllFields(bridgeEvent);
   };

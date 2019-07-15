@@ -34,8 +34,8 @@ const bridgeEvent = (sequelize, DataTypes) => {
   });
 
   BridgeEvent.associate = models => {
-    BridgeEvent.hasOne(models.BridgeEventCheck)
-  }
+    BridgeEvent.hasOne(models.BridgeEventCheck);
+  };
 
 
   /* Create a bridge event corresponding to a situation record
