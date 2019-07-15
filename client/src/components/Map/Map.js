@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import ReactMapGL, { Marker, FlyToInterpolator } from 'react-map-gl'
-import DeckGL, { ScatterplotLayer, IconLayer, LayerManager } from 'deck.gl'
+import DeckGL, { ScatterplotLayer, IconLayer } from 'deck.gl'
 import Header from '../Header'
 import Sidebar from '../Sidebar'
 import { Circle } from 'react-feather'
@@ -126,6 +126,10 @@ class Map extends Component {
       onClick: ({ object, x, y }) => {
         const tooltip = object ? `${object.id}` : console.log('no valid point')
         this.getBridgeEvents(object.id)
+
+        /**
+         * TODO: Zoom to point onClick
+         */
       }
     })
   }

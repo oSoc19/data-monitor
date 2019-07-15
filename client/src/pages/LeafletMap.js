@@ -71,14 +71,14 @@ class LeafletMap extends Component {
       <React.Fragment>
         <Header />
         <Legend />
-        <Map center={coordinates} zoom={10} id="map">
+        <Map center={coordinates} zoom={10} id='map'>
           <TileLayer
             attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
             url={tileSetUrl}
           />
           {bridges && (
             <WrappedHexbinLayer
-              className="hexbin-hexagon"
+              className='hexbin-hexagon'
               data={bridges}
               {...options}
             />
