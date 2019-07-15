@@ -8,22 +8,13 @@ const op = Sequelize.Op;
 let app = express();
 
 const sequelize = new Sequelize(
-<<<<<<< HEAD
   process.env.DATABASE,
   process.env.DATABASE_USER,
   process.env.DATABASE_PASSWORD, {
     host: 'database',
     dialect: 'postgres',
   },
-=======
-    process.env.DATABASE,
-    process.env.DATABASE_USER,
-    process.env.DATABASE_PASSWORD, {
-        host: 'database',
-        dialect: 'postgres'
-    },
->>>>>>> feature/test-postgis-backend
-);
+
 
 app.use(cors());
 
@@ -33,11 +24,8 @@ sequelize.sync({
   .then(() => {
     app.listen(8080, () => {
       console.log('API Server listening on port 8080');
-<<<<<<< HEAD
-    })
-=======
+
     });
->>>>>>> feature/test-postgis-backend
   });
 
 app.get("/", (req, res, next) => {});
@@ -57,12 +45,7 @@ app.get('/api/bridges/', async (req, res, next) => {
     "features": bridges
   };
   res.send(featureCollection);
-<<<<<<< HEAD
-})
-=======
-
 });
->>>>>>> feature/test-postgis-backend
 
 
 app.get('/api/bridgeopenings/', async (req, res, next) => {
