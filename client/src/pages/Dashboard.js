@@ -1,10 +1,20 @@
 import React from 'react'
 
-export default function Dashboard() {
+import { DashboardTable } from '../components/DashboardTable'
+
+import { Activity } from 'react-feather'
+
+import Header from '../components/Header'
+
+const Dashboard = () => {
   return (
-    <div>
-      <h1>Dashboard</h1>
+    <React.Fragment>
+      <Header />
+      <Activity />
+      <DashboardTable />
       <div className="grid-wrapper"></div>
-    </div>
+    </React.Fragment>
   )
 }
+
+export default Dashboard

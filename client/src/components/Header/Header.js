@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import logo from '../../assets/logo.svg'
 import './Header.sass'
@@ -12,12 +11,15 @@ export default class Header extends Component {
     return (
       <div className="header-wrapper">
         <div className="header">
-          <div className="header-brand">
+          <NavLink to="/dashboard" className="header-brand">
             <img className="header-brand_logo" src={logo} alt="" />
             <h1 className="header-brand_name">Liquid Traffic</h1>
-          </div>
+          </NavLink>
           <div className="header-nav">
-            <NavLink to="/map" className="header-nav_link">
+            <NavLink to="/leaflet" className="header-nav_link">
+              <Map color="#aaa" />
+            </NavLink>
+            <NavLink to="/mapbox" className="header-nav_link">
               <Map />
             </NavLink>
             <NavLink to="/dashboard" className="header-nav_link">
