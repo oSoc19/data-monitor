@@ -1,11 +1,10 @@
 const express = require('express');
-const bridge = require('./index')
-const cron = require('cron')
+const bridge = require('./index');
+const cron = require('cron');
 
 let app = express();
 bridge.associateModels();
 const CRON_FREQUENCY = process.env.CRON_PATTERN || '0 */15 * * * *';
-app.use(express.bodyParser());
 
 app.get("/import/bridges", (req, res, next) => {
   bridge.loadBridges();
@@ -18,4 +17,4 @@ new cron.CronJob(CRON_FREQUENCY, async function() {
 }, null, true);
 
 
-app.listen(8080, () => console.log('FetchData pipeline listening on port 8080'))
+app.listen(8080, () => console.log('FetchData pipeline listening on port 8080'));

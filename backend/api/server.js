@@ -7,29 +7,23 @@ const bodyParser = require('body-parser');
 
 const op = Sequelize.Op;
 let app = express();
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
+app.use(bodyParser.json());
+app.use(cors());
+app.listen(8080, () => {
+  console.log('API Server listening on port 8080');
+});
 
 const sequelize = new Sequelize(
   process.env.DATABASE,
   process.env.DATABASE_USER,
   process.env.DATABASE_PASSWORD, {
     host: 'database',
-    dialect: 'postgres',
+    dialect: 'postgres'
   },
 );
-
-app.use(bodyParser.json())
-app.use(cors());
-
-app.listen(8080, () => {
-  console.log('API Server listening on port 8080');
-
-});
-
-// sequelize.sync({
-//     force: true
-//   })
-//   .then(() => {
-//   });
 
 app.get("/", (req, res, next) => { });
 
