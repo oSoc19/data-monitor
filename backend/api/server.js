@@ -4,7 +4,6 @@ const geojson = require('geojson');
 const Sequelize = require('sequelize');
 const models = require('./fetchData/index').models;
 const bodyParser = require('body-parser');
-
 const fs = require('fs');
 const csvStringify = require('csv-stringify');
 const associateModels = require('./fetchData/index').associateModels;
@@ -12,10 +11,13 @@ const associateModels = require('./fetchData/index').associateModels;
 const op = Sequelize.Op;
 let app = express();
 app.use(bodyParser.urlencoded({
-    extended: true
+  extended: true
 }));
 app.use(bodyParser.json());
 app.use(cors());
+app.use(function(req, res) {
+  res.status(404);
+});
 app.listen(8080, () => {
   console.log('API Server listening on port 8080');
 });
@@ -29,6 +31,7 @@ const sequelize = new Sequelize(
   },
 );
 
+// Load the file with all the provincie and cities
 const citiesByProvince = JSON.parse(fs.readFileSync('./data/dutchCities.json'));
 associateModels();
 
@@ -106,7 +109,6 @@ app.get('/api/bridgeopenings/:id', (req, res, next) => {
 });
 
 app.get('/api/qa/bridgeopenings/summary/', async (req, res) => {
-  // let provinces = ["North Holland", "South Holland", "Flevoland", "Gelderland", "North Brabant", "Overijssel", "Drenthe", "Utrecht", "Groningen", "Friesland", "Zeeland", "Limburg"]
   let provinces = ["North Holland", "Flevoland", "Gelderland", "North Brabant", "Overijssel", "Drenthe", "Groningen", "Friesland", "Limburg"];
   let results = [];
   for (let province of provinces) {
@@ -167,7 +169,7 @@ app.get('/api/qa/bridgeopenings/summary/city/:city', async (req, res) => {
     ids.push(bridgeEvent.id);
   }
   let bridgeEventChecks = await models.BridgeEventCheck.findAll({
-    attributes: ['bridgeEventId', 'allFields', 'correctID', 'checksum', 'manualIntervention'],
+    attributes: ['bridgeEventId', 'allFields', 'correctID', 'checksum', 'manualIntervention', 'comment'],
     where: {
       bridgeEventId: ids
     }
@@ -175,64 +177,58 @@ app.get('/api/qa/bridgeopenings/summary/city/:city', async (req, res) => {
 
   res.send(bridgeEventChecks);
 });
-app.get('/api/donwload/bridgeopenings/summary/', async (req, res) => {
+
+app.get('/api/download/bridgeopenings/summary/', async (req, res) => {
   let provinces = ["North Holland", "Flevoland", "Gelderland", "North Brabant", "Overijssel", "Drenthe", "Groningen", "Friesland", "Limburg"];
   let results = [];
   for (let province of provinces) {
     let provinceLevel = 4;
-    let result = await intersectsBridgeEvent(province, provinceLevel);
-    console.log(result);
+    let result = await getAllBridgeEvents(province, provinceLevel);
+    results.push(...result)
   }
-  res.send(results);
+  sendCsv(results, res);
+});
+
+app.get('/api/download/bridgeopenings/summary/province/:province', async (req, res) => {
+  let province = req.params.province;
+  let provinceName = province.split('_').join(' ');
+  let provinceLevel = 4;
+  let result = await getAllBridgeEvents(province, provinceLevel);
+  sendCsv(result, res);
+});
+
+app.get('/api/download/bridgeopenings/summary/city/:city', async (req, res) => {
+  let city = req.params.city;
+  let cityName = city.split('_').join(' ');
+  let cityLevel = 8;
+  let result = await getAllBridgeEvents(cityName, cityLevel);
+  sendCsv(result, res);
 });
 
 app.put('/api/qa/bridgeopenings/:id', async (req, res, next) => {
-  let id = parseInt(req.params.id);
+  let id = req.params.id;
 
   let checks = await models.BridgeEventCheck.findOne({
     where: {
-      id: id
+      bridgeEventId: id
     }
   });
 
   if (checks) {
-    try{
+    try {
       await checks.update({
         manualIntervention: req.body.manualIntervention,
-        comment : req.body.comment
+        comment: req.body.comment
       });
       res.send(checks);
-    }
-
-    catch (e) {
+    } catch (e) {
       console.error(e);
-      res.status(500).json({'error':  'internal server error'});
+      res.status(500).json({
+        'error': 'internal server error'
+      });
     }
   }
 });
-
-
-app.use(function (req, res) {
-  res.status(404);
-});
-
-
-async function intersectsBridgeEvent(boundariesName, level) {
-  return [results, metadata] = await sequelize.query(
-
-    `/* Select all columns from bridge_events, use table administrative boundaries*/
-     SELECT  b.id FROM bridge_events AS b, administrative_boundaries AS a
-
-       WHERE a.name = '${boundariesName}' AND a.level=${level} AND
-
-         /* Basically we want the points of the event bridges which intersects the admin boundaries*/
-         ST_Intersects(
-
-           ST_FlipCoordinates(b."geoJsonLocation"),
-           a.geog)`
-  );
-
-}
 
 async function findGoodEvents(model, ids) {
   let goodBridgeEvents = await model.findAndCountAll({
@@ -243,7 +239,6 @@ async function findGoodEvents(model, ids) {
   });
   return goodBridgeEvents;
 }
-
 
 async function findBadEvents(model, ids) {
   let badBridgeEvents = await model.findAndCountAll({
@@ -256,3 +251,32 @@ async function findBadEvents(model, ids) {
   });
   return badBridgeEvents;
 }
+
+async function intersectsBridgeEvent(boundariesName, level) {
+  return [results, metadata] = await sequelize.query(
+    `SELECT  b.id FROM bridge_events AS b, administrative_boundaries AS a
+       WHERE a.name = '${boundariesName}' AND a.level=${level} AND
+         ST_Intersects(
+           ST_FlipCoordinates(b."geoJsonLocation"), a.geog)`
+  );
+}
+
+async function getAllBridgeEvents(location, locationLevel) {
+  let [result, metadata] = await sequelize.query(
+    `SELECT b.* FROM bridge_events AS b, administrative_boundaries AS a
+       WHERE a.name = '${location}' AND a.level=${locationLevel} AND
+         ST_Intersects(
+           ST_FlipCoordinates(b."geoJsonLocation"), a.geog)`
+  );
+  return result;
+
+}
+
+function sendCsv(body, res) {
+  res.setHeader('Content-Type', 'text/csv');
+  res.setHeader('Content-Disposition', 'attachment; filename=\"' + 'bridgeEvents-' + Date.now() + '.csv\"');
+  csvStringify(body, {
+    header: true
+  }).pipe(res);
+}
+
