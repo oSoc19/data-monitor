@@ -76,7 +76,7 @@ const bridgeEvent = (sequelize, DataTypes) => {
         bridgeId: bridge.id
       })
     }
-    // console.log(createCheckAllFields(bridgeEvent))
+		models.BridgeEventCheck.createCheckAllFields(bridgeEvent);
   };
 
   return BridgeEvent;
