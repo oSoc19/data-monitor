@@ -190,7 +190,7 @@ app.get('/api/download/bridgeopenings/summary/province/:province', async (req, r
   let province = req.params.province;
   let provinceName = province.split('_').join(' ');
   let provinceLevel = 4;
-  let result = await getAllBridgeEvents(province, provinceLevel);
+  let result = await getAllBridgeEvents(provinceName, provinceLevel);
   sendCsv(result, res);
 });
 
