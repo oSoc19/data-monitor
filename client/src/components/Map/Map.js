@@ -6,7 +6,8 @@ import Sidebar from '../Sidebar'
 import { Circle } from 'react-feather'
 import './Map.sass'
 import Legend from '../Legend'
-import bridgeOpenIcon from '../../assets/icons/bridge-open.svg'
+import bridgeOpenIcon from '../../assets/icons/bridge-closed.png'
+import bridgeClosedIcon from '../../assets/icons/bridge-closed.png'
 import { Mapbox } from '../../config'
 
 import { MapStylePicker } from './Controls'
@@ -81,7 +82,7 @@ class Map extends Component {
     })
 
     const ICON_MAPPING = {
-      marker: { x: 0, y: 0, width: 32, height: 32, mask: true }
+      marker: { x: 0, y: 0, width: 64, height: 64, mask: false }
     }
 
     return new IconLayer({
@@ -91,10 +92,10 @@ class Map extends Component {
       iconAtlas: bridgeOpenIcon,
       iconMapping: ICON_MAPPING,
       getIcon: d => 'marker',
-      sizeScale: 5,
+      sizeScale: 1,
       getPosition: d => d.coordinates,
-      getSize: d => 5,
-      getColor: d => [Math.sqrt(d.exits), 140, 0]
+      getSize: d => 32
+      // getColor: d => [Math.sqrt(d.exits), 140, 0]
     })
   }
 
@@ -114,7 +115,7 @@ class Map extends Component {
       data,
       getPosition: d => d.coordinates,
       getRadius: 10000,
-      getFillColor: [128, 128, 128],
+      getFillColor: d => [128, 128, 128],
       opacity: 0.1,
       radiusMinPixels: 10,
       radiusMaxPixels: 15,
@@ -165,7 +166,7 @@ class Map extends Component {
     const { children } = this.props
     return (
       <React.Fragment>
-        {/* <Header /> */}
+        <Header />
         <Sidebar
           onClick={e =>
             !e.target.checked

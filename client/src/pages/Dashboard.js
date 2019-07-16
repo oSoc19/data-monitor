@@ -2,14 +2,14 @@ import React from 'react'
 
 import { DashboardTable } from '../components/DashboardTable'
 
-import { Activity } from 'react-feather'
-
 import Header from '../components/Header'
+
+import { Activity } from 'react-feather'
 
 const Dashboard = () => {
   return (
     <React.Fragment>
-      {/* <Header /> */}
+      <Header />
       {/* <Activity /> */}
       <DashboardTable />
     </React.Fragment>
