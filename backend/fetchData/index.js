@@ -17,7 +17,7 @@ const models = {
   Bridge: sequelize.import('./models/bridge.js'),
   BridgeEvent: sequelize.import('./models/bridgeEvent.js'),
   BridgeEventCheck: sequelize.import('./models/bridgeEventCheck.js'),
-  RoadMaintenance: sequelize.import('./models/roadMaintenance.js')
+  MaintenanceWorks: sequelize.import('./models/maintenanceWorks.js')
 };
 
 /* Make all the association between models.
@@ -38,11 +38,12 @@ const loadBridges = async () => {
   await parse(bridgeOpeningsUrl, "situation", models.BridgeEvent.addBridgeEvent, models);
 };
 
-const loadRoadMaintenances = async () => {
+const loadMaintenanceWorks = async () => {
   await waitForDatabase();
+	await sequelize.sync();
   const roadMaintenancesUrl = 'http://opendata.ndw.nu/wegwerkzaamheden.xml.gz';
-  console.log("START FETCHING ROAD MAINTENANCE")
-  await parse(roadMaintenancesUrl, "situationRecord", models.RoadMaintenance.addRoadMaintenance, models);
+  console.log("START FETCHING MaintenanceWorks")
+  await parse(roadMaintenancesUrl, "situationRecord", models.MaintenanceWorks.addMaintenanceWorks, models);
   console.log("END ROAD MAINTENANCE")
 };
 
@@ -75,4 +76,4 @@ const sleep = (ms) => {
     });
 };
 
-module.exports = { models, loadBridges, loadRoadMaintenances, associateModels };
+module.exports = { models, loadBridges, loadMaintenanceWorks, associateModels };
