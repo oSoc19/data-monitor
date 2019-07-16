@@ -7,33 +7,32 @@ const parseString = require('xml2js').parseString;
  * @param  {string} source a valid URL that goes to an xml datex2 feed
  * @return {Promise} will return an object which contains the situation
  */
-function parse(url) {
+function parse(url, node, next, models) {
   return new Promise((resolve, reject) => {
     let gunzip = zlib.createGunzip();
     // Option to allow xtreamer to parse a file bigger than 10MB (here 1 GB)
     const options = {
       max_xml_size: 1000000000
     };
-    let xtreamerTransform = xtreamer('situation', options);
+    let xtreamerTransform = xtreamer(node, options);
     http.get(url, res => {
       /* The file that we get through ndw site is in a gzip format
        * We first need to unzip it.
        */
       res.pipe(gunzip).pipe(xtreamerTransform);
-      let situations = [];
       xtreamerTransform.on('data', data => {
         let xmlSituation = data.toString();
         parseString(xmlSituation, {
           explicitArray: false
-        }, (err, result) => {
+        }, async (err, result) => {
           if (err) {
             reject(err);
           }
-          situations.push(result);
+          await next(result[node], models);
         })
       });
       xtreamerTransform.on('end', () => {
-        resolve(situations);
+        resolve('Database updated');
       })
     }).on('error', error => reject(error));
 

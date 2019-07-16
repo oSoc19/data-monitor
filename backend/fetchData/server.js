@@ -1,21 +1,30 @@
 const express = require('express');
-const bridge = require('./index');
+const fetchData = require('./index');
 const cron = require('cron');
 
 let app = express();
-bridge.associateModels();
-bridge.loadBridges();
+fetchData.associateModels();
+console.log(`Loading bridges ${new Date().toISOString()}`);
+fetchData.loadBridges();
+console.log(`Loading road maintenance ${new Date().toISOString()}`);
+fetchData.loadRoadMaintenances();
 const CRON_FREQUENCY = process.env.CRON_PATTERN || '0 */15 * * * *';
 
-app.get("/import/bridges", (req, res, next) => {
+app.get("/import/bridges", (req, res) => {
   console.log(`Loading bridges ${new Date().toISOString()}`);
-  bridge.loadBridges();
-  return res.send({"Loading":"Ok"});
+  fetchData.loadBridges();
+  console.log(`Loading road maintenance ${new Date().toISOString()}`);
+  fetchData.loadRoadMaintenances();
+  return res.send({
+    "Loading": "Ok"
+  });
 });
 
 new cron.CronJob(CRON_FREQUENCY, async function() {
-  console.log(`Bridges loaded by cron job at ${new Date().toISOString()}`);
-  await bridge.loadBridges();
+  console.log(`Data loaded by cron job at ${new Date().toISOString()}`);
+  await fetchData.loadBridges();
+  await fetchData.loadRoadMaintenances();
 }, null, true);
 
 app.listen(8080, () => console.log('FetchData pipeline listening on port 8080'));
+

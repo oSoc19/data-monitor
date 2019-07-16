@@ -50,7 +50,7 @@ const bridgeEvent = (sequelize, DataTypes) => {
       }
     });
     if (!bridgeEvent) {
-      console.log(`Creating bridge_event ${situationRecord['$'].id}`);
+      // console.log(`Creating bridge_event ${situationRecord['$'].id}`);
       /* Try to find the bridge associate to the bridge event. If the bridge doesn't
        * exist, we create a new one.
        */
@@ -76,7 +76,7 @@ const bridgeEvent = (sequelize, DataTypes) => {
       });
     }
     else{
-      console.log(`Updating bridge_event ${situationRecord['$'].id}`);
+      // console.log(`Updating bridge_event ${situationRecord['$'].id}`);
       bridgeEvent = await bridgeEvent.update({
         version: situationRecord['$'].version,
         location: [location.longitude, location.latitude],
