@@ -1,24 +1,22 @@
 import React, { Component } from 'react'
 import './DashboardTable.sass'
-import regionData from '../../components/Map/cities'
-import { PlusCircle } from 'react-feather'
-import { Route, Link } from 'react-router-dom'
-import '../../pages/DashboardDetail'
-import DashboardDetail from '../../pages/DashboardDetail'
-
-import { Download } from 'react-feather'
-
+import { DashboardDetail } from '../DashboardDetail'
+import { Download, Check, X } from 'react-feather'
 import { Pie } from 'react-chartjs-2'
 
-import Loader from '../../components/Loader'
-
-const levels = ['country', 'region', 'province', 'city']
+/**
+ * Region levels
+ * - 3: country
+ * - 2: region
+ * - 1: province
+ * - 0: city
+ */
+const levelInfo = ['country', 'region', 'province', 'city']
 
 export class DashboardTable extends Component {
   state = {
     level: 1,
-    summary: [],
-    provinces: []
+    summary: []
   }
 
   componentDidMount = () => {
@@ -27,7 +25,6 @@ export class DashboardTable extends Component {
 
   fetchSummary = async () => {
     let res = await fetch(
-      // `http://82.196.10.230:8080/api/qa/bridgeopenings/summary/${level}/:${level}`
       `http://82.196.10.230:8080/api/qa/bridgeopenings/summary`
     )
     let summary = await res.json()
@@ -54,11 +51,20 @@ export class DashboardTable extends Component {
     const { summary, level } = this.state
     return (
       <div className='dashboard-container'>
-        {summary ? (
+        {summary && level < 3 ? (
           summary.map(item => {
             const { numberOfGoodEvents, numberOfBadEvents } = item.summary
             return (
               <div
+                onClick={() => {
+                  fetch(`http://82.196.10.230:8080${item.nextUrl}`)
+                    .then(res => {
+                      return res.json()
+                    })
+                    .then(summary => {
+                      this.setState({ summary, level: level + 1 })
+                    })
+                }}
                 className='dashboard-item'
                 key={item.name}
                 style={{
@@ -77,14 +83,14 @@ export class DashboardTable extends Component {
                   borderWidth: '20px 1px 1px 1px'
                 }}
               >
-                <h1>{item.name}</h1>
+                <h2>{item.name}</h2>
                 <hr />
                 {item.nextUrl && (
                   <React.Fragment>
-                    <h4>API endpoint</h4>
+                    {/* <h4>API endpoint</h4>
                     <pre>
                       <code>{item.nextUrl}</code>
-                    </pre>
+                    </pre> */}
                     <button
                       className='btn-outline'
                       type='submit'
@@ -103,14 +109,30 @@ export class DashboardTable extends Component {
                     </button>
                   </React.Fragment>
                 )}
-                <h2>Quality</h2>
-                <div>Number of good events: {numberOfGoodEvents}</div>
-                <div>Number of bad events: {numberOfBadEvents}</div>
+
+                <h3>Event quality</h3>
+                <table>
+                  <tr>
+                    <td>
+                      <Check />
+                    </td>
+                    <td>
+                      <X />
+                    </td>
+                    <td>quality (%)</td>
+                  </tr>
+                  <tr>
+                    <td>{numberOfGoodEvents}</td>
+                    <td>{numberOfBadEvents}</td>
+                    <td>
+                      {this.getEventDataQuality(
+                        numberOfGoodEvents,
+                        numberOfBadEvents
+                      ).toFixed(1)}
+                    </td>
+                  </tr>
+                </table>
                 <div>
-                  {this.getEventDataQuality(
-                    numberOfGoodEvents,
-                    numberOfBadEvents
-                  )}
                   <Pie
                     data={{
                       datasets: [
@@ -126,35 +148,11 @@ export class DashboardTable extends Component {
                     }}
                   />
                 </div>
-                <button
-                  onClick={() => {
-                    fetch(`http://82.196.10.230:8080${item.nextUrl}`)
-                      .then(res => {
-                        return res.json()
-                      })
-                      .then(summary => {
-                        this.setState({ summary, level: level[3] })
-                      })
-                  }}
-                >
-                  Cities in {item.name}
-                </button>
               </div>
             )
           })
         ) : (
-          <div
-            style={{
-              background: '#000',
-              display: 'flex',
-              width: '100%',
-              height: '100%',
-              justifyContent: 'center',
-              alignItems: 'center'
-            }}
-          >
-            <Loader />
-          </div>
+          <DashboardDetail summary={summary} />
         )}
       </div>
     )
