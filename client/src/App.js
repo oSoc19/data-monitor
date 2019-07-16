@@ -1,5 +1,4 @@
 import React from 'react'
-import './App.sass'
 import './sass/main.sass'
 
 import LeafletMap from './pages/LeafletMap'
