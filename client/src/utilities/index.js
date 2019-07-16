@@ -1,2 +1,4 @@
 import * as GeoJson from './geoJson'
-export { GeoJson }
+import * as Visualisation from './visualisation'
+
+export { GeoJson, Visualisation }
