@@ -99,7 +99,7 @@ export class DashboardTable extends Component {
                       }}
                     >
                       <Download />
-                      Download CSV
+                      {`${item.name}.csv`}
                     </button>
                   </React.Fragment>
                 )}
