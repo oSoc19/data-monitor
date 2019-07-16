@@ -6,7 +6,6 @@ import Sidebar from '../Sidebar'
 import { Circle } from 'react-feather'
 import './Map.sass'
 import Legend from '../Legend'
-import bridgeOpenIcon from './bridge-open.svg'
 import { Mapbox } from '../../config'
 
 import { MapStylePicker } from './Controls'
@@ -198,9 +197,7 @@ class Map extends Component {
             />
             {children}
             <DeckGL
-              layers={[
-                this.renderScatterPlotLayer() /*, this.renderIconLayer()*/
-              ]}
+              layers={[this.renderScatterPlotLayer(), this.renderIconLayer()]}
               initialViewState={viewport}
               controller
             ></DeckGL>
