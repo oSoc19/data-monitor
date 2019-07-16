@@ -1,0 +1,19 @@
+{
+    "name": "Liquid Traffic",
+    "short_name": "Liquid Traffic",
+    "icons": [
+        {
+            "src": "/android-chrome-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/android-chrome-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ],
+    "theme_color": "#195190",
+    "background_color": "#195190",
+    "display": "standalone"
+}
