@@ -6,6 +6,8 @@ import { Route, Link } from 'react-router-dom'
 import '../../pages/DashboardDetail'
 import DashboardDetail from '../../pages/DashboardDetail'
 
+import { Download } from 'react-feather'
+
 import { Pie } from 'react-chartjs-2'
 
 import Loader from '../../components/Loader'
@@ -35,14 +37,7 @@ export class DashboardTable extends Component {
   fetchCities = async url => {
     let res = await fetch(url)
     let cities = await res.json()
-    console.log(cities)
     this.setState({ cities })
-  }
-
-  showCities = province => {
-    Object.values(regionData[province]).map(city => {
-      console.log(city)
-    })
   }
 
   getEventDataQuality = (goodEvents, badEvents) => {
@@ -61,7 +56,7 @@ export class DashboardTable extends Component {
       <div className='dashboard-container'>
         {summary ? (
           summary.map(item => {
-            console.log(item.name)
+            const { numberOfGoodEvents, numberOfBadEvents } = item.summary
             return (
               <div
                 className='dashboard-item'
@@ -69,13 +64,13 @@ export class DashboardTable extends Component {
                 style={{
                   border:
                     this.getEventDataQuality(
-                      item.summary.numberOfGoodEvents,
-                      item.summary.numberOfBadEvents
+                      numberOfGoodEvents,
+                      numberOfBadEvents
                     ) === 100
                       ? '20px solid rgba(0,255,0, .5)'
                       : this.getEventDataQuality(
-                          item.summary.numberOfGoodEvents,
-                          item.summary.numberOfBadEvents
+                          numberOfGoodEvents,
+                          numberOfBadEvents
                         ) > 50
                       ? '20px solid rgba(255,128,0, .5)'
                       : '20px solid rgba(255,0,0, .5)',
@@ -90,19 +85,31 @@ export class DashboardTable extends Component {
                     <pre>
                       <code>{item.nextUrl}</code>
                     </pre>
+                    <button
+                      className='btn-outline'
+                      type='submit'
+                      onClick={() => {
+                        console.log(item.nextUrl)
+                        const downloadUrlEndpoint = item.nextUrl.replace(
+                          'api/qa/bridgeopenings/summary/provinces',
+                          'api/download/bridgeopenings/summary/province'
+                        )
+                        const downloadUrl = `http://82.196.10.230:8080${downloadUrlEndpoint}`
+                        window.open(downloadUrl)
+                      }}
+                    >
+                      <Download />
+                      Download CSV
+                    </button>
                   </React.Fragment>
                 )}
                 <h2>Quality</h2>
-                <div>
-                  Number of good events: {item.summary.numberOfGoodEvents}
-                </div>
-                <div>
-                  Number of bad events: {item.summary.numberOfBadEvents}
-                </div>
+                <div>Number of good events: {numberOfGoodEvents}</div>
+                <div>Number of bad events: {numberOfBadEvents}</div>
                 <div>
                   {this.getEventDataQuality(
-                    item.summary.numberOfGoodEvents,
-                    item.summary.numberOfBadEvents
+                    numberOfGoodEvents,
+                    numberOfBadEvents
                   )}
                   <Pie
                     data={{
@@ -110,8 +117,8 @@ export class DashboardTable extends Component {
                         {
                           data: [
                             this.getEventDataQuality(
-                              item.summary.numberOfGoodEvents,
-                              item.summary.numberOfBadEvents
+                              numberOfGoodEvents,
+                              numberOfBadEvents
                             )
                           ]
                         }
@@ -149,17 +156,6 @@ export class DashboardTable extends Component {
             <Loader />
           </div>
         )}
-        {/* {Object.keys(regionData).map(province => {
-          return (
-            <div className='dashboard-item'>
-              <h1>{province}</h1>
-              <Link to={`/dashboard/${province}`}>
-                <PlusCircle />
-              </Link>
-            </div>
-          )
-        })} */}
-        {/* <Route path='/dashboard/province' component={DashboardDetail} /> */}
       </div>
     )
   }
