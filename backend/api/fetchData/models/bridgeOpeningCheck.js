@@ -106,7 +106,8 @@ const bridgeOpeningCheck = (sequelize, DataTypes) => {
         locationForDisplay: BridgeOpeningCheck.locationForDisplay(event),
         location: BridgeOpeningCheck.location(event),
         generalNetworkManagementType: BridgeOpeningCheck.generalNetworkManagementType(event),
-        checksum: BridgeOpeningCheck.checksum(event)
+				checksum: BridgeOpeningCheck.checksum(event),
+				bridgeOpeningId: event.id
       })
       return checkFields;
 
@@ -118,7 +119,8 @@ const bridgeOpeningCheck = (sequelize, DataTypes) => {
         locationForDisplay: BridgeOpeningCheck.locationForDisplay(event),
         location: BridgeOpeningCheck.location(event),
         generalNetworkManagementType: BridgeOpeningCheck.generalNetworkManagementType(event),
-        checksum: BridgeOpeningCheck.checksum(event)
+				checksum: BridgeOpeningCheck.checksum(event),
+				bridgeOpeningId: event.id
       })
       return checkFields;
     }

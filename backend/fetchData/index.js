@@ -17,7 +17,8 @@ const models = {
   Bridge: sequelize.import('./models/bridge.js'),
   BridgeOpening: sequelize.import('./models/bridgeOpening.js'),
   BridgeOpeningCheck: sequelize.import('./models/bridgeOpeningCheck.js'),
-  MaintenanceWorks: sequelize.import('./models/maintenanceWorks.js')
+  MaintenanceWorks: sequelize.import('./models/maintenanceWorks.js'),
+  MaintenanceWorksCheck: sequelize.import('./models/maintenanceWorksCheck.js')
 };
 
 /* Make all the association between models.
