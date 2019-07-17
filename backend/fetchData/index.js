@@ -35,16 +35,26 @@ const loadBridges = async () => {
   await waitForDatabase();
   await sequelize.sync();
   const bridgeOpeningsUrl = 'http://opendata.ndw.nu/brugopeningen.xml.gz';
-  await parse(bridgeOpeningsUrl, "situation", models.BridgeEvent.addBridgeEvent, models);
+  let situations = [];
+  // We want to run synchronusly the insertion of all bridge events in the table
+  // And pipe used in the function parse are always asynchronous(see implementation of parse)
+  await parse(bridgeOpeningsUrl, "situation", (situation) => {
+    situations.push(situation);
+  });
+  for(let situation of situations) {
+    await models.BridgeEvent.addBridgeEvent(situation, models)
+  }
 };
 
 const loadMaintenanceWorks = async () => {
   await waitForDatabase();
 	await sequelize.sync();
   const roadMaintenancesUrl = 'http://opendata.ndw.nu/wegwerkzaamheden.xml.gz';
-  console.log("START FETCHING MaintenanceWorks")
-  await parse(roadMaintenancesUrl, "situationRecord", models.MaintenanceWorks.addMaintenanceWorks, models);
-  console.log("END ROAD MAINTENANCE")
+  console.log("START FETCHING MaintenanceWorks : " + Date.now())
+  await parse(roadMaintenancesUrl, "situationRecord", (situation) => {
+    models.MaintenanceWorks.addMaintenanceWorks(situation, models)
+  });
+  console.log("END ROAD MAINTENANCE : " + Date.now())
 };
 
 const waitForDatabase = async() => {

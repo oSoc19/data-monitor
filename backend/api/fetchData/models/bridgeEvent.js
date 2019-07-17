@@ -15,11 +15,11 @@ const bridgeEvent = (sequelize, DataTypes) => {
     version: {
       type: DataTypes.INTEGER
     },
-    location: {
-      type: DataTypes.ARRAY(DataTypes.FLOAT)
-    },
     creationTime: {
       type: DataTypes.DATE
+    },
+    locationForDisplay: {
+      type: DataTypes.GEOMETRY('POINT')
     },
     // The date when the bridge will be open
     startTime: {
@@ -28,9 +28,6 @@ const bridgeEvent = (sequelize, DataTypes) => {
     endTime: {
       type: DataTypes.DATE
     },
-    geoJsonLocation: {
-      type: DataTypes.GEOMETRY('POINT')
-    }
   });
 
   BridgeEvent.associate = models => {
@@ -49,44 +46,36 @@ const bridgeEvent = (sequelize, DataTypes) => {
         id: situationRecord['$'].id
       }
     });
-    if (!bridgeEvent) {
-      console.log(`Creating bridge_event ${situationRecord['$'].id}`);
-      /* Try to find the bridge associate to the bridge event. If the bridge doesn't
-       * exist, we create a new one.
-       */
-      let bridge = await models.Bridge.findOne({
-        where: {
-          location: [location.longitude, location.latitude]
-        }
-      });
-      if (!bridge) {
-        bridge = await models.Bridge.createBridge(location.longitude, location.latitude, models);
+
+    /* Try to find the bridge associate to the bridge event. If the bridge doesn't
+     * exist, we create a new one.
+     */
+    let bridge = await models.Bridge.findOne({
+      where: {
+        location: [location.longitude, location.latitude]
       }
-      bridgeEvent = await BridgeEvent.create({
-        id: situationRecord['$'].id,
-        version: situationRecord['$'].version,
-        location: [location.longitude, location.latitude],
-        creationTime: situationRecord.situationRecordCreationTime,
-        startTime: situationRecord.validity.validityTimeSpecification.overallStartTime,
-        endTime: situationRecord.validity.validityTimeSpecification.overallEndTime,
-        geoJsonLocation: GeoJson.parse(location, {
-          Point: ['longitude', 'latitude']
-        }).geometry,
-        bridgeId: bridge.id
-      });
+    });
+    if (!bridge) {
+      bridge = await models.Bridge.createBridge(location.longitude, location.latitude, models);
     }
-    else{
-      console.log(`Updating bridge_event ${situationRecord['$'].id}`);
-      bridgeEvent = await bridgeEvent.update({
-        version: situationRecord['$'].version,
-        location: [location.longitude, location.latitude],
-        creationTime: situationRecord.situationRecordCreationTime,
-        startTime: situationRecord.validity.validityTimeSpecification.overallStartTime,
-        endTime: situationRecord.validity.validityTimeSpecification.overallEndTime,
-        geoJsonLocation: GeoJson.parse(location, {
-          Point: ['longitude', 'latitude']
-        }).geometry
-      });
+
+    let bridgeEventEntry = {
+      id: situationRecord['$'].id,
+      version: situationRecord['$'].version,
+      creationTime: situationRecord.situationRecordCreationTime,
+      startTime: situationRecord.validity.validityTimeSpecification.overallStartTime,
+      endTime: situationRecord.validity.validityTimeSpecification.overallEndTime,
+      locationForDisplay: GeoJson.parse(location, {
+        Point: ['longitude', 'latitude']
+      }).geometry,
+      bridgeId: bridge.id
+    };
+    if (!bridgeEvent) {
+      // console.log(`Creating bridge_event ${situationRecord['$'].id}`);
+      bridgeEvent = await BridgeEvent.create(bridgeEventEntry);
+    } else {
+      // console.log(`Updating bridge_event ${situationRecord['$'].id}`);
+      bridgeEvent = await bridgeEvent.update(bridgeEventEntry);
     }
     models.BridgeEventCheck.createCheckAllFields(bridgeEvent);
   };
@@ -95,3 +84,4 @@ const bridgeEvent = (sequelize, DataTypes) => {
 };
 
 module.exports = bridgeEvent;
+
