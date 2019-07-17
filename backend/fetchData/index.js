@@ -17,7 +17,7 @@ const models = {
   Bridge: sequelize.import('./models/bridge.js'),
   BridgeEvent: sequelize.import('./models/bridgeEvent.js'),
   BridgeEventCheck: sequelize.import('./models/bridgeEventCheck.js'),
-  RoadMaintenance: sequelize.import('./models/roadMaintenance.js')
+  MaintenanceWorks: sequelize.import('./models/maintenanceWorks.js')
 };
 
 /* Make all the association between models.
@@ -35,15 +35,26 @@ const loadBridges = async () => {
   await waitForDatabase();
   await sequelize.sync();
   const bridgeOpeningsUrl = 'http://opendata.ndw.nu/brugopeningen.xml.gz';
-  await parse(bridgeOpeningsUrl, "situation", models.BridgeEvent.addBridgeEvent, models);
+  let situations = [];
+  // We want to run synchronusly the insertion of all bridge events in the table
+  // And pipe used in the function parse are always asynchronous(see implementation of parse)
+  await parse(bridgeOpeningsUrl, "situation", (situation) => {
+    situations.push(situation);
+  });
+  for(let situation of situations) {
+    await models.BridgeEvent.addBridgeEvent(situation, models)
+  }
 };
 
-const loadRoadMaintenances = async () => {
+const loadMaintenanceWorks = async () => {
   await waitForDatabase();
+	await sequelize.sync();
   const roadMaintenancesUrl = 'http://opendata.ndw.nu/wegwerkzaamheden.xml.gz';
-  console.log("START FETCHING ROAD MAINTENANCE")
-  await parse(roadMaintenancesUrl, "situationRecord", models.RoadMaintenance.addRoadMaintenance, models);
-  console.log("END ROAD MAINTENANCE")
+  console.log("START FETCHING MaintenanceWorks : " + Date.now())
+  await parse(roadMaintenancesUrl, "situationRecord", (situation) => {
+    models.MaintenanceWorks.addMaintenanceWorks(situation, models)
+  });
+  console.log("END ROAD MAINTENANCE : " + Date.now())
 };
 
 const waitForDatabase = async() => {
@@ -75,4 +86,4 @@ const sleep = (ms) => {
     });
 };
 
-module.exports = { models, loadBridges, loadRoadMaintenances, associateModels };
+module.exports = { models, loadBridges, loadMaintenanceWorks, associateModels };

@@ -17,6 +17,7 @@ const models = {
   Bridge: sequelize.import('./models/bridge.js'),
   BridgeEvent: sequelize.import('./models/bridgeEvent.js'),
   BridgeEventCheck: sequelize.import('./models/bridgeEventCheck.js'),
+  MaintenanceWorks: sequelize.import('./models/maintenanceWorks.js')
 };
 
 /* Make all the association between models.
@@ -27,17 +28,62 @@ const associateModels = () => {
     if ('associate' in models[key]) {
       models[key].associate(models);
     }
-  })
+  });
 }
 
 const loadBridges = async () => {
-	associateModels();
+  await waitForDatabase();
   await sequelize.sync();
-  const bridgeOpeningsUrl = 'http://opendata.ndw.nu/brugopeningen.xml.gz'
-  const bridgeOpeningsSitutations = await parse(bridgeOpeningsUrl)
-  for (situation of bridgeOpeningsSitutations) {
-    await models.BridgeEvent.addBridgeEvent(situation.situation, models);
+  const bridgeOpeningsUrl = 'http://opendata.ndw.nu/brugopeningen.xml.gz';
+  let situations = [];
+  // We want to run synchronusly the insertion of all bridge events in the table
+  // And pipe used in the function parse are always asynchronous(see implementation of parse)
+  await parse(bridgeOpeningsUrl, "situation", (situation) => {
+    situations.push(situation);
+  });
+  for(let situation of situations) {
+    await models.BridgeEvent.addBridgeEvent(situation, models)
   }
-}
-module.exports = {models, loadBridges, associateModels}
+};
 
+const loadMaintenanceWorks = async () => {
+  await waitForDatabase();
+	await sequelize.sync();
+  const roadMaintenancesUrl = 'http://opendata.ndw.nu/wegwerkzaamheden.xml.gz';
+  console.log("START FETCHING MaintenanceWorks : " + Date.now())
+  await parse(roadMaintenancesUrl, "situationRecord", (situation) => {
+    models.MaintenanceWorks.addMaintenanceWorks(situation, models)
+  });
+  console.log("END ROAD MAINTENANCE : " + Date.now())
+};
+
+const waitForDatabase = async() => {
+  console.log(`----- Trying to connect to database`);
+  let counter = 0;
+  let maxAttempts = 300;
+  let sleepTimeMs = 5000;
+  while(counter < maxAttempts){
+    try{
+      await sequelize.authenticate();
+      break;
+    }
+    catch(error){
+      counter += 1;
+      console.log(`----- Database not alive, waiting ${sleepTimeMs}`);
+      await sleep(sleepTimeMs);
+    }
+  }
+
+  if(counter === maxAttempts){
+    throw('Unable to connect to datase');
+  }
+  console.log(`----- Connection ok`);
+};
+
+const sleep = (ms) => {
+    return new Promise(resolve=>{
+      setTimeout(resolve,ms);
+    });
+};
+
+module.exports = { models, loadBridges, loadMaintenanceWorks, associateModels };

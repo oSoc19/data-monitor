@@ -7,7 +7,7 @@ const parseString = require('xml2js').parseString;
  * @param  {string} source a valid URL that goes to an xml datex2 feed
  * @return {Promise} will return an object which contains the situation
  */
-function parse(url, node, next, models) {
+function parse(url, node, next) {
   return new Promise((resolve, reject) => {
     let gunzip = zlib.createGunzip();
     // Option to allow xtreamer to parse a file bigger than 10MB (here 1 GB)
@@ -24,19 +24,18 @@ function parse(url, node, next, models) {
         let xmlSituation = data.toString();
         parseString(xmlSituation, {
           explicitArray: false
-        }, async (err, result) => {
+        },  (err, result) => {
           if (err) {
             reject(err);
           }
-          await next(result[node], models);
+          // Run asynchronusly the next function on each node
+          next(result[node]);
         })
       });
       xtreamerTransform.on('end', () => {
         resolve('Database updated');
       })
     }).on('error', error => reject(error));
-
-
   })
 }
 
