@@ -56,8 +56,8 @@ const bridgeOpening = (sequelize, DataTypes) => {
    * and associate this event to a bridge.
    */
   BridgeOpening.addBridgeOpening = async (situation, models) => {
-    let location = situation.situationRecord.groupOfLocations.locationForDisplay;
-    let situationRecord = situation.situationRecord;
+    let location = get(['situationRecord', 'groupOfLocations', 'locationForDisplay'], situation);
+    let situationRecord = get(['situationRecord'], situation)
     let bridgeOpening = await models.BridgeOpening.findOne({
       where: {
         id: situationRecord['$'].id
