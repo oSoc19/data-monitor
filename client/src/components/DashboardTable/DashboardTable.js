@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import './DashboardTable.sass'
 import { DashboardDetail } from '../DashboardDetail'
-import { Download, Check, X } from 'react-feather'
+import { Download, Check, X, Percent } from 'react-feather'
 import { Pie } from 'react-chartjs-2'
 
 /**
@@ -119,7 +119,9 @@ export class DashboardTable extends Component {
                     <td>
                       <X />
                     </td>
-                    <td>quality (%)</td>
+                    <td>
+                      <Percent />
+                    </td>
                   </tr>
                   <tr>
                     <td>{numberOfGoodEvents}</td>

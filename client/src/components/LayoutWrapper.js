@@ -1,7 +1,18 @@
 import React from 'react'
 
+import Header from './Header'
+import Sidebar from './Sidebar'
+
 const LayoutWrapper = props => {
-  return <div className="container">{props.children}</div>
+  return (
+    <div className='container'>
+      <Header />
+      <div style={{ display: 'flex', flexDirection: 'row' }}>
+        <Sidebar />
+        {props.children}
+      </div>
+    </div>
+  )
 }
 
 export default LayoutWrapper

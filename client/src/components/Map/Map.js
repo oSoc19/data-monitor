@@ -166,22 +166,6 @@ class Map extends Component {
     const { children } = this.props
     return (
       <React.Fragment>
-        <Header />
-        <Sidebar
-          onClick={e =>
-            !e.target.checked
-              ? console.log('no bridges')
-              : console.log('bridges')
-          }
-          style={{
-            position: 'absolute',
-            zIndex: 5000000,
-            left: '3rem',
-            top: '10rem',
-            borderRadius: '1rem',
-            padding: '1rem'
-          }}
-        />
         {bridges ? (
           <ReactMapGL
             {...viewport}

@@ -1,18 +1,15 @@
 import React from 'react'
 
 import { DashboardTable } from '../components/DashboardTable'
-
-import Header from '../components/Header'
+import LayoutWrapper from '../components/LayoutWrapper'
 
 import { Activity } from 'react-feather'
 
 const Dashboard = () => {
   return (
-    <React.Fragment>
-      <Header />
-      {/* <Activity /> */}
+    <LayoutWrapper>
       <DashboardTable />
-    </React.Fragment>
+    </LayoutWrapper>
   )
 }
 
