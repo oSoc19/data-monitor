@@ -15,7 +15,13 @@ const bridgeEvent = (sequelize, DataTypes) => {
     version: {
       type: DataTypes.INTEGER
     },
+    source: {
+      type: DataTypes.STRING
+    },
     location: {
+      type: DataTypes.ARRAY(DataTypes.FLOAT)
+    },
+    locationForDisplay: {
       type: DataTypes.ARRAY(DataTypes.FLOAT)
     },
     creationTime: {
@@ -30,6 +36,12 @@ const bridgeEvent = (sequelize, DataTypes) => {
     },
     geoJsonLocation: {
       type: DataTypes.GEOMETRY('POINT')
+    },
+    probabilityOfOccurence: {
+      type: DataTypes.STRING
+    },
+    generalNetworkManagementType: {
+      type: DataTypes.STRING
     }
   });
 
@@ -65,13 +77,17 @@ const bridgeEvent = (sequelize, DataTypes) => {
       bridgeEvent = await BridgeEvent.create({
         id: situationRecord['$'].id,
         version: situationRecord['$'].version,
+        source: situationRecord.source,
         location: [location.longitude, location.latitude],
         creationTime: situationRecord.situationRecordCreationTime,
         startTime: situationRecord.validity.validityTimeSpecification.overallStartTime,
         endTime: situationRecord.validity.validityTimeSpecification.overallEndTime,
+        probabilityOfOccurence: situationRecord.probabilityOfOccurence,
         geoJsonLocation: GeoJson.parse(location, {
           Point: ['longitude', 'latitude']
         }).geometry,
+        probabilityOfOccurence: situationRecord.probabilityOfOccurence,
+        generalNetworkManagementType: situationRecord.generalNetworkManagementType,
         bridgeId: bridge.id
       });
     }
@@ -83,9 +99,12 @@ const bridgeEvent = (sequelize, DataTypes) => {
         creationTime: situationRecord.situationRecordCreationTime,
         startTime: situationRecord.validity.validityTimeSpecification.overallStartTime,
         endTime: situationRecord.validity.validityTimeSpecification.overallEndTime,
+        probabilityOfOccurence: situationRecord.probabilityOfOccurence,
         geoJsonLocation: GeoJson.parse(location, {
           Point: ['longitude', 'latitude']
-        }).geometry
+        }).geometry,
+        probabilityOfOccurence: situationRecord.probabilityOfOccurence,
+        generalNetworkManagementType: situationRecord.generalNetworkManagementType,
       });
     }
     models.BridgeEventCheck.createCheckAllFields(bridgeEvent);

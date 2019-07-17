@@ -5,6 +5,9 @@ const GeoJson = require('geojson');
  *  OPEN  : __/ \__
  *  CLOSE : _______)
  */
+const get = (p, o) =>
+    p.reduce((xs, x) => (xs && xs[x]) ? xs[x] : null, o);
+
 const bridgeEvent = (sequelize, DataTypes) => {
   const BridgeEvent = sequelize.define('bridge_event', {
     id: {
@@ -15,7 +18,13 @@ const bridgeEvent = (sequelize, DataTypes) => {
     version: {
       type: DataTypes.INTEGER
     },
+    source: {
+      type: DataTypes.STRING
+    },
     location: {
+      type: DataTypes.ARRAY(DataTypes.FLOAT)
+    },
+    locationForDisplay: {
       type: DataTypes.ARRAY(DataTypes.FLOAT)
     },
     creationTime: {
@@ -30,13 +39,18 @@ const bridgeEvent = (sequelize, DataTypes) => {
     },
     geoJsonLocation: {
       type: DataTypes.GEOMETRY('POINT')
+    },
+    probabilityOfOccurence: {
+      type: DataTypes.STRING
+    },
+    generalNetworkManagementType: {
+      type: DataTypes.STRING
     }
   });
 
   BridgeEvent.associate = models => {
     BridgeEvent.hasOne(models.BridgeEventCheck);
   };
-
 
   /* Create a bridge event corresponding to a situation record
    * and associate this event to a bridge.
@@ -62,30 +76,37 @@ const bridgeEvent = (sequelize, DataTypes) => {
       if (!bridge) {
         bridge = await models.Bridge.createBridge(location.longitude, location.latitude, models);
       }
+      debugger
       bridgeEvent = await BridgeEvent.create({
         id: situationRecord['$'].id,
         version: situationRecord['$'].version,
+        source: get(['source', 'sourceName', 'values', 'value', '_'], situationRecord),
         location: [location.longitude, location.latitude],
-        creationTime: situationRecord.situationRecordCreationTime,
-        startTime: situationRecord.validity.validityTimeSpecification.overallStartTime,
-        endTime: situationRecord.validity.validityTimeSpecification.overallEndTime,
+        creationTime: get(['situationRecordCreationTimeget'], situationRecord),
+        startTime: get(['validity', 'validityTimeSpecification', 'overallStartTime'], situationRecord),
+        endTime: get(['validity', 'validityTimeSpecification', 'overallEndTime'], situationRecord),
+        probabilityOfOccurence: get(['probabilityOfOccurence'], situationRecord),
         geoJsonLocation: GeoJson.parse(location, {
           Point: ['longitude', 'latitude']
         }).geometry,
+        generalNetworkManagementType: get(['generalNetworkManagementType'], situationRecord),
         bridgeId: bridge.id
       });
     }
-    else{
+    else {
       // console.log(`Updating bridge_event ${situationRecord['$'].id}`);
       bridgeEvent = await bridgeEvent.update({
         version: situationRecord['$'].version,
+        source: get(['source', 'sourceName', 'values', 'value', '_'], situationRecord),
         location: [location.longitude, location.latitude],
-        creationTime: situationRecord.situationRecordCreationTime,
-        startTime: situationRecord.validity.validityTimeSpecification.overallStartTime,
-        endTime: situationRecord.validity.validityTimeSpecification.overallEndTime,
+        creationTime: get(['situationRecordCreationTimeget'], situationRecord),
+        startTime: get(['validity', 'validityTimeSpecification', 'overallStartTime'], situationRecord),
+        endTime: get(['validity', 'validityTimeSpecification', 'overallEndTime'], situationRecord),
+        probabilityOfOccurence: get(['probabilityOfOccurence'], situationRecord),
         geoJsonLocation: GeoJson.parse(location, {
           Point: ['longitude', 'latitude']
-        }).geometry
+        }).geometry,
+        generalNetworkManagementType: get(['generalNetworkManagementType'], situationRecord)
       });
     }
     models.BridgeEventCheck.createCheckAllFields(bridgeEvent);
