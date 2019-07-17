@@ -25,7 +25,7 @@ export class DashboardTable extends Component {
 
   fetchSummary = async () => {
     let res = await fetch(
-      `http://82.196.10.230:8080/api/qa/bridgeopenings/summary`
+      `http://82.196.10.230:8080/api/qa/bridge_openings/summary`
     )
     let summary = await res.json()
     this.setState({ summary })
@@ -97,8 +97,8 @@ export class DashboardTable extends Component {
                       onClick={() => {
                         console.log(item.nextUrl)
                         const downloadUrlEndpoint = item.nextUrl.replace(
-                          'api/qa/bridgeopenings/summary/provinces',
-                          'api/download/bridgeopenings/summary/province'
+                          'api/qa/bridge_openings/summary/provinces',
+                          'api/download/bridge_openings/summary/province'
                         )
                         const downloadUrl = `http://82.196.10.230:8080${downloadUrlEndpoint}`
                         window.open(downloadUrl)

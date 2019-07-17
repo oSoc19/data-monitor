@@ -19,7 +19,7 @@ const DashboardDetail = props => {
         {summary.map(event => {
           return (
             <tr>
-              <td>{event.bridgeEventId}</td>
+              <td>{event.bridgeOpeningId}</td>
               <td>{event.allFields ? <Check /> : <X />}</td>
               <td>{event.correctID ? <Check /> : <X />}</td>
               <td>{event.checksum ? <Check /> : <X />}</td>

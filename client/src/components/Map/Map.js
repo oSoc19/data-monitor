@@ -49,7 +49,7 @@ class Map extends Component {
 
   getBridgeEvents = async id => {
     let res = await fetch(
-      `http://82.196.10.230:8080/api/bridgeopenings/?id=${id}`
+      `http://82.196.10.230:8080/api/bridge_openings/?id=${id}`
     )
     let bridgeEvents = await res.json()
     this.setState({ bridgeEvents })
