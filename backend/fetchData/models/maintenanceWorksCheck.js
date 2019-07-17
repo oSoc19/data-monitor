@@ -23,7 +23,7 @@ const maintenanceWorksCheck = (sequelize, DataTypes) => {
       return checkFields
     }
     else{
-      let checkFields = await MaintenanceWorksCheck.update({
+      let checkFields = await maintenanceWorksCheck.update({
         maintenanceWorkId: event.id,
         checksum: 1
       })

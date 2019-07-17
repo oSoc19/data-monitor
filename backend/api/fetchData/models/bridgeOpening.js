@@ -1,12 +1,11 @@
 const GeoJson = require('geojson');
+const get = require('../getNested.js');
 /*
  * A BridgeOpening indicates when a bridge will be open or close
  * (Note: a bridge is considered open if a boat can pass below it.
  *  OPEN  : __/ \__
  *  CLOSE : _______)
  */
-const get = (p, o) =>
-    p.reduce((xs, x) => (xs && xs[x]) ? xs[x] : null, o);
 
 const bridgeOpening = (sequelize, DataTypes) => {
   const BridgeOpening = sequelize.define('bridge_opening', {

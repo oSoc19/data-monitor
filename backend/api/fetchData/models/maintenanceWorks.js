@@ -49,6 +49,10 @@ const maintenanceWorks = (sequelize, DataTypes) => {
     },
   });
 
+  MaintenanceWorks.associate = models => {
+    MaintenanceWorks.hasOne(models.MaintenanceWorksCheck)
+  }
+
   MaintenanceWorks.addMaintenanceWorks = async (situationRecord, models) => {
     if (get(['$', 'xsi:type'], situationRecord) !== 'MaintenanceWorks') {
       return;
@@ -143,6 +147,7 @@ const maintenanceWorks = (sequelize, DataTypes) => {
     } else {
       maintenanceWorks = await maintenanceWorks.update(maintenanceWorksEntry)
     }
+    models.MaintenanceWorksCheck.createCheck(maintenanceWorks);
   };
 
   return MaintenanceWorks;
