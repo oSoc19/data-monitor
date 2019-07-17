@@ -7,7 +7,7 @@ const GeoJson = require('geojson');
  */
 const get = (p, o) =>
     p.reduce((xs, x) => (xs && xs[x]) ? xs[x] : null, o);
-    
+
 const bridgeEvent = (sequelize, DataTypes) => {
   const BridgeEvent = sequelize.define('bridge_event', {
     id: {
