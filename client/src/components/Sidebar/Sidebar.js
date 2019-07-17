@@ -1,14 +1,13 @@
-import React from 'react'
+import React, { useState } from 'React'
 
 import { CheckCircle, XCircle } from 'react-feather'
 import './Sidebar.sass'
 
 const Sidebar = props => {
+  const [type, setType] = useState('bridges')
   return (
     <div className='sidebar' style={props.style}>
       <h3>Filter</h3>
-      <label>Show bridges</label>
-      <input type='checkbox' onClick={props.onClick} />
       <label>Start date</label>
       <input type='date' />
       <label>End date</label>
@@ -22,6 +21,10 @@ const Sidebar = props => {
           <XCircle />
           Clear
         </button>
+      </div>
+      <div className='data-toggle'>
+        <button onClick={() => {}}>bridges</button>
+        <button onClick={() => {}}>maintenance</button>
       </div>
     </div>
   )
