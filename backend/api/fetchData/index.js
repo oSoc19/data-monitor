@@ -15,8 +15,8 @@ const sequelize = new Sequelize(
 // TODO: Refactor by iterate in the models folder
 const models = {
   Bridge: sequelize.import('./models/bridge.js'),
-  BridgeEvent: sequelize.import('./models/bridgeEvent.js'),
-  BridgeEventCheck: sequelize.import('./models/bridgeEventCheck.js'),
+  BridgeOpening: sequelize.import('./models/bridgeOpening.js'),
+  BridgeOpeningCheck: sequelize.import('./models/bridgeOpeningCheck.js'),
   MaintenanceWorks: sequelize.import('./models/maintenanceWorks.js')
 };
 
@@ -42,7 +42,7 @@ const loadBridges = async () => {
     situations.push(situation);
   });
   for(let situation of situations) {
-    await models.BridgeEvent.addBridgeEvent(situation, models)
+    await models.BridgeOpening.addBridgeOpening(situation, models)
   }
 };
 

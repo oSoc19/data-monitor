@@ -44,10 +44,10 @@ app.get('/api/bridges/', async (req, res, next) => {
   });
   let features = [];
   for (let i = 0; i < bridges.length; i++) {
-    let bridgeEvents = await getBridgeEvents(startTime, endTime, bridges[i].id);
+    let bridgeOpenings = await getBridgeOpeningss(startTime, endTime, bridges[i].id);
     // If the bridge has at least one bridge event between the startTime and the endTime
     // we can add it to the list of bridges to show on the map
-    if (bridgeEvents.length > 0) {
+    if (bridgeOpenings.length > 0) {
       features.push(geojson.parse(bridges[i], {
         Point: 'location'
       }));
@@ -62,97 +62,97 @@ app.get('/api/bridges/', async (req, res, next) => {
 });
 
 
-app.get('/api/bridge_events/', async (req, res, next) => {
+app.get('/api/bridge_openings/', async (req, res, next) => {
   let startTime = req.query.startTime;
   let endTime = req.query.endTime;
   let bridgeId = req.query.id;
-  res.send(await getBridgeEvents(startTime, endTime, bridgeId));
+  res.send(await getBridgeOpeningss(startTime, endTime, bridgeId));
 
 });
 
-app.get('/api/qa/bridge_events/summary/', async (req, res) => {
-  let results = await getSummary('bridge_events');
+app.get('/api/qa/bridge_openings/summary/', async (req, res) => {
+  let results = await getSummary('bridge_openings');
   res.send(results);
 });
 
-app.get('/api/qa/bridge_events/summary/provinces/:province', async (req, res) => {
+app.get('/api/qa/bridge_openings/summary/provinces/:province', async (req, res) => {
   let province = req.params.province.split('_').join(' ');
   let results = [];
   for (let city of citiesByProvince[province]) {
     let cityQuery = city.replace("'", "''");
     let citiesLevel = 8;
-    let result = await intersects('bridge_events', 'b', 'b.id', cityQuery, citiesLevel);
+    let result = await intersects('bridge_openings', 'b', 'b.id', cityQuery, citiesLevel);
     let ids = [];
-    for (let bridgeEvent of result[0]) {
-      ids.push(bridgeEvent.id);
+    for (let bridgeOpening of result[0]) {
+      ids.push(bridgeOpening.id);
     }
-    let goodBridgeEvents = await findGoodEvents(models.BridgeEventCheck, ids);
-    let badBridgeEvents = await findBadEvents(models.BridgeEventCheck, ids);
+    let goodBridgeOpeningss = await findGoodEvents(models.BridgeOpeningCheck, ids);
+    let badBridgeOpeningss = await findBadEvents(models.BridgeOpeningCheck, ids);
     let cityName = city.split(' ').join('_');
     results.push({
       name: city,
-      nextUrl: '/api/qa/bridge_events/summary/city/' + cityName,
+      nextUrl: '/api/qa/bridge_openings/summary/city/' + cityName,
       summary: {
-        numberOfGoodEvents: goodBridgeEvents.count,
-        numberOfBadEvents: badBridgeEvents.count
+        numberOfGoodEvents: goodBridgeOpeningss.count,
+        numberOfBadEvents: badBridgeOpeningss.count
       }
     });
   }
   res.send(results);
 });
 
-app.get('/api/qa/bridge_events/summary/city/:city', async (req, res) => {
+app.get('/api/qa/bridge_openings/summary/city/:city', async (req, res) => {
   let city = req.params.city.split('_').join(' ');
   let cityQuery = city.replace("'", "''");
   let cityLevel = 8;
-  let result = await intersects('bridge_events', 'b', 'b.id', city, cityLevel);
+  let result = await intersects('bridge_openings', 'b', 'b.id', city, cityLevel);
   let ids = [];
-  for (let bridgeEvent of result[0]) {
-    ids.push(bridgeEvent.id);
+  for (let bridgeOpening of result[0]) {
+    ids.push(bridgeOpening.id);
   }
-  let bridgeEventChecks = await models.BridgeEventCheck.findAll({
-    attributes: ['bridgeEventId', 'allFields', 'correctID', 'checksum', 'manualIntervention', 'comment'],
+  let bridgeOpeningChecks = await models.BridgeOpeningCheck.findAll({
+    attributes: ['bridgeOpeningId', 'allFields', 'correctID', 'checksum', 'manualIntervention', 'comment'],
     where: {
-      bridgeEventId: ids
+      bridgeOpeningId: ids
     }
   });
 
-  res.send(bridgeEventChecks);
+  res.send(bridgeOpeningChecks);
 });
 
-app.get('/api/download/bridge_events/summary/', async (req, res) => {
+app.get('/api/download/bridge_openings/summary/', async (req, res) => {
   let provinces = ["North Holland", "Flevoland", "Gelderland", "North Brabant", "Overijssel", "Drenthe", "Groningen", "Friesland", "Limburg"];
   let results = [];
   for (let province of provinces) {
     let provinceLevel = 4;
-    let result = await intersects('bridge_events', 'b', 'b.*', province, provinceLevel);
+    let result = await intersects('bridge_openings', 'b', 'b.*', province, provinceLevel);
     results.push(...result[0])
   }
   sendCsv(results, res);
 });
 
-app.get('/api/download/bridge_events/summary/provinces/:province', async (req, res) => {
+app.get('/api/download/bridge_openings/summary/provinces/:province', async (req, res) => {
   let province = req.params.province;
   let provinceName = province.split('_').join(' ');
   let provinceLevel = 4;
-  let result = await intersects('bridge_events', 'b', 'b.*', provinceName, provinceLevel);
+  let result = await intersects('bridge_openings', 'b', 'b.*', provinceName, provinceLevel);
   sendCsv(result[0], res);
 });
 
-app.get('/api/download/bridge_events/summary/cities/:city', async (req, res) => {
+app.get('/api/download/bridge_openings/summary/cities/:city', async (req, res) => {
   let city = req.params.city;
   let cityName = city.split('_').join(' ');
   let cityLevel = 8;
-  let result = await intersects('bridge_events', 'b', 'b.*', cityName, cityLevel);
+  let result = await intersects('bridge_openings', 'b', 'b.*', cityName, cityLevel);
   sendCsv(result[0], res);
 });
 
-app.put('/api/qa/bridge_events/:id', async (req, res, next) => {
+app.put('/api/qa/bridge_openings/:id', async (req, res, next) => {
   let id = req.params.id;
 
-  let checks = await models.BridgeEventCheck.findOne({
+  let checks = await models.BridgeOpeningCheck.findOne({
     where: {
-      bridgeEventId: id
+      bridgeOpeningId: id
     }
   });
 
@@ -179,7 +179,7 @@ app.use('*', function(req, res) {
   }, 404);
 });
 
-async function getBridgeEvents(startTime, endTime, bridgeId) {
+async function getBridgeOpeningss(startTime, endTime, bridgeId) {
   if (startTime === undefined) {
     startTime = 0;
   }
@@ -192,7 +192,7 @@ async function getBridgeEvents(startTime, endTime, bridgeId) {
     return;
   }
 
-  let bridgeEvents = await models.BridgeEvent.findAll({
+  let bridgeOpenings = await models.BridgeOpening.findAll({
     raw: true,
     where: {
       bridgeId: bridgeId,
@@ -204,7 +204,7 @@ async function getBridgeEvents(startTime, endTime, bridgeId) {
       }
     }
   });
-  return bridgeEvents;
+  return bridgeOpenings;
 
 }
 
@@ -218,15 +218,15 @@ async function getSummary(table) {
     for (let event of result[0]) {
       ids.push(event.id);
     }
-    let goodBridgeEvents = await findGoodEvents(models.BridgeEventCheck, ids);
-    let badBridgeEvents = await findBadEvents(models.BridgeEventCheck, ids);
+    let goodBridgeOpeningss = await findGoodEvents(models.BridgeOpeningCheck, ids);
+    let badBridgeOpeningss = await findBadEvents(models.BridgeOpeningCheck, ids);
     let provinceName = province.split(' ').join('_');
     results.push({
       name: province,
       nextUrl: `/api/qa/${table}/summary/provinces/${provinceName}`,
       summary: {
-        numberOfGoodEvents: goodBridgeEvents.count,
-        numberOfBadEvents: badBridgeEvents.count
+        numberOfGoodEvents: goodBridgeOpeningss.count,
+        numberOfBadEvents: badBridgeOpeningss.count
       }
     });
   }
@@ -244,30 +244,30 @@ async function intersects(table, as, attributes, boundariesName, level) {
 }
 
 async function findGoodEvents(model, ids) {
-  let goodBridgeEvents = await model.findAndCountAll({
+  let goodBridgeOpeningss = await model.findAndCountAll({
     where: {
-      bridgeEventId: ids,
+      bridgeOpeningId: ids,
       checksum: 1
     }
   });
-  return goodBridgeEvents;
+  return goodBridgeOpeningss;
 }
 
 async function findBadEvents(model, ids) {
-  let badBridgeEvents = await model.findAndCountAll({
+  let badBridgeOpeningss = await model.findAndCountAll({
     where: {
-      bridgeEventId: ids,
+      bridgeOpeningId: ids,
       checksum: {
         [Sequelize.Op.ne]: 1
       }
     }
   });
-  return badBridgeEvents;
+  return badBridgeOpeningss;
 }
 
 function sendCsv(body, res) {
   res.setHeader('Content-Type', 'text/csv');
-  res.setHeader('Content-Disposition', 'attachment; filename=\"' + 'bridgeEvents-' + Date.now() + '.csv\"');
+  res.setHeader('Content-Disposition', 'attachment; filename=\"' + 'bridgeOpenings-' + Date.now() + '.csv\"');
   csvStringify(body, {
     header: true
   }).pipe(res);

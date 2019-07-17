@@ -1,6 +1,6 @@
 const GeoJson = require('geojson');
 /*
- * A BridgeEvent indicates when a bridge will be open or close
+ * A BridgeOpening indicates when a bridge will be open or close
  * (Note: a bridge is considered open if a boat can pass below it.
  *  OPEN  : __/ \__
  *  CLOSE : _______)
@@ -8,8 +8,8 @@ const GeoJson = require('geojson');
 const get = (p, o) =>
     p.reduce((xs, x) => (xs && xs[x]) ? xs[x] : null, o);
 
-const bridgeEvent = (sequelize, DataTypes) => {
-  const BridgeEvent = sequelize.define('bridge_event', {
+const bridgeOpening = (sequelize, DataTypes) => {
+  const BridgeOpening = sequelize.define('bridge_opening', {
     id: {
       type: DataTypes.STRING,
       primaryKey: true,
@@ -48,18 +48,18 @@ const bridgeEvent = (sequelize, DataTypes) => {
     }
   });
 
-  BridgeEvent.associate = models => {
-    BridgeEvent.hasOne(models.BridgeEventCheck);
+  BridgeOpening.associate = models => {
+    BridgeOpening.hasOne(models.BridgeOpeningCheck);
   };
 
 
   /* Create a bridge event corresponding to a situation record
    * and associate this event to a bridge.
    */
-  BridgeEvent.addBridgeEvent = async (situation, models) => {
+  BridgeOpening.addBridgeOpening = async (situation, models) => {
     let location = situation.situationRecord.groupOfLocations.locationForDisplay;
     let situationRecord = situation.situationRecord;
-    let bridgeEvent = await models.BridgeEvent.findOne({
+    let bridgeOpening = await models.BridgeOpening.findOne({
       where: {
         id: situationRecord['$'].id
       }
@@ -77,7 +77,7 @@ const bridgeEvent = (sequelize, DataTypes) => {
       bridge = await models.Bridge.createBridge(location.longitude, location.latitude, models);
     }
 
-    let bridgeEventEntry = {
+    let bridgeOpeningEntry = {
       id: situationRecord['$'].id,
         version: situationRecord['$'].version,
         source: get(['source', 'sourceName', 'values', 'value', '_'], situationRecord),
@@ -92,18 +92,18 @@ const bridgeEvent = (sequelize, DataTypes) => {
         generalNetworkManagementType: get(['generalNetworkManagementType'], situationRecord),
         bridgeId: bridge.id
     };
-    if (!bridgeEvent) {
-      // console.log(`Creating bridge_event ${situationRecord['$'].id}`);
-      bridgeEvent = await BridgeEvent.create(bridgeEventEntry);
+    if (!bridgeOpening) {
+      // console.log(`Creating bridge_opening ${situationRecord['$'].id}`);
+      bridgeOpening = await BridgeOpening.create(bridgeOpeningEntry);
     } else {
-      // console.log(`Updating bridge_event ${situationRecord['$'].id}`);
-      bridgeEvent = await bridgeEvent.update(bridgeEventEntry);
+      // console.log(`Updating bridge_opening ${situationRecord['$'].id}`);
+      bridgeOpening = await bridgeOpening.update(bridgeOpeningEntry);
     }
-    models.BridgeEventCheck.createCheckAllFields(bridgeEvent);
+    models.BridgeOpeningCheck.createCheckAllFields(bridgeOpening);
   };
 
-  return BridgeEvent;
+  return BridgeOpening;
 };
 
-module.exports = bridgeEvent;
+module.exports = bridgeOpening;
 
