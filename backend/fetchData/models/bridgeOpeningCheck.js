@@ -92,8 +92,7 @@ const bridgeOpeningCheck = (sequelize, DataTypes) => {
     return c/6
   }
 
-  BridgeOpeningCheck.createCheckAllFields = async (event) => {
-    // let allFields = BridgeOpeningCheck.checkAllFields(event);
+  BridgeOpeningCheck.createCheck= async (event) => {
     let bridgeOpeningCheck = await BridgeOpeningCheck.findOne({
       where: {
         bridgeOpeningId: event.id
@@ -107,7 +106,8 @@ const bridgeOpeningCheck = (sequelize, DataTypes) => {
         locationForDisplay: BridgeOpeningCheck.locationForDisplay(event),
         location: BridgeOpeningCheck.location(event),
         generalNetworkManagementType: BridgeOpeningCheck.generalNetworkManagementType(event),
-        checksum: BridgeOpeningCheck.checksum(event)
+				checksum: BridgeOpeningCheck.checksum(event),
+				bridgeOpeningId: event.id
       })
       return checkFields;
 
@@ -119,7 +119,8 @@ const bridgeOpeningCheck = (sequelize, DataTypes) => {
         locationForDisplay: BridgeOpeningCheck.locationForDisplay(event),
         location: BridgeOpeningCheck.location(event),
         generalNetworkManagementType: BridgeOpeningCheck.generalNetworkManagementType(event),
-        checksum: BridgeOpeningCheck.checksum(event)
+				checksum: BridgeOpeningCheck.checksum(event),
+				bridgeOpeningId: event.id
       })
       return checkFields;
     }

@@ -92,8 +92,7 @@ const bridgeOpeningCheck = (sequelize, DataTypes) => {
     return c/6
   }
 
-  BridgeOpeningCheck.createCheckAllFields = async (event) => {
-    // let allFields = BridgeOpeningCheck.checkAllFields(event);
+  BridgeOpeningCheck.createCheck= async (event) => {
     let bridgeOpeningCheck = await BridgeOpeningCheck.findOne({
       where: {
         bridgeOpeningId: event.id
