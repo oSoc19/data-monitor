@@ -1,5 +1,3 @@
-
-
 const maintenanceWorksCheck = (sequelize, DataTypes) => {
   const MaintenanceWorksCheck = sequelize.define('maintenance_works_check', {
     checksum: {

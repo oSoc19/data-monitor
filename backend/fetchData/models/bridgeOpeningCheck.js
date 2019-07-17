@@ -1,3 +1,4 @@
+const get = require('../getNested');
 /*
  * BridgeOpeningCheck Model which contains all the check for the quality assessment
  * This model is used to display the dashboard on the website
@@ -39,14 +40,14 @@ const bridgeOpeningCheck = (sequelize, DataTypes) => {
   }
 
   BridgeOpeningCheck.version = bridgeOpening => {
-    if (bridgeOpening.dataValues.version !== undefined)
+    if (get(['dataValues', 'version'], bridgeOpening) !== undefined)
       return 1;
     else
       return 0;
   }
   
   BridgeOpeningCheck.probabilityOfOccurence = bridgeOpening => {
-    let value = bridgeOpening.dataValues.probabilityOfOccurence;
+    let value = get(['dataValues', 'probabilityOfOccurence'], bridgeOpening);
     if (value === 'certain' || value === 'probable' || value === 'riskOf') {
       return 1
     }
@@ -54,28 +55,28 @@ const bridgeOpeningCheck = (sequelize, DataTypes) => {
   }
 
   BridgeOpeningCheck.source = bridgeOpening => {
-    if (bridgeOpening.dataValues.source !== undefined) {
+    if (get(['dataValues', 'source'], bridgeOpening) !== undefined) {
       return 1
     }
     else return 0
   }
 
   BridgeOpeningCheck.locationForDisplay = bridgeOpening => {
-    if (bridgeOpening.dataValues.locationForDisplay !== undefined)
+    if (get(['dataValues', 'locationForDisplay'], bridgeOpening) !== undefined)
       return 1;
     else
       return 0;
   }
 
   BridgeOpeningCheck.location = bridgeOpening => {
-    if (bridgeOpening.dataValues.location !== undefined)
+    if (get(['dataValues', 'location'], bridgeOpening) !== undefined)
       return 1;
     else
       return 0;
   }
 
   BridgeOpeningCheck.generalNetworkManagementType = bridgeOpening => {
-    if (bridgeOpening.dataValues.generalNetworkManagementType !== undefined)
+    if (get(['dataValues', 'generalNetworkManagementType'], bridgeOpening) !== undefined)
       return 1;
     else
       return 0;

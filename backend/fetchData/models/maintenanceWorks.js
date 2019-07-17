@@ -58,31 +58,30 @@ const maintenanceWorks = (sequelize, DataTypes) => {
       return;
     }
 
-    if (!isNewData(new Date(situationRecord.situationRecordVersionTime))) {
+    if (!isNewData(new Date(get(['situationRecordVersionTime']),situationRecord))) {
       return;
     }
     
     let locationForDisplay;
-    let groupOfLocations = situationRecord.groupOfLocations;
+    let groupOfLocations = get(['groupOfLocations'], situationRecord)
     let listOfLines;
     let lineString = [];
     if (groupOfLocations['$']['xsi:type'] === 'Point') {
-      locationForDisplay = groupOfLocations.locationForDisplay;
+      locationForDisplay = get(['locationForDisplay'], groupOfLocations)
 
     } else if (groupOfLocations['$']['xsi:type'] === 'Linear') {
-      locationForDisplay = groupOfLocations.locationForDisplay;
+      locationForDisplay = get(['locationForDisplay'], groupOfLocations)
       listOfLines = [{
         location: groupOfLocations
       }] // To keep the same format
 
     } else if (groupOfLocations['$']['xsi:type'] === 'ItineraryByIndexedLocations') {
-    // if (groupOfLocations['$']['xsi:type'] === 'ItineraryByIndexedLocations') {
-      if (Array.isArray(groupOfLocations.locationContainedInItinerary)) {
-        locationForDisplay = groupOfLocations.locationContainedInItinerary[0].location.locationForDisplay;
-        listOfLines = groupOfLocations.locationContainedInItinerary;
+      if (Array.isArray(get(['locationContainedInItinerary'], groupOfLocations))) {
+        locationForDisplay = get(['locationContainedInItinerary[0]', 'location', 'locationForDisplay'], groupOfLocations)
+        listOfLines = get(['locationContainedInItinerary'], groupOfLocations);
 
       } else {
-        locationForDisplay = groupOfLocations.locationContainedInItinerary.location.locationForDisplay;
+        locationForDisplay = get(['locationContainedInItinerary', 'location', 'locationForDisplay'], groupOfLocations)
         listOfLines = [groupOfLocations.locationContainedInItinerary];
       }
     }
@@ -90,11 +89,10 @@ const maintenanceWorks = (sequelize, DataTypes) => {
     if (listOfLines) {
       for (let i = 0; i < listOfLines.length; i++) {
         if (listOfLines[i].location['$']['xsi:type'] === 'Point') {
-          // console.log("Point value " + Date.now())
           return; //Need to manage this case later
         }
-        let startPoint = listOfLines[i].location.linearExtension.linearByCoordinatesExtension.linearCoordinatesStartPoint.pointCoordinates;
-        let endPoint = listOfLines[i].location.linearExtension.linearByCoordinatesExtension.linearCoordinatesEndPoint.pointCoordinates;
+        let startPoint = get(['location', 'linearExtension', 'linearByCoordinatesExtension', 'linearCoordinatesStartPoint', 'pointCoordinates'], listOfLines[i])
+        let endPoint = get(['location', 'linearExtension', 'linearByCoordinatesExtension', 'linearCoordinatesEndPoint', 'pointCoordinates'], listOfLines[i])
         lineString.push([
           [startPoint.longitude, startPoint.latitude],
           [endPoint.longitude, endPoint.latitude]
@@ -121,10 +119,10 @@ const maintenanceWorks = (sequelize, DataTypes) => {
       id: get(['$', 'id'], situationRecord),
       version: get(['$', 'version'], situationRecord),
       type: get(['$', 'xsi:type'], situationRecord),
-      situationRecordCreationTime: situationRecord.situationRecordCreationTime,
-      situationRecordVersionTime: situationRecord.situationRecordVersionTime,
-      probabilityOfOccurrence: situationRecord.probabilityOfOccurrence,
-      operatorActionStatus: situationRecord.operatorActionStatus,
+      situationRecordCreationTime: get(['situationRecordCreationTime'], situationRecord),
+      situationRecordVersionTime: get(['situationRecordVersionTime'], situationRecord),
+      probabilityOfOccurrence: get(['probabilityOfOccurrence'], situationRecord),
+      operatorActionStatus: get(['operatorActionStatus'], situationRecord),
       source: get(['source', 'sourceName', 'values', 'value', '_'], situationRecord),
       overallStartTime: get(['validity', 'validityTimeSpecification', 'overallStartTime'], situationRecord),
       overallEndTime: get(['validity', 'validityTimeSpecification', 'overallEndTime'], situationRecord),
