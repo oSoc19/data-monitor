@@ -8,6 +8,7 @@ const fs = require('fs');
 const csvStringify = require('csv-stringify');
 const associateModels = require('./fetchData/index').associateModels;
 
+
 const op = Sequelize.Op;
 let app = express();
 app.use(bodyParser.urlencoded({
@@ -29,7 +30,8 @@ const sequelize = new Sequelize(
 );
 
 // Load the file with all the provincie and cities
-const citiesByProvince = JSON.parse(fs.readFileSync('./data/dutchCities.json'));
+const citiesByProvince = JSON.parse(fs.readFileSync('./data/dutchCitiesBigger.json'));
+const PROVINCES = Object.keys(citiesByProvince);
 associateModels();
 
 app.get('/api/bridges/', async (req, res, next) => {
@@ -333,9 +335,8 @@ async function getMaintenanceWorks(startTime, endTime) {
 }
 
 async function getSummary(table, model, idName) {
-  let provinces = ["North Holland", "Flevoland", "Gelderland", "North Brabant", "Overijssel", "Drenthe", "Groningen", "Friesland", "Limburg"];
   let results = [];
-  for (let province of provinces) {
+  for (let province of PROVINCES) {
     let provinceLevel = 4;
     let result = await intersects(table, 'b', 'b.id', province, provinceLevel);
     let ids = [];
@@ -392,9 +393,8 @@ async function findBadEvents(model, idName, ids) {
 }
 
 async function getEventSummary(table) {
-  let provinces = ["North Holland", "Flevoland", "Gelderland", "North Brabant", "Overijssel", "Drenthe", "Groningen", "Friesland", "Limburg"];
   let results = [];
-  for (let province of provinces) {
+  for (let province of PROVINCES) {
     let provinceLevel = 4;
     let result = await intersects(table, 'b', 'b.*', province, provinceLevel);
     results.push(...result[0])
