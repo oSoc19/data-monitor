@@ -13,18 +13,20 @@ const maintenanceWorksCheck = (sequelize, DataTypes) => {
   MaintenanceWorksCheck.createCheck = async (event) => {
     let maintenanceWorksCheck = await MaintenanceWorksCheck.findOne({
       where: {
-        maintenanceWorksId: event.id
+        maintenanceWorkId: event.id
       }
     });
 
     if (!maintenanceWorksCheck) {
       let checkFields = await MaintenanceWorksCheck.create({
+        maintenanceWorkId: event.id,
         checksum: 1
       })
       return checkFields
     }
     else{
       let checkFields = await MaintenanceWorksCheck.update({
+        maintenanceWorkId: event.id,
         checksum: 1
       })
       return checkFields
