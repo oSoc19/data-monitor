@@ -24,7 +24,7 @@ const sequelize = new Sequelize(
   process.env.DATABASE_USER,
   process.env.DATABASE_PASSWORD, {
     host: 'database',
-    dialect: 'postgres'
+    dialect: 'postgres',
   },
 );
 
@@ -32,19 +32,16 @@ const sequelize = new Sequelize(
 const citiesByProvince = JSON.parse(fs.readFileSync('./data/dutchCities.json'));
 associateModels();
 
-app.get("/", (req, res, next) => {});
-
 app.get('/api/bridges/', async (req, res, next) => {
   let startTime = req.query.startTime;
   let endTime = req.query.endTime;
-  console.log(startTime, endTime)
 
   let bridges = await models.Bridge.findAll({
     raw: true
   });
   let features = [];
   for (let i = 0; i < bridges.length; i++) {
-    let bridgeOpenings = await getBridgeOpeningss(startTime, endTime, bridges[i].id);
+    let bridgeOpenings = await getBridgeOpenings(startTime, endTime, bridges[i].id);
     // If the bridge has at least one bridge event between the startTime and the endTime
     // we can add it to the list of bridges to show on the map
     if (bridgeOpenings.length > 0) {
@@ -66,7 +63,7 @@ app.get('/api/bridge_openings/', async (req, res, next) => {
   let startTime = req.query.startTime;
   let endTime = req.query.endTime;
   let bridgeId = req.query.id;
-  res.send(await getBridgeOpeningss(startTime, endTime, bridgeId));
+  res.send(await getBridgeOpenings(startTime, endTime, bridgeId));
 
 });
 
@@ -172,6 +169,40 @@ app.put('/api/qa/bridge_openings/:id', async (req, res, next) => {
   }
 });
 
+app.get('/api/maintenance_works/:id', async (req, res) => {
+  let result = await models.MaintenanceWorks.findOne({
+    where: {
+      id: req.params.id
+    }
+  });
+  res.send(result);
+
+
+});
+app.get('/api/maintenance_works/', async (req, res, next) => {
+  let startTime = req.query.startTime;
+  let endTime = req.query.endTime;
+  console.log(startTime, endTime)
+  let maintenanceWorks = await getMaintenanceWorks(startTime, endTime);
+  let features = [];
+  for (let event of maintenanceWorks) {
+    let feature = {
+      "type": "Feature",
+      "geometry": {},
+      "properties": {}
+    }
+    feature.geometry = event.locationForDisplay;
+    feature.properties.id = event.id;
+    features.push(feature);
+  }
+  let featureCollection = {
+    "type": "FeatureCollection",
+    "features": features
+  };
+  res.send(featureCollection);
+});
+
+
 // Default route
 app.use('*', function(req, res) {
   res.send({
@@ -179,7 +210,7 @@ app.use('*', function(req, res) {
   }, 404);
 });
 
-async function getBridgeOpeningss(startTime, endTime, bridgeId) {
+async function getBridgeOpenings(startTime, endTime, bridgeId) {
   if (startTime === undefined) {
     startTime = 0;
   }
@@ -204,6 +235,31 @@ async function getBridgeOpeningss(startTime, endTime, bridgeId) {
     }
   });
   return bridgeOpenings;
+
+}
+
+async function getMaintenanceWorks(startTime, endTime) {
+  if (startTime === undefined) {
+    startTime = 0;
+  }
+  if (endTime === undefined) {
+    endTime = '9999-12-01';
+  }
+  console.log(startTime, endTime)
+
+  let maintenanceWorks = await models.MaintenanceWorks.findAll({
+    raw: true,
+    attributes: ['id', 'locationForDisplay'],
+    where: {
+      situationRecordVersionTime: {
+        [op.and]: {
+          [op.gte]: new Date(startTime),
+          [op.lte]: new Date(endTime)
+        }
+      }
+    }
+  });
+  return maintenanceWorks;
 
 }
 
@@ -271,4 +327,3 @@ function sendCsv(body, res) {
     header: true
   }).pipe(res);
 }
-
