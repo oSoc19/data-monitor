@@ -91,7 +91,7 @@ app.get('/api/qa/bridge_openings/summary/provinces/:province', async (req, res) 
     let cityName = city.split(' ').join('_');
     results.push({
       name: city,
-      nextUrl: '/api/qa/bridge_openings/summary/city/' + cityName,
+      nextUrl: '/api/qa/bridge_openings/summary/cities/' + cityName,
       summary: {
         numberOfGoodEvents: goodBridgeOpeningss.count,
         numberOfBadEvents: badBridgeOpeningss.count
@@ -101,7 +101,7 @@ app.get('/api/qa/bridge_openings/summary/provinces/:province', async (req, res) 
   res.send(results);
 });
 
-app.get('/api/qa/bridge_openings/summary/city/:city', async (req, res) => {
+app.get('/api/qa/bridge_openings/summary/cities/:city', async (req, res) => {
   let city = req.params.city.split('_').join(' ');
   let cityQuery = city.replace("'", "''");
   let cityLevel = 8;
@@ -111,7 +111,7 @@ app.get('/api/qa/bridge_openings/summary/city/:city', async (req, res) => {
     ids.push(bridgeOpening.id);
   }
   let bridgeOpeningChecks = await models.BridgeOpeningCheck.findAll({
-    attributes: ['bridgeOpeningId', 'allFields', 'correctID', 'checksum', 'manualIntervention', 'comment'],
+    // attributes: ['bridgeOpeningId', 'allFields', 'correctID', 'checksum', 'manualIntervention', 'comment'],
     where: {
       bridgeOpeningId: ids
     }
@@ -188,8 +188,7 @@ async function getBridgeOpeningss(startTime, endTime, bridgeId) {
   }
 
   if (bridgeId === undefined) {
-    res.send([]);
-    return;
+    return [];
   }
 
   let bridgeOpenings = await models.BridgeOpening.findAll({

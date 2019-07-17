@@ -86,7 +86,7 @@ const bridgeOpening = (sequelize, DataTypes) => {
         startTime: get(['validity', 'validityTimeSpecification', 'overallStartTime'], situationRecord),
         endTime: get(['validity', 'validityTimeSpecification', 'overallEndTime'], situationRecord),
         probabilityOfOccurence: get(['probabilityOfOccurence'], situationRecord),
-        geoJsonLocation: GeoJson.parse(location, {
+        locationForDisplay: GeoJson.parse(location, {
           Point: ['longitude', 'latitude']
         }).geometry,
         generalNetworkManagementType: get(['generalNetworkManagementType'], situationRecord),
@@ -99,7 +99,7 @@ const bridgeOpening = (sequelize, DataTypes) => {
       // console.log(`Updating bridge_opening ${situationRecord['$'].id}`);
       bridgeOpening = await bridgeOpening.update(bridgeOpeningEntry);
     }
-    models.BridgeOpeningCheck.createCheckAllFields(bridgeOpening);
+    models.BridgeOpeningCheck.createCheck(bridgeOpening);
   };
 
   return BridgeOpening;
