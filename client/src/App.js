@@ -23,6 +23,7 @@ const App = () => {
       name: 'bridges',
       summary: bridgeOpenings.summary,
       map: bridgeOpenings.map,
+      download: bridgeOpenings.csv,
       icon: 'bridge'
     }
   }

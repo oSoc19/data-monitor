@@ -9,54 +9,62 @@ const Sidebar = props => {
   const [{ dataSet }, dispatch] = useStateValue()
   return (
     <div className='sidebar' style={props.style}>
-      <h3>Filter</h3>
-      <label>Start date</label>
-      <input type='date' />
-      <label>End date</label>
-      <input type='date' />
-      <div className='filter-actions'>
-        {/* <button type='submit'>
-          <CheckCircle />
-          Confirm
-        </button>
-        <button type='submit'>
-          <XCircle />
-          Clear
-        </button> */}
+      <div className='sidebar-section'>
+        <h4>Filter</h4>
+        <label>Start date</label>
+        <input type='date' />
+        <label>End date</label>
+        <input type='date' />
       </div>
-      <div className='data-toggle'>
+      <div className='sidebar-section'>
+        <h4>Datasets</h4>
+        <div className='data-toggle'>
+          <button
+            onClick={() => {
+              dispatch({
+                type: 'changeDataSet',
+                newDataSet: {
+                  name: 'bridges',
+                  summary: bridgeOpenings.summary,
+                  map: bridgeOpenings.map,
+                  download: bridgeOpenings.csv,
+                  icon: 'bridge'
+                }
+              })
+            }}
+          >
+            Bridges
+          </button>
+          <button
+            onClick={() => {
+              dispatch({
+                type: 'changeDataSet',
+                newDataSet: {
+                  name: 'maintenance',
+                  summary: maintenanceWorks.summary,
+                  map: maintenanceWorks.map,
+                  download: bridgeOpenings.csv,
+                  icon: 'bridge'
+                }
+              })
+            }}
+          >
+            Maintenance
+          </button>
+        </div>
+
+        {/* <pre>{dataSet.summary}</pre> */}
+      </div>
+      <div className='sidebar-section'>
+        <h4>Dataset actions</h4>
         <button
           onClick={() => {
-            dispatch({
-              type: 'changeDataSet',
-              newDataSet: {
-                name: 'bridges',
-                summary: bridgeOpenings.summary,
-                map: bridgeOpenings.map,
-                icon: 'bridge'
-              }
-            })
+            const downloadUrl = dataSet.download
+            window.open(downloadUrl)
           }}
         >
-          Bridges
+          {`Download ${dataSet.name}`}
         </button>
-        <button
-          onClick={() => {
-            dispatch({
-              type: 'changeDataSet',
-              newDataSet: {
-                name: 'maintenance',
-                summary: maintenanceWorks.summary,
-                map: maintenanceWorks.map,
-                icon: 'bridge'
-              }
-            })
-          }}
-        >
-          Maintenance
-        </button>
-        <h4>{dataSet.name}</h4>
-        <p>{dataSet.summary}</p>
       </div>
     </div>
   )
