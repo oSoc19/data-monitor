@@ -1,9 +1,10 @@
+const get = require('../getNested.js');
 const maintenanceWorksCheck = (sequelize, DataTypes) => {
   const MaintenanceWorksCheck = sequelize.define('maintenance_works_check', {
     version: {
       type: DataTypes.FLOAT
     },
-    probabilityOfOccurence: {
+    probabilityOfOccurrence: {
       type: DataTypes.FLOAT
     },
     source: {
@@ -37,7 +38,7 @@ const maintenanceWorksCheck = (sequelize, DataTypes) => {
   }
 
   MaintenanceWorksCheck.probabilityOfOccurence = maintenanceWorks => {
-    let value = get(['dataValues', 'probabilityOfOccurence'], maintenanceWorks);
+    let value = get(['dataValues', 'probabilityOfOccurrence'], maintenanceWorks);
     if (value === 'certain' || value === 'probable' || value === 'riskOf') {
       return 1
     }
@@ -90,7 +91,6 @@ const maintenanceWorksCheck = (sequelize, DataTypes) => {
         source: MaintenanceWorksCheck.source(event),
         locationForDisplay: MaintenanceWorksCheck.locationForDisplay(event),
         location: MaintenanceWorksCheck.location(event),
-				checksum: MaintenanceWorksCheck.checksum(event),
         maintenanceWorkId: event.id,
         checksum: MaintenanceWorksCheck.checksum(event)
       })
@@ -105,7 +105,6 @@ const maintenanceWorksCheck = (sequelize, DataTypes) => {
         location: MaintenanceWorksCheck.location(event),
 				checksum: MaintenanceWorksCheck.checksum(event),
         maintenanceWorkId: event.id,
-        checksum: MaintenanceWorksCheck.checksum(event)
       })
       return checkFields
     }
