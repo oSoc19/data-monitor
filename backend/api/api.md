@@ -2,6 +2,8 @@
 
 ## GET calls
 
+### Bridge Openings
+
 ```
 /api/bridge_openings/?id=1&startTime=something&endTime=later
 ```
@@ -21,7 +23,7 @@ ___
 ```
 /api/qa/bridge_openings/summary/cities/:city
 ```
-This call will send you details on the specified city.
+This call will send you details on the bridge openings in the specified city.
 ___
 ```
 /api/download/bridge_openings/summary/
@@ -38,6 +40,36 @@ ___
 ```
 CSV export for the specified city
 ___
+
+### Maintenance works
+
+```
+/api/maintenance_works/?startTime=something&endTime=later
+```
+Send all the maintenance works data in geoJSON between the optional parameters startTime and endTime
+___
+```
+/api/maintenance_works/:id
+```
+Send details on a the particular event that has the id specified.
+___
+```
+/api/qa/maintenance_works/summary/
+```
+This call will send you a summary of all the provinces of the Netherlands
+___
+```
+/api/qa/maintenance_works/summary/provinces/:province
+```
+This call will send you a summary of all the cities of the specified province.
+___
+```
+/api/qa/maintenance_works/summary/cities/:city
+```
+This call will send you details on the maintenance works in the specified city.
+___
+
+
 ## PUT calls
 
 ```

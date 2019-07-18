@@ -93,7 +93,7 @@ const bridgeOpeningCheck = (sequelize, DataTypes) => {
         c++;
       }
     }
-    return ((c - 2) / (bridgeOpeningKeys.length - 2));
+    return ((c-2) / (bridgeOpeningKeys.length-2));
   }
 
   BridgeOpeningCheck.checksum = bridgeOpening => {
