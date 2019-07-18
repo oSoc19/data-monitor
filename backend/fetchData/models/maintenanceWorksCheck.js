@@ -19,6 +19,9 @@ const maintenanceWorksCheck = (sequelize, DataTypes) => {
     checksum: {
       type: DataTypes.FLOAT
     },
+    allFields: {
+      type: DataTypes.FLOAT
+    },
     manualIntervention: {
       type: DataTypes.BOOLEAN
     },
@@ -66,16 +69,27 @@ const maintenanceWorksCheck = (sequelize, DataTypes) => {
       return 0;
   }
 
-  MaintenanceWorksCheck.checksum = maintenanceWorks => {
+  MaintenanceWorksCheck.allFields = maintenanceWorks => {
+    let maintenanceWorksKeys = Object.values(maintenanceWorks.dataValues)
     let c = 0;
-    c+=MaintenanceWorksCheck.version(maintenanceWorks);
-    c+=MaintenanceWorksCheck.probabilityOfOccurence(maintenanceWorks);
-    c+=MaintenanceWorksCheck.source(maintenanceWorks);
-    c+=MaintenanceWorksCheck.locationForDisplay(maintenanceWorks);
-    c+=MaintenanceWorksCheck.location(maintenanceWorks);
-    return c/5
+    for (let value of maintenanceWorksKeys) {
+      if (value !== undefined & value !== null & value !== '') {
+        c++;
+      }
+    }
+    return ((c - 2) / (maintenanceWorksKeys.length - 2));
   }
 
+  MaintenanceWorksCheck.checksum = maintenanceWorks => {
+    let c = 0;
+    c += MaintenanceWorksCheck.version(maintenanceWorks);
+    c += MaintenanceWorksCheck.probabilityOfOccurence(maintenanceWorks);
+    c += MaintenanceWorksCheck.source(maintenanceWorks);
+    c += MaintenanceWorksCheck.locationForDisplay(maintenanceWorks);
+    c += MaintenanceWorksCheck.location(maintenanceWorks);
+    c += MaintenanceWorksCheck.allFields(maintenanceWorks);
+    return c / 6
+  }
 
   MaintenanceWorksCheck.createCheck = async (event) => {
     let maintenanceWorksCheck = await MaintenanceWorksCheck.findOne({
@@ -91,19 +105,21 @@ const maintenanceWorksCheck = (sequelize, DataTypes) => {
         source: MaintenanceWorksCheck.source(event),
         locationForDisplay: MaintenanceWorksCheck.locationForDisplay(event),
         location: MaintenanceWorksCheck.location(event),
-        maintenanceWorkId: event.id,
-        checksum: MaintenanceWorksCheck.checksum(event)
+        checksum: MaintenanceWorksCheck.checksum(event),
+        allFields: MaintenanceWorksCheck.allFields(event),
+        maintenanceWorkId: event.id
       })
       return checkFields
     }
-    else{
+    else {
       let checkFields = await maintenanceWorksCheck.update({
         version: MaintenanceWorksCheck.version(event),
         probabilityOfOccurence: MaintenanceWorksCheck.probabilityOfOccurence(event),
         source: MaintenanceWorksCheck.source(event),
         locationForDisplay: MaintenanceWorksCheck.locationForDisplay(event),
         location: MaintenanceWorksCheck.location(event),
-				checksum: MaintenanceWorksCheck.checksum(event),
+        checksum: MaintenanceWorksCheck.checksum(event),
+        allFields: MaintenanceWorksCheck.allFields(event),
         maintenanceWorkId: event.id,
       })
       return checkFields
