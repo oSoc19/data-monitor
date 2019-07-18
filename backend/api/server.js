@@ -49,7 +49,6 @@ app.get('/api/bridges/', async (req, res, next) => {
 		let feature = geojson.parse(bridges[i], {
 			Point: 'location'
 		});
-		[feature.geometry.coordinates[0], feature.geometry.coordinates[1]] = [feature.geometry.coordinates[1], feature.geometry.coordinates[0]];
 
     if (bridgeOpenings.length > 0) {
       features.push(geojson.parse(bridges[i], {

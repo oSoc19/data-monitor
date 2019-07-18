@@ -8,7 +8,7 @@ const sequelize = new Sequelize(
   process.env.DATABASE_PASSWORD, {
     host: 'database',
     dialect: 'postgres',
-    logging: false
+		logging: false
   }
 );
 
@@ -37,6 +37,7 @@ const loadBridges = async () => {
   await sequelize.sync();
   const bridgeOpeningsUrl = 'http://opendata.ndw.nu/brugopeningen.xml.gz';
   let situations = [];
+	console.log('Start fetching bridges')
   // We want to run synchronusly the insertion of all bridge events in the table
   // And pipe used in the function parse are always asynchronous(see implementation of parse)
   await parse(bridgeOpeningsUrl, "situation", (situation) => {
@@ -45,6 +46,7 @@ const loadBridges = async () => {
   for(let situation of situations) {
     await models.BridgeOpening.addBridgeOpening(situation, models)
   }
+	console.log('fetching bridge is finished')
 };
 
 const loadMaintenanceWorks = async () => {
