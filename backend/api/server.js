@@ -46,6 +46,11 @@ app.get('/api/bridges/', async (req, res, next) => {
     let bridgeOpenings = await getBridgeOpenings(startTime, endTime, bridges[i].id);
     // If the bridge has at least one bridge event between the startTime and the endTime
     // we can add it to the list of bridges to show on the map
+		let feature = geojson.parse(bridges[i], {
+			Point: 'location'
+		});
+		[feature.geometry.coordinates[0], feature.geometry.coordinates[1]] = [feature.geometry.coordinates[1], feature.geometry.coordinates[0]];
+
     if (bridgeOpenings.length > 0) {
       features.push(geojson.parse(bridges[i], {
         Point: 'location'

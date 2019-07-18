@@ -101,7 +101,6 @@ const maintenanceWorks = (sequelize, DataTypes) => {
     }
 
     if (!locationForDisplay) {
-			console.log("No locationfordisplay value " + Date.now())
       return;
 
     } // Error in the situation record

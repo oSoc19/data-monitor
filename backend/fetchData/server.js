@@ -4,8 +4,8 @@ const cron = require('cron');
 
 let app = express();
 fetchData.associateModels();
-// console.log(`Loading bridges ${new Date().toISOString()}`);
-// fetchData.loadBridges();
+console.log(`Loading bridges ${new Date().toISOString()}`);
+fetchData.loadBridges();
 console.log(`Loading maintenance works ${new Date().toISOString()}`);
 fetchData.loadMaintenanceWorks();
 const CRON_FREQUENCY = process.env.CRON_PATTERN || '0 */60 * * * *';
