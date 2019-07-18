@@ -128,7 +128,7 @@ const maintenanceWorks = (sequelize, DataTypes) => {
       mobilityType: get(['mobility', 'mobilityType'], situationRecord),
       subjectTypeOfWorks: get(['subjects', 'subjectTypeOfWorks'], situationRecord),
       locationForDisplay: GeoJson.parse(locationForDisplay, {
-        Point: ['longitude', 'latitude']
+        Point: ['latitude', 'longitude']
       }).geometry,
       location: location,
 
