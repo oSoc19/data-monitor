@@ -1,8 +1,6 @@
-import React, { Component } from 'react'
+import React, { useState, useEffect } from 'react'
 import ReactMapGL, { Marker, FlyToInterpolator } from 'react-map-gl'
 import DeckGL, { ScatterplotLayer, IconLayer } from 'deck.gl'
-import Header from '../Header'
-import Sidebar from '../Sidebar'
 import { Circle } from 'react-feather'
 import './Map.sass'
 import Legend from '../Legend'
@@ -12,9 +10,12 @@ import { Mapbox } from '../../config'
 
 import { MapStylePicker } from './Controls'
 
-class Map extends Component {
-  state = {
-    bridges: [],
+import { useStateValue } from '../../utilities/state'
+
+const Map = props => {
+  const [{ dataSet }] = useStateValue()
+  const [state, setState] = useState({
+    dataFeatures: [],
     bridgeEvents: null,
     style: 'mapbox://styles/mapbox/light-v9',
     viewport: {
@@ -27,57 +28,34 @@ class Map extends Component {
       pitch: 0
       // TODO: min & max zoom
     }
+  })
+
+  useEffect(() => {
+    getData()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dataSet])
+
+  const getData = async () => {
+    let res = await fetch(dataSet.map)
+    res = await res.json()
+    setState({ ...state, dataFeatures: res.features })
   }
 
-  componentDidMount() {
-    this.getBridges()
-  }
-
-  getProvinceBoundingBox = async province => {
-    let res = await fetch(
-      `https://nominatim.openstreetmap.org/search.php?q=${province}&polygon_geojson=1&format=json`
-    )
-    let data = await res.json()
-    this.setState({ province: data })
-  }
-
-  getBridges = async () => {
-    let res = await fetch('http://82.196.10.230:8080/api/bridges')
-    let bridges = await res.json()
-    this.setState({ bridges: bridges.features })
-  }
-
-  getBridgeEvents = async id => {
+  const getBridgeEvents = async id => {
     let res = await fetch(
       `http://82.196.10.230:8080/api/bridge_openings/?id=${id}`
     )
     let bridgeEvents = await res.json()
-    this.setState({ bridgeEvents })
+    setState({ ...state, bridgeEvents })
   }
 
-  renderBridgeMarkers = () => {
-    const { bridges } = this.state
-    return bridges.map(bridge => {
-      const status = Math.random() > 0.5 ? 1 : 0
-      return (
-        <Marker
-          key={bridge.properties.id}
-          latitude={bridge.geometry.coordinates[1]}
-          longitude={bridge.geometry.coordinates[0]}
-        >
-          <Circle color={status ? '#f00' : '#0f0'} />
-        </Marker>
-      )
-    })
-  }
+  const renderIconLayer = () => {
+    const { dataFeatures } = state
 
-  renderIconLayer = () => {
-    const { bridges } = this.state
-
-    const data = bridges.map(bridge => {
-      return (bridge = {
-        coordinates: bridge.geometry.coordinates,
-        properties: bridge.properties
+    const data = dataFeatures.map(feature => {
+      return (feature = {
+        coordinates: feature.geometry.coordinates.reverse(),
+        properties: feature.properties
       })
     })
 
@@ -95,19 +73,18 @@ class Map extends Component {
       sizeScale: 1,
       getPosition: d => d.coordinates,
       getSize: d => 32
-      // getColor: d => [Math.sqrt(d.exits), 140, 0]
     })
   }
 
-  renderScatterPlotLayer = () => {
-    const { bridges } = this.state
+  const renderScatterPlotLayer = () => {
+    const { dataFeatures } = state
 
-    const data = bridges.map(bridge => {
+    const data = dataFeatures.map(feature => {
       return {
-        coordinates: bridge.geometry.coordinates,
-        id: bridge.properties.id,
-        createdAt: bridge.properties.createdAt,
-        updatedAt: bridge.properties.updatedAt
+        coordinates: feature.geometry.coordinates.reverse(),
+        id: feature.properties.id
+        // createdAt: feature.properties.createdAt,
+        // updatedAt: feature.properties.updatedAt
       }
     })
 
@@ -126,7 +103,7 @@ class Map extends Component {
       // }
       onClick: ({ object, x, y }) => {
         const tooltip = object ? `${object.id}` : console.log('no valid point')
-        this.getBridgeEvents(object.id)
+        getBridgeEvents(object.id)
 
         /**
          * TODO: Zoom to point onClick
@@ -135,11 +112,12 @@ class Map extends Component {
     })
   }
 
-  _goToNYC = () => {
+  const flyTo = coordinates => {
     const viewport = {
-      ...this.state.viewport,
-      longitude: -74.1,
-      latitude: 40.7,
+      ...state.viewport,
+      ...coordinates,
+      // longitude: -74.1,
+      // latitude: 40.7,
       zoom: 14,
       transitionDuration: 5000,
       transitionInterpolator: new FlyToInterpolator(),
@@ -148,62 +126,67 @@ class Map extends Component {
           ? Math.pow(2, 10 * t - 10)
           : 2 - Math.pow(2, 10 - 10 * t)) / 2
     }
-    this.setState({ viewport })
+    setState({ ...state, viewport })
   }
 
-  onStyleChange = style => {
-    this.setState({ style })
+  const onStyleChange = style => {
+    setState({ ...state, style })
   }
 
-  _onViewportChange(viewport) {
-    this.setState({
-      viewport: { ...this.state.viewport, ...viewport }
+  const _onViewportChange = viewport => {
+    setState({
+      ...state,
+      viewport
     })
   }
 
-  render() {
-    const { bridges, bridgeEvents, viewport, style } = this.state
-    const { children } = this.props
-    return (
-      <React.Fragment>
-        {bridges ? (
-          <ReactMapGL
-            {...viewport}
-            onViewportChange={viewport => this._onViewportChange(viewport)}
-            mapboxApiAccessToken={Mapbox.token}
-            mapStyle={style}
-          >
-            {bridgeEvents &&
-              bridgeEvents.features.map(event => {
-                console.log(event)
-              })}
-            <MapStylePicker
-              onStyleChange={this.onStyleChange}
-              currentStyle={this.state.style}
-            />
-            {children}
-            <DeckGL
-              layers={[this.renderScatterPlotLayer(), this.renderIconLayer()]}
-              initialViewState={viewport}
-              controller
-            ></DeckGL>
-          </ReactMapGL>
-        ) : (
-          <h1
-            style={{
-              display: 'flex',
-              width: '100vw',
-              height: '100vh',
-              justifyContent: 'center',
-              alignItems: 'center'
+  const { dataFeatures, bridgeEvents, viewport, style } = state
+  return (
+    <React.Fragment>
+      {dataFeatures ? (
+        <ReactMapGL
+          {...viewport}
+          onViewportChange={viewport => _onViewportChange(viewport)}
+          mapboxApiAccessToken={Mapbox.token}
+          mapStyle={style}
+        >
+          {bridgeEvents &&
+            bridgeEvents.features.map(event => {
+              console.log(event)
+            })}
+          <MapStylePicker
+            onStyleChange={onStyleChange}
+            currentStyle={state.style}
+          />
+          <DeckGL
+            layers={[renderScatterPlotLayer() /* renderIconLayer() */]}
+            initialViewState={viewport}
+            controller
+          ></DeckGL>
+          <button
+            style={{ zIndex: 5000, position: 'absolute' }}
+            onClick={() => {
+              flyTo({ latitude: 41.9028, longitude: 12.4964 })
             }}
           >
-            Loading
-          </h1>
-        )}
-      </React.Fragment>
-    )
-  }
+            test
+          </button>
+        </ReactMapGL>
+      ) : (
+        <h1
+          style={{
+            display: 'flex',
+            width: '100vw',
+            height: '100vh',
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}
+        >
+          Loading
+        </h1>
+      )}
+    </React.Fragment>
+  )
 }
 
 export default Map
