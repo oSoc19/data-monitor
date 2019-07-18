@@ -49,12 +49,23 @@ const Map = props => {
     setState({ ...state, bridgeEvents })
   }
 
+  const getIcon = () => {
+    switch (dataSet.icon) {
+      case 'bridge':
+        return bridgeOpenIcon
+      case 'maintenance':
+        return null
+      default:
+        return 'none'
+    }
+  }
+
   const renderIconLayer = () => {
     const { dataFeatures } = state
 
     const data = dataFeatures.map(feature => {
       return (feature = {
-        coordinates: feature.geometry.coordinates.reverse(),
+        coordinates: feature.geometry.coordinates,
         properties: feature.properties
       })
     })
@@ -67,7 +78,7 @@ const Map = props => {
       id: 'icon-layer',
       data,
       pickable: true,
-      iconAtlas: bridgeOpenIcon,
+      iconAtlas: getIcon(),
       iconMapping: ICON_MAPPING,
       getIcon: d => 'marker',
       sizeScale: 1,
@@ -81,7 +92,7 @@ const Map = props => {
 
     const data = dataFeatures.map(feature => {
       return {
-        coordinates: feature.geometry.coordinates.reverse(),
+        coordinates: feature.geometry.coordinates,
         id: feature.properties.id
         // createdAt: feature.properties.createdAt,
         // updatedAt: feature.properties.updatedAt
@@ -159,12 +170,12 @@ const Map = props => {
             currentStyle={state.style}
           />
           <DeckGL
-            layers={[renderScatterPlotLayer() /* renderIconLayer() */]}
+            layers={[renderScatterPlotLayer(), renderIconLayer()]}
             initialViewState={viewport}
             controller
           ></DeckGL>
           <button
-            style={{ zIndex: 5000, position: 'absolute' }}
+            style={{ position: 'absolute', zIndex: 1000 }}
             onClick={() => {
               flyTo({ latitude: 41.9028, longitude: 12.4964 })
             }}

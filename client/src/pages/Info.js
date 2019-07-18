@@ -1,19 +1,19 @@
 import React from 'react'
 
-import { Api } from '../config'
+import { bridgeOpenings, maintenanceWorks } from '../config/api'
 
 const Info = () => {
   return (
     <React.Fragment>
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         <h3>Summary endpoints</h3>
-        <code>{Api.endPoints.bridgeOpenings.summary}</code>
-        <code>{Api.endPoints.maintenanceWorks.summary}</code>
+        <code>{bridgeOpenings.summary}</code>
+        <code>{maintenanceWorks.summary}</code>
         <h3>CSV Download endpoints</h3>
-        <code>{Api.endPoints.bridgeOpenings.csv}</code>
-        <code>{Api.endPoints.maintenanceWorks.csv}</code>
+        <code>{bridgeOpenings.csv}</code>
+        <code>{maintenanceWorks.csv}</code>
         <h3>Modify endpoint</h3>
-        <code>{Api.endPoints.bridgeOpenings.modify}</code>
+        <code>{bridgeOpenings.modify}</code>
       </div>
       <h1>About</h1>
       <p>

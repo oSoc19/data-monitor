@@ -32,7 +32,8 @@ const Sidebar = props => {
               newDataSet: {
                 name: 'bridges',
                 summary: bridgeOpenings.summary,
-                map: bridgeOpenings.map
+                map: bridgeOpenings.map,
+                icon: 'bridge'
               }
             })
           }}
@@ -46,7 +47,8 @@ const Sidebar = props => {
               newDataSet: {
                 name: 'maintenance',
                 summary: maintenanceWorks.summary,
-                map: maintenanceWorks.map
+                map: maintenanceWorks.map,
+                icon: 'bridge'
               }
             })
           }}
