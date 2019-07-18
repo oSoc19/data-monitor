@@ -101,7 +101,7 @@ const maintenanceWorksCheck = (sequelize, DataTypes) => {
     if (!maintenanceWorksCheck) {
       let checkFields = await MaintenanceWorksCheck.create({
         version: MaintenanceWorksCheck.version(event),
-        probabilityOfOccurence: MaintenanceWorksCheck.probabilityOfOccurence(event),
+        probabilityOfOccurrence: MaintenanceWorksCheck.probabilityOfOccurence(event),
         source: MaintenanceWorksCheck.source(event),
         locationForDisplay: MaintenanceWorksCheck.locationForDisplay(event),
         location: MaintenanceWorksCheck.location(event),
@@ -114,7 +114,7 @@ const maintenanceWorksCheck = (sequelize, DataTypes) => {
     else {
       let checkFields = await maintenanceWorksCheck.update({
         version: MaintenanceWorksCheck.version(event),
-        probabilityOfOccurence: MaintenanceWorksCheck.probabilityOfOccurence(event),
+        probabilityOfOccurrence: MaintenanceWorksCheck.probabilityOfOccurence(event),
         source: MaintenanceWorksCheck.source(event),
         locationForDisplay: MaintenanceWorksCheck.locationForDisplay(event),
         location: MaintenanceWorksCheck.location(event),
