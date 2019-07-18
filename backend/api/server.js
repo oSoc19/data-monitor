@@ -256,32 +256,21 @@ app.get('/api/download/maintenance_works/summary/', async (req, res) => {
   sendCsv(results, 'maintenance_works', res);
 });
 
-//TODO NEED TO FIX
+app.get('/api/download/maintenance_works/summary/provinces/:province', async (req, res) => {
+  let province = req.params.province;
+  let provinceName = province.split('_').join(' ');
+  let provinceLevel = 4;
+  let result = await intersects('maintenance_works', 'b', 'b.*', provinceName, provinceLevel);
+  sendCsv(result[0], 'maintenance_works', res);
+});
 
-// app.get('/api/download/maintenance_works/summary/', async (req, res) => {
-// 	console.log('summary call')
-// 	let results = await getEventSummary('maintenance_works');
-//   sendCsv(results, 'maintenance_works', res);
-// });
-//
-// app.get('/api/download/maintenance_works/summary/provinces/:province', async (req, res) => {
-// 	console.log('province call')
-//   let province = req.params.province;
-//   let provinceName = province.split('_').join(' ');
-//   let provinceLevel = 4;
-//   let result = await intersects('maintenance_works', 'b', 'b.*', provinceName, provinceLevel);
-//   sendCsv(result[0], 'maintenance_works', res);
-// });
-//
-// app.get('/api/download/maintenance_works/summary/cities/:city', async (req, res) => {
-// 	console.log('city call')
-//   let city = req.params.city;
-//   let cityName = city.split('_').join(' ');
-//   let cityLevel = 8;
-//   let result = await intersects('maintenance_works', 'b', 'b.*', cityName, cityLevel);
-//   sendCsv(result[0], 'maintenance_works', res);
-// });
-//
+app.get('/api/download/maintenance_works/summary/cities/:city', async (req, res) => {
+  let city = req.params.city;
+  let cityName = city.split('_').join(' ');
+  let cityLevel = 8;
+  let result = await intersects('maintenance_works', 'b', 'b.*', cityName, cityLevel);
+  sendCsv(result[0], 'maintenance_works', res);
+});
 
 // Default route
 app.use('*', function(req, res) {
