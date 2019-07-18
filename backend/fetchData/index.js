@@ -8,15 +8,17 @@ const sequelize = new Sequelize(
   process.env.DATABASE_PASSWORD, {
     host: 'database',
     dialect: 'postgres',
-    logging: false
+		logging: false
   }
 );
 
 // TODO: Refactor by iterate in the models folder
 const models = {
   Bridge: sequelize.import('./models/bridge.js'),
-  BridgeEvent: sequelize.import('./models/bridgeEvent.js'),
-  BridgeEventCheck: sequelize.import('./models/bridgeEventCheck.js'),
+  BridgeOpening: sequelize.import('./models/bridgeOpening.js'),
+  BridgeOpeningCheck: sequelize.import('./models/bridgeOpeningCheck.js'),
+  MaintenanceWorks: sequelize.import('./models/maintenanceWorks.js'),
+  MaintenanceWorksCheck: sequelize.import('./models/maintenanceWorksCheck.js')
 };
 
 /* Make all the association between models.
@@ -32,13 +34,30 @@ const associateModels = () => {
 
 const loadBridges = async () => {
   await waitForDatabase();
-  associateModels();
   await sequelize.sync();
   const bridgeOpeningsUrl = 'http://opendata.ndw.nu/brugopeningen.xml.gz';
-  const bridgeOpeningsSitutations = await parse(bridgeOpeningsUrl);
-  for (let situation of bridgeOpeningsSitutations) {
-    await models.BridgeEvent.addBridgeEvent(situation.situation, models);
+  let situations = [];
+	console.log('Start fetching bridges')
+  // We want to run synchronusly the insertion of all bridge events in the table
+  // And pipe used in the function parse are always asynchronous(see implementation of parse)
+  await parse(bridgeOpeningsUrl, "situation", (situation) => {
+    situations.push(situation);
+  });
+  for(let situation of situations) {
+    await models.BridgeOpening.addBridgeOpening(situation, models)
   }
+	console.log('fetching bridge is finished')
+};
+
+const loadMaintenanceWorks = async () => {
+  await waitForDatabase();
+	await sequelize.sync();
+  const roadMaintenancesUrl = 'http://opendata.ndw.nu/wegwerkzaamheden.xml.gz';
+  console.log("START FETCHING MaintenanceWorks : " + Date.now())
+  await parse(roadMaintenancesUrl, "situationRecord", (situation) => {
+    models.MaintenanceWorks.addMaintenanceWorks(situation, models)
+  });
+  console.log("END ROAD MAINTENANCE : " + Date.now())
 };
 
 const waitForDatabase = async() => {
@@ -70,4 +89,4 @@ const sleep = (ms) => {
     });
 };
 
-module.exports = { models, loadBridges, associateModels };
+module.exports = { models, loadBridges, loadMaintenanceWorks, associateModels };

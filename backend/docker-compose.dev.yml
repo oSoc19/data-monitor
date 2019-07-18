@@ -3,9 +3,6 @@ services:
   api:
     volumes:
       - ./api:/usr/src/app
-    ports:
-      - 8888:8080
-      - 9229:9229
     environment:
       - "NODE_ENV=development"
     command: >
@@ -16,4 +13,4 @@ services:
     environment:
       - "NODE_ENV=development"
     command: >
-      sh -c "npm install && supervisor -w . -- --inspect=0.0.0.0:9229 server.js"
+      sh -c "npm install && supervisor -w . -n exit -- --inspect=0.0.0.0:9229 server.js"

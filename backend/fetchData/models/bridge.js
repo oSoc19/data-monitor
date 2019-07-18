@@ -1,7 +1,7 @@
 /*
  * Bridge Model that store a unique bridge with its location.
  * A unique id column is generate automatically by Sequelize
- * A bridge can have multiple BridgeEvent. See BridgeEvent model
+ * A bridge can have multiple BridgeOpening. See BridgeOpening model
  * for more information. 
  */
 const bridge = (sequelize, DataTypes) => {
@@ -12,7 +12,7 @@ const bridge = (sequelize, DataTypes) => {
   });
 
   Bridge.associate = models => {
-    Bridge.hasMany(models.BridgeEvent);
+    Bridge.hasMany(models.BridgeOpening);
   }
 
 
