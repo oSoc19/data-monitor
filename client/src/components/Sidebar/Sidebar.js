@@ -1,8 +1,9 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useStateValue } from '../../utilities/state'
 
 import { CheckCircle, XCircle } from 'react-feather'
 import './Sidebar.sass'
+import { bridgeOpenings, maintenanceWorks } from '../../config/api'
 
 const Sidebar = props => {
   const [{ dataSet }, dispatch] = useStateValue()
@@ -14,37 +15,46 @@ const Sidebar = props => {
       <label>End date</label>
       <input type='date' />
       <div className='filter-actions'>
-        <button type='submit'>
+        {/* <button type='submit'>
           <CheckCircle />
           Confirm
         </button>
         <button type='submit'>
           <XCircle />
           Clear
-        </button>
+        </button> */}
       </div>
       <div className='data-toggle'>
         <button
           onClick={() => {
             dispatch({
               type: 'changeDataSet',
-              newDataSet: { name: 'bridges' }
+              newDataSet: {
+                name: 'bridges',
+                summary: bridgeOpenings.summary,
+                map: bridgeOpenings.map
+              }
             })
           }}
         >
-          bridges
+          Bridges
         </button>
         <button
           onClick={() => {
             dispatch({
               type: 'changeDataSet',
-              newDataSet: { name: 'maintenance' }
+              newDataSet: {
+                name: 'maintenance',
+                summary: maintenanceWorks.summary,
+                map: maintenanceWorks.map
+              }
             })
           }}
         >
-          maintenance
+          Maintenance
         </button>
-        <h1>{dataSet.name}</h1>
+        <h4>{dataSet.name}</h4>
+        <p>{dataSet.summary}</p>
       </div>
     </div>
   )
