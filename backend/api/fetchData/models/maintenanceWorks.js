@@ -54,11 +54,11 @@ const maintenanceWorks = (sequelize, DataTypes) => {
   }
 
   MaintenanceWorks.addMaintenanceWorks = async (situationRecord, models) => {
-    if (get(['$', 'xsi:type'], situationRecord) !== 'MaintenanceWorks') {
+    if (get(['$', 'xsi:type'], situationRecord) != 'MaintenanceWorks') {
       return;
     }
 
-    if (!isNewData(new Date(get(['situationRecordVersionTime']),situationRecord))) {
+    if (!isNewData(new Date(get(['situationRecordVersionTime'],situationRecord)))) {
       return;
     }
     

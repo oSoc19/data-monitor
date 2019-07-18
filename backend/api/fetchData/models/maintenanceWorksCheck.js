@@ -1,9 +1,10 @@
+const get = require('../getNested.js');
 const maintenanceWorksCheck = (sequelize, DataTypes) => {
   const MaintenanceWorksCheck = sequelize.define('maintenance_works_check', {
     version: {
       type: DataTypes.FLOAT
     },
-    probabilityOfOccurence: {
+    probabilityOfOccurrence: {
       type: DataTypes.FLOAT
     },
     source: {
@@ -16,6 +17,9 @@ const maintenanceWorksCheck = (sequelize, DataTypes) => {
       type: DataTypes.FLOAT
     },
     checksum: {
+      type: DataTypes.FLOAT
+    },
+    allFields: {
       type: DataTypes.FLOAT
     },
     manualIntervention: {
@@ -37,7 +41,7 @@ const maintenanceWorksCheck = (sequelize, DataTypes) => {
   }
 
   MaintenanceWorksCheck.probabilityOfOccurence = maintenanceWorks => {
-    let value = get(['dataValues', 'probabilityOfOccurence'], maintenanceWorks);
+    let value = get(['dataValues', 'probabilityOfOccurrence'], maintenanceWorks);
     if (value === 'certain' || value === 'probable' || value === 'riskOf') {
       return 1
     }
@@ -65,16 +69,27 @@ const maintenanceWorksCheck = (sequelize, DataTypes) => {
       return 0;
   }
 
-  MaintenanceWorksCheck.checksum = maintenanceWorks => {
+  MaintenanceWorksCheck.allFields = maintenanceWorks => {
+    let maintenanceWorksKeys = Object.values(maintenanceWorks.dataValues)
     let c = 0;
-    c+=MaintenanceWorksCheck.version(maintenanceWorks);
-    c+=MaintenanceWorksCheck.probabilityOfOccurence(maintenanceWorks);
-    c+=MaintenanceWorksCheck.source(maintenanceWorks);
-    c+=MaintenanceWorksCheck.locationForDisplay(maintenanceWorks);
-    c+=MaintenanceWorksCheck.location(maintenanceWorks);
-    return c/5
+    for (let value of maintenanceWorksKeys) {
+      if (value !== undefined & value !== null & value !== '') {
+        c++;
+      }
+    }
+    return ((c - 2) / (maintenanceWorksKeys.length - 2));
   }
 
+  MaintenanceWorksCheck.checksum = maintenanceWorks => {
+    let c = 0;
+    c += MaintenanceWorksCheck.version(maintenanceWorks);
+    c += MaintenanceWorksCheck.probabilityOfOccurence(maintenanceWorks);
+    c += MaintenanceWorksCheck.source(maintenanceWorks);
+    c += MaintenanceWorksCheck.locationForDisplay(maintenanceWorks);
+    c += MaintenanceWorksCheck.location(maintenanceWorks);
+    c += MaintenanceWorksCheck.allFields(maintenanceWorks);
+    return c / 6
+  }
 
   MaintenanceWorksCheck.createCheck = async (event) => {
     let maintenanceWorksCheck = await MaintenanceWorksCheck.findOne({
@@ -86,26 +101,26 @@ const maintenanceWorksCheck = (sequelize, DataTypes) => {
     if (!maintenanceWorksCheck) {
       let checkFields = await MaintenanceWorksCheck.create({
         version: MaintenanceWorksCheck.version(event),
-        probabilityOfOccurence: MaintenanceWorksCheck.probabilityOfOccurence(event),
+        probabilityOfOccurrence: MaintenanceWorksCheck.probabilityOfOccurence(event),
         source: MaintenanceWorksCheck.source(event),
         locationForDisplay: MaintenanceWorksCheck.locationForDisplay(event),
         location: MaintenanceWorksCheck.location(event),
-				checksum: MaintenanceWorksCheck.checksum(event),
-        maintenanceWorkId: event.id,
-        checksum: MaintenanceWorksCheck.checksum(event)
+        checksum: MaintenanceWorksCheck.checksum(event),
+        allFields: MaintenanceWorksCheck.allFields(event),
+        maintenanceWorkId: event.id
       })
       return checkFields
     }
-    else{
+    else {
       let checkFields = await maintenanceWorksCheck.update({
         version: MaintenanceWorksCheck.version(event),
-        probabilityOfOccurence: MaintenanceWorksCheck.probabilityOfOccurence(event),
+        probabilityOfOccurrence: MaintenanceWorksCheck.probabilityOfOccurence(event),
         source: MaintenanceWorksCheck.source(event),
         locationForDisplay: MaintenanceWorksCheck.locationForDisplay(event),
         location: MaintenanceWorksCheck.location(event),
-				checksum: MaintenanceWorksCheck.checksum(event),
+        checksum: MaintenanceWorksCheck.checksum(event),
+        allFields: MaintenanceWorksCheck.allFields(event),
         maintenanceWorkId: event.id,
-        checksum: MaintenanceWorksCheck.checksum(event)
       })
       return checkFields
     }

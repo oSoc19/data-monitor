@@ -27,6 +27,9 @@ const bridgeOpeningCheck = (sequelize, DataTypes) => {
     checksum: {
       type: DataTypes.FLOAT
     },
+    allFields: {
+      type: DataTypes.FLOAT
+    },
     manualIntervention: {
       type: DataTypes.BOOLEAN
     },
@@ -45,7 +48,7 @@ const bridgeOpeningCheck = (sequelize, DataTypes) => {
     else
       return 0;
   }
-  
+
   BridgeOpeningCheck.probabilityOfOccurence = bridgeOpening => {
     let value = get(['dataValues', 'probabilityOfOccurence'], bridgeOpening);
     if (value === 'certain' || value === 'probable' || value === 'riskOf') {
@@ -82,18 +85,30 @@ const bridgeOpeningCheck = (sequelize, DataTypes) => {
       return 0;
   }
 
-  BridgeOpeningCheck.checksum = bridgeOpening => {
+  BridgeOpeningCheck.allFields = bridgeOpening => {
+    let bridgeOpeningKeys = Object.values(bridgeOpening.dataValues)
     let c = 0;
-    c+=BridgeOpeningCheck.version(bridgeOpening);
-    c+=BridgeOpeningCheck.probabilityOfOccurence(bridgeOpening);
-    c+=BridgeOpeningCheck.source(bridgeOpening);
-    c+=BridgeOpeningCheck.locationForDisplay(bridgeOpening);
-    c+=BridgeOpeningCheck.location(bridgeOpening);
-    c+=BridgeOpeningCheck.generalNetworkManagementType(bridgeOpening);
-    return c/6
+    for (let value of bridgeOpeningKeys) {
+      if (value !== undefined & value !== null & value !== '') {
+        c++;
+      }
+    }
+    return ((c - 2) / (bridgeOpeningKeys.length - 2));
   }
 
-  BridgeOpeningCheck.createCheck= async (event) => {
+  BridgeOpeningCheck.checksum = bridgeOpening => {
+    let c = 0;
+    c += BridgeOpeningCheck.version(bridgeOpening);
+    c += BridgeOpeningCheck.probabilityOfOccurence(bridgeOpening);
+    c += BridgeOpeningCheck.source(bridgeOpening);
+    c += BridgeOpeningCheck.locationForDisplay(bridgeOpening);
+    c += BridgeOpeningCheck.location(bridgeOpening);
+    c += BridgeOpeningCheck.generalNetworkManagementType(bridgeOpening);
+    c += BridgeOpeningCheck.allFields(bridgeOpening);
+    return c / 7
+  }
+
+  BridgeOpeningCheck.createCheck = async (event) => {
     let bridgeOpeningCheck = await BridgeOpeningCheck.findOne({
       where: {
         bridgeOpeningId: event.id
@@ -107,8 +122,9 @@ const bridgeOpeningCheck = (sequelize, DataTypes) => {
         locationForDisplay: BridgeOpeningCheck.locationForDisplay(event),
         location: BridgeOpeningCheck.location(event),
         generalNetworkManagementType: BridgeOpeningCheck.generalNetworkManagementType(event),
-				checksum: BridgeOpeningCheck.checksum(event),
-				bridgeOpeningId: event.id
+        checksum: BridgeOpeningCheck.checksum(event),
+        allFields: BridgeOpeningCheck.allFields(event),
+        bridgeOpeningId: event.id
       })
       return checkFields;
 
@@ -120,8 +136,9 @@ const bridgeOpeningCheck = (sequelize, DataTypes) => {
         locationForDisplay: BridgeOpeningCheck.locationForDisplay(event),
         location: BridgeOpeningCheck.location(event),
         generalNetworkManagementType: BridgeOpeningCheck.generalNetworkManagementType(event),
-				checksum: BridgeOpeningCheck.checksum(event),
-				bridgeOpeningId: event.id
+        checksum: BridgeOpeningCheck.checksum(event),
+        allFields: BridgeOpeningCheck.allFields(event),
+        bridgeOpeningId: event.id
       })
       return checkFields;
     }
