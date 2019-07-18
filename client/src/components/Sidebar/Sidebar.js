@@ -44,7 +44,7 @@ const Sidebar = props => {
                   summary: maintenanceWorks.summary,
                   map: maintenanceWorks.map,
                   download: bridgeOpenings.csv,
-                  icon: 'bridge'
+                  icon: 'maintenance'
                 }
               })
             }}

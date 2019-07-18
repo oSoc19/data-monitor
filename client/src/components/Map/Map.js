@@ -4,13 +4,14 @@ import DeckGL, { ScatterplotLayer, IconLayer } from 'deck.gl'
 import { Circle } from 'react-feather'
 import './Map.sass'
 import Legend from '../Legend'
-import bridgeOpenIcon from '../../assets/icons/bridge-closed.png'
-import bridgeClosedIcon from '../../assets/icons/bridge-closed.png'
+import bridgeOpenIcon from '../../assets/icons/bridge.png'
+import maintenanceIcon from '../../assets/icons/actualmaintenance.png'
 import { Mapbox } from '../../config'
 
 import { MapStylePicker } from './Controls'
 
 import { useStateValue } from '../../utilities/state'
+import { maintenanceWorks } from '../../config/api'
 
 const Map = props => {
   const [{ dataSet }] = useStateValue()
@@ -54,7 +55,7 @@ const Map = props => {
       case 'bridge':
         return bridgeOpenIcon
       case 'maintenance':
-        return null
+        return maintenanceIcon
       default:
         return 'none'
     }
@@ -170,7 +171,7 @@ const Map = props => {
             currentStyle={state.style}
           />
           <DeckGL
-            layers={[renderScatterPlotLayer(), renderIconLayer()]}
+            layers={[/* renderScatterPlotLayer() */ renderIconLayer()]}
             initialViewState={viewport}
             controller
           ></DeckGL>
