@@ -122,6 +122,7 @@ app.get('/api/qa/bridge_openings/summary/cities/:city', async (req, res) => {
 
   res.send(bridgeOpeningChecks);
 });
+
 app.get('/api/download/bridge_openings/summary/', async (req, res) => {
 	let results = await getEventSummary('bridge_openings');
   sendCsv(results, 'bride_openings', res);
@@ -250,6 +251,11 @@ app.get('/api/qa/maintenance_works/summary/cities/:city', async (req, res) => {
   res.send(checkEvents);
 });
 
+app.get('/api/download/maintenance_works/summary/', async (req, res) => {
+	let results = await getEventSummary('maintenance_works');
+  sendCsv(results, 'maintenance_works', res);
+});
+
 //TODO NEED TO FIX
 
 // app.get('/api/download/maintenance_works/summary/', async (req, res) => {
@@ -367,8 +373,7 @@ async function intersects(table, as, attributes, boundariesName, level) {
   return [results, metadata] = await sequelize.query(
     `SELECT ${attributes} FROM ${table} AS ${as}, administrative_boundaries AS a
        WHERE a.name = '${boundariesName}' AND a.level=${level} AND
-         ST_Intersects(
-           ST_FlipCoordinates(${as}."locationForDisplay"), a.geog)`
+         ST_Intersects(${as}."locationForDisplay", a.geog)`
   );
 }
 

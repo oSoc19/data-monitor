@@ -83,7 +83,7 @@ const bridgeOpening = (sequelize, DataTypes) => {
         endTime: get(['validity', 'validityTimeSpecification', 'overallEndTime'], situationRecord),
         probabilityOfOccurence: get(['probabilityOfOccurrence'], situationRecord),
         locationForDisplay: GeoJson.parse(location, {
-          Point: ['longitude', 'latitude']
+          Point: ['latitude', 'longitude']
         }).geometry,
         generalNetworkManagementType: get(['generalNetworkManagementType'], situationRecord),
         bridgeId: bridge.id
