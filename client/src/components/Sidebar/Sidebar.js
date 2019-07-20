@@ -43,10 +43,11 @@ const Sidebar = props => {
                   name: 'maintenance',
                   summary: maintenanceWorks.summary,
                   map: maintenanceWorks.map,
-                  download: bridgeOpenings.csv,
+                  download: maintenanceWorks.csv,
                   icon: 'maintenance'
                 }
               })
+              console.log(dataSet.name)
             }}
           >
             Maintenance
