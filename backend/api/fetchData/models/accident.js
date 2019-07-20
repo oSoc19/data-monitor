@@ -35,7 +35,7 @@ const accident = (sequelize, DataTypes) => {
   })
 
   Accident.associate = models => {
-    Accident.hasOne(models.AccidentCheck, { onDelete: 'cascade' });
+    Accident.hasOne(models.AccidentCheck);
     Accident.checkTable = models.AccidentCheck;
   }
 

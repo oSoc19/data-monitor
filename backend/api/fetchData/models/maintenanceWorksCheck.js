@@ -30,7 +30,8 @@ const maintenanceWorksCheck = (sequelize, DataTypes) => {
     }
   })
   MaintenanceWorksCheck.associate = models => {
-    MaintenanceWorksCheck.belongsTo(models.MaintenanceWorks)
+    MaintenanceWorksCheck.belongsTo(models.MaintenanceWorks);
+    MaintenanceWorksCheck.eventId = 'maintenanceWorkId';
   }
 
   MaintenanceWorksCheck.version = maintenanceWorks => {
