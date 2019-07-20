@@ -10,15 +10,7 @@ const associateModels = require('./fetchData/index').associateModels;
 
 
 const op = Sequelize.Op;
-let app = express();
-app.use(bodyParser.urlencoded({
-  extended: true
-}));
-app.use(bodyParser.json());
-app.use(cors());
-app.listen(8080, () => {
-  console.log('API Server listening on port 8080');
-});
+
 
 const sequelize = new Sequelize(
   process.env.DATABASE,
@@ -29,10 +21,27 @@ const sequelize = new Sequelize(
   },
 );
 
+associateModels();
+
 // Load the file with all the provincie and cities
 const citiesByProvince = JSON.parse(fs.readFileSync('./data/dutchCitiesBigger.json'));
 const PROVINCES = Object.keys(citiesByProvince);
-associateModels();
+
+// City and province level defined in the administrative table
+const CITY_LEVEL = 8;
+const PROVINCE_LEVEL = 4;
+
+let app = express();
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
+app.use(bodyParser.json());
+app.use(cors());
+app.listen(8080, () => {
+  console.log('API Server listening on port 8080');
+});
+
+// Bridge and Bridge Openings API
 
 app.get('/api/bridges/', async (req, res, next) => {
   let startTime = req.query.startTime;
@@ -46,9 +55,9 @@ app.get('/api/bridges/', async (req, res, next) => {
     let bridgeOpenings = await getBridgeOpenings(startTime, endTime, bridges[i].id);
     // If the bridge has at least one bridge event between the startTime and the endTime
     // we can add it to the list of bridges to show on the map
-		let feature = geojson.parse(bridges[i], {
-			Point: 'location'
-		});
+    let feature = geojson.parse(bridges[i], {
+      Point: 'location'
+    });
 
     if (bridgeOpenings.length > 0) {
       features.push(geojson.parse(bridges[i], {
@@ -74,74 +83,33 @@ app.get('/api/bridge_openings/', async (req, res, next) => {
 });
 
 app.get('/api/qa/bridge_openings/summary/', async (req, res) => {
-  let results = await getSummary('bridge_openings', models.BridgeOpeningCheck, 'bridgeOpeningId');
+  let results = await getSummary(models.BridgeOpening);
   res.send(results);
 });
 
 app.get('/api/qa/bridge_openings/summary/provinces/:province', async (req, res) => {
-  let province = req.params.province.split('_').join(' ');
-  let results = [];
-  for (let city of citiesByProvince[province]) {
-    let cityQuery = city.replace("'", "''");
-    let citiesLevel = 8;
-    let result = await intersects('bridge_openings', 'b', 'b.id', cityQuery, citiesLevel);
-    let ids = [];
-    for (let bridgeOpening of result[0]) {
-      ids.push(bridgeOpening.id);
-    }
-    let goodBridgeOpeningss = await findGoodEvents(models.BridgeOpeningCheck, 'bridgeOpeningId', ids);
-    let badBridgeOpeningss = await findBadEvents(models.BridgeOpeningCheck, 'bridgeOpeningId', ids);
-    let cityName = city.split(' ').join('_');
-    results.push({
-      name: city,
-      nextUrl: '/api/qa/bridge_openings/summary/cities/' + cityName,
-      summary: {
-        numberOfGoodEvents: goodBridgeOpeningss.count,
-        numberOfBadEvents: badBridgeOpeningss.count
-      }
-    });
-  }
+  let results = await getProvinceSummary(req.params.province, models.BridgeOpening);
   res.send(results);
 });
 
 app.get('/api/qa/bridge_openings/summary/cities/:city', async (req, res) => {
-  let city = req.params.city.split('_').join(' ');
-  let cityQuery = city.replace("'", "''");
-  let cityLevel = 8;
-  let result = await intersects('bridge_openings', 'b', 'b.id', city, cityLevel);
-  let ids = [];
-  for (let bridgeOpening of result[0]) {
-    ids.push(bridgeOpening.id);
-  }
-  let bridgeOpeningChecks = await models.BridgeOpeningCheck.findAll({
-    // attributes: ['bridgeOpeningId', 'allFields', 'correctID', 'checksum', 'manualIntervention', 'comment'],
-    where: {
-      bridgeOpeningId: ids
-    }
-  });
-
-  res.send(bridgeOpeningChecks);
+  let results = await getCitySummary(req.params.city, models.BridgeOpening);
+  res.send(results);
 });
 
 app.get('/api/download/bridge_openings/summary/', async (req, res) => {
-	let results = await getEventSummary('bridge_openings');
-  sendCsv(results, 'bride_openings', res);
+  let results = await getEventSummary(models.BridgeOpening);
+  sendCsv(results, models.BridgeOpening.getTableName(), res);
 });
 
 app.get('/api/download/bridge_openings/summary/provinces/:province', async (req, res) => {
-  let province = req.params.province;
-  let provinceName = province.split('_').join(' ');
-  let provinceLevel = 4;
-  let result = await intersects('bridge_openings', 'b', 'b.*', provinceName, provinceLevel);
-  sendCsv(result[0], 'bridge_openings', res);
+  let result = await getEventProvinceSummary(req.params.province, models.BridgeOpening);
+  sendCsv(result, models.BridgeOpening.getTableName(), res);
 });
 
 app.get('/api/download/bridge_openings/summary/cities/:city', async (req, res) => {
-  let city = req.params.city;
-  let cityName = city.split('_').join(' ');
-  let cityLevel = 8;
-  let result = await intersects('bridge_openings', 'b', 'b.*', cityName, cityLevel);
-  sendCsv(result[0], 'bridge_openings', res);
+  let result = await getEventCitySummary(req.params.city, models.BridgeOpening);
+  sendCsv(result, models.BridgeOpening.getTableName(), res);
 });
 
 app.put('/api/qa/bridge_openings/:id', async (req, res, next) => {
@@ -169,6 +137,8 @@ app.put('/api/qa/bridge_openings/:id', async (req, res, next) => {
   }
 });
 
+// Maintenance works API
+
 app.get('/api/maintenance_works/:id', async (req, res) => {
   let result = await models.MaintenanceWorks.findOne({
     where: {
@@ -179,100 +149,100 @@ app.get('/api/maintenance_works/:id', async (req, res) => {
 
 
 });
+
 app.get('/api/maintenance_works/', async (req, res, next) => {
-  let startTime = req.query.startTime;
-  let endTime = req.query.endTime;
-  let maintenanceWorks = await getMaintenanceWorks(startTime, endTime);
-  let features = [];
-  for (let event of maintenanceWorks) {
-    let feature = {
-      "type": "Feature",
-      "geometry": {},
-      "properties": {}
-    }
-    feature.geometry = event.locationForDisplay;
-    feature.properties.id = event.id;
-    features.push(feature);
-  }
-  let featureCollection = {
-    "type": "FeatureCollection",
-    "features": features
-  };
+  let startTime = req.params.startTime;
+  let endTime = req.params.endTime;
+  let featureCollection = await createFeatureCollection(models.MaintenanceWorks, startTime, endTime);
   res.send(featureCollection);
 });
 
 
 app.get('/api/qa/maintenance_works/summary/', async (req, res) => {
-  let results = await getSummary('maintenance_works', models.MaintenanceWorksCheck, 'maintenanceWorkId');
+  let results = await getSummary(models.MaintenanceWorks);
   res.send(results);
 });
 
 app.get('/api/qa/maintenance_works/summary/provinces/:province', async (req, res) => {
-  let province = req.params.province.split('_').join(' ');
-  let results = [];
-  for (let city of citiesByProvince[province]) {
-    let cityQuery = city.replace("'", "''");
-    let citiesLevel = 8;
-    let result = await intersects('maintenance_works', 'b', 'b.id', cityQuery, citiesLevel);
-    let ids = [];
-    for (let event of result[0]) {
-      ids.push(event.id);
-    }
-    let goodEvents = await findGoodEvents(models.MaintenanceWorksCheck, 'maintenanceWorkId', ids);
-    let badEvents = await findBadEvents(models.MaintenanceWorksCheck, 'maintenanceWorkId', ids);
-    let cityName = city.split(' ').join('_');
-    results.push({
-      name: city,
-      nextUrl: '/api/qa/maintenance_works/summary/cities/' + cityName,
-      summary: {
-        numberOfGoodEvents: goodEvents.count,
-        numberOfBadEvents: badEvents.count
-      }
-    });
-  }
+  let results = await getProvinceSummary(req.params.province, models.MaintenanceWorks);
   res.send(results);
 });
 
 app.get('/api/qa/maintenance_works/summary/cities/:city', async (req, res) => {
-  let city = req.params.city.split('_').join(' ');
-  let cityQuery = city.replace("'", "''");
-  let cityLevel = 8;
-  let result = await intersects('maintenance_works', 'b', 'b.id', city, cityLevel);
-  let ids = [];
-  for (let event of result[0]) {
-    ids.push(event.id);
-  }
-  let checkEvents = await models.MaintenanceWorksCheck.findAll({
-    where: {
-      maintenanceWorkId: ids
-    }
-  });
-
-  res.send(checkEvents);
+  res.send(await getCitySummary(req.params.city, models.MaintenanceWorks));
 });
 
 app.get('/api/download/maintenance_works/summary/', async (req, res) => {
-	let results = await getEventSummary('maintenance_works');
-  sendCsv(results, 'maintenance_works', res);
+  let results = await getEventSummary(models.MaintenanceWorks);
+  sendCsv(results, models.MaintenanceWorks.getTableName(), res);
 });
 
 app.get('/api/download/maintenance_works/summary/provinces/:province', async (req, res) => {
-  let province = req.params.province;
-  let provinceName = province.split('_').join(' ');
-  let provinceLevel = 4;
-  let result = await intersects('maintenance_works', 'b', 'b.*', provinceName, provinceLevel);
-  sendCsv(result[0], 'maintenance_works', res);
+  let result = await getEventProvinceSummary(req.params.province, models.MaintenanceWorks);
+  sendCsv(result, models.MaintenanceWorks.getTableName(), res);
 });
 
 app.get('/api/download/maintenance_works/summary/cities/:city', async (req, res) => {
-  let city = req.params.city;
-  let cityName = city.split('_').join(' ');
-  let cityLevel = 8;
-  let result = await intersects('maintenance_works', 'b', 'b.*', cityName, cityLevel);
-  sendCsv(result[0], 'maintenance_works', res);
+  let result = await getEventCitySummary(req.params.city, models.MaintenanceWorks);
+  sendCsv(result, models.MaintenanceWorks.getTableName(), res);
 });
 
-// Default route
+// Accident API
+
+app.get('/api/accidents/:id', async (req, res) => {
+  let result = await models.Accident.findOne({
+    where: {
+      id: req.params.id
+    }
+  });
+  res.send(result);
+
+
+});
+
+app.get('/api/accidents/', async (req, res, next) => {
+  let startTime = req.query.startTime;
+  let endTime = req.query.endTime;
+  let featureCollection = await createFeatureCollection(models.Accident, startTime, endTime);
+  res.send(featureCollection);
+});
+
+
+app.get('/api/qa/accidents/summary/', async (req, res) => {
+  let results = await getSummary(models.Accident);
+  res.send(results);
+});
+
+app.get('/api/qa/accidents/summary/provinces/:province', async (req, res) => {
+  let results = await getProvinceSummary(req.params.province, models.Accident);
+  res.send(results);
+});
+
+app.get('/api/qa/accidents/summary/cities/:city', async (req, res) => {
+  res.send(await getCitySummary(req.params.city, models.Accident));
+});
+
+app.get('/api/download/accidents/summary/', async (req, res) => {
+  let results = await getEventSummary(models.Accident);
+  sendCsv(results, models.Accident.getTableName(), res);
+});
+
+app.get('/api/download/accidents/summary/provinces/:province', async (req, res) => {
+  let result = await getEventProvinceSummary(req.params.province, models.Accident);
+  sendCsv(result, models.Accident.getTableName(), res);
+});
+
+app.get('/api/download/accidents/summary/cities/:city', async (req, res) => {
+  let result = await getEventCitySummary(req.params.city, models.Accident);
+  sendCsv(result, models.Accident.getTableName(), res);
+});
+
+/*
+ * --------------------------------------------------
+ * Default route
+ * Don't put others API endpoints after this function
+ * --------------------------------------------------
+ */
 app.use('*', function(req, res) {
   res.send({
     'msg': 'route not found'
@@ -308,16 +278,36 @@ async function getBridgeOpenings(startTime, endTime, bridgeId) {
 
 }
 
-async function getMaintenanceWorks(startTime, endTime) {
+async function createFeatureCollection(table, startTime, endTime) {
+  let events = await getAllEvents(table, startTime, endTime);
+  let features = [];
+  for (let event of events) {
+    let feature = {
+      "type": "Feature",
+      "geometry": {},
+      "properties": {}
+    }
+    feature.geometry = event.locationForDisplay;
+    feature.properties.id = event.id;
+    features.push(feature);
+  }
+  let featureCollection = {
+    "type": "FeatureCollection",
+    "features": features
+  };
+
+  return featureCollection;
+}
+
+async function getAllEvents(table, startTime, endTime) {
   if (startTime === undefined) {
     startTime = 0;
   }
   if (endTime === undefined) {
     endTime = '9999-12-01';
   }
-  console.log(startTime, endTime)
 
-  let maintenanceWorks = await models.MaintenanceWorks.findAll({
+  let events = await table.findAll({
     raw: true,
     attributes: ['id', 'locationForDisplay'],
     where: {
@@ -329,28 +319,27 @@ async function getMaintenanceWorks(startTime, endTime) {
       }
     }
   });
-  return maintenanceWorks;
+  return events;
 
 }
 
-async function getSummary(table, model, idName) {
+async function getSummary(table) {
   let results = [];
   for (let province of PROVINCES) {
-    let provinceLevel = 4;
-    let result = await intersects(table, 'b', 'b.id', province, provinceLevel);
+    let result = await intersects(table, 'b', 'b.id', province, PROVINCE_LEVEL);
     let ids = [];
     for (let event of result[0]) {
       ids.push(event.id);
     }
-    let goodBridgeOpeningss = await findGoodEvents(model, idName, ids);
-    let badBridgeOpeningss = await findBadEvents(model, idName, ids);
+    let goodEvents = await findGoodEvents(table.checkTable, ids);
+    let badEvents = await findBadEvents(table.checkTable, ids);
     let provinceName = province.split(' ').join('_');
     results.push({
       name: province,
-      nextUrl: `/api/qa/${table}/summary/provinces/${provinceName}`,
+      nextUrl: `/api/qa/${table.getTableName()}/summary/provinces/${provinceName}`,
       summary: {
-        numberOfGoodEvents: goodBridgeOpeningss.count,
-        numberOfBadEvents: badBridgeOpeningss.count
+        numberOfGoodEvents: goodEvents.count,
+        numberOfBadEvents: badEvents.count
       }
     });
   }
@@ -358,52 +347,104 @@ async function getSummary(table, model, idName) {
 
 }
 
+async function getProvinceSummary(province, table) {
+  province = province.split('_').join(' ');
+  let results = [];
+  for (let city of citiesByProvince[province]) {
+    // String in query which contain ' must be changed to ''
+    let cityQuery = city.replace("'", "''");
+    let result = await intersects(table, 'b', 'b.id', cityQuery, CITY_LEVEL);
+    let ids = [];
+    for (let event of result[0]) {
+      ids.push(event.id);
+    }
+    let goodEvents = await findGoodEvents(table.checkTable, ids);
+    let badEvents = await findBadEvents(table.checkTable, ids);
+    let cityName = city.split(' ').join('_');
+    results.push({
+      name: city,
+      nextUrl: `/api/qa/${table.getTableName()}/summary/cities/` + cityName,
+      summary: {
+        numberOfGoodEvents: goodEvents.count,
+        numberOfBadEvents: badEvents.count
+      }
+    });
+  }
+  return results;
+}
+
+async function getCitySummary(city, table) {
+  city = city.split('_').join(' ');
+  let cityQuery = city.replace("'", "''");
+  let result = await intersects(table, 'b', 'b.id', city, CITY_LEVEL);
+  let ids = [];
+  for (let event of result[0]) {
+    ids.push(event.id);
+  }
+  let checkEvents = await table.checkTable.findAll({
+    where: {
+      [table.checkTable.eventId]: ids
+    }
+  });
+  return checkEvents;
+}
+
 async function intersects(table, as, attributes, boundariesName, level) {
   return [results, metadata] = await sequelize.query(
-    `SELECT ${attributes} FROM ${table} AS ${as}, administrative_boundaries AS a
+    `SELECT ${attributes} FROM ${table.getTableName()} AS ${as}, administrative_boundaries AS a
        WHERE a.name = '${boundariesName}' AND a.level=${level} AND
          ST_Intersects(${as}."locationForDisplay", a.geog)`
   );
 }
 
-async function findGoodEvents(model, idName, ids) {
-  let options = {
+async function findGoodEvents(model, ids) {
+  let goodEvents = await model.findAndCountAll({
     where: {
+      [model.eventId]: ids,
       checksum: 1
     }
-  };
-  options.where[idName] = ids;
-  let goodEvents = await model.findAndCountAll(options);
+  });
   return goodEvents;
 }
 
-async function findBadEvents(model, idName, ids) {
-  let options = {
+async function findBadEvents(model, ids) {
+  let badEvents = await model.findAndCountAll({
     where: {
+      [model.eventId]: ids,
       checksum: {
-        [Sequelize.Op.ne]: 1
+        [op.ne]: 1
       }
     }
-  };
-  options.where[idName] = ids;
-  let badEvents = await model.findAndCountAll(options);
+  });
   return badEvents;
 }
 
 async function getEventSummary(table) {
   let results = [];
   for (let province of PROVINCES) {
-    let provinceLevel = 4;
-    let result = await intersects(table, 'b', 'b.*', province, provinceLevel);
+    let result = await intersects(table, 'b', 'b.*', province, PROVINCE_LEVEL);
     results.push(...result[0])
   }
-	return results;
+  return results;
+}
+
+async function getEventProvinceSummary(province, table) {
+  let provinceName = province.split('_').join(' ');
+  let result = await intersects(table, 'b', 'b.*', provinceName, PROVINCE_LEVEL);
+  return result[0];
+}
+
+async function getEventCitySummary(city, table) {
+  city = city.split('_').join(' ');
+  let result = await intersects(table, 'b', 'b.*', city, CITY_LEVEL);
+  return result[0];
 }
 
 function sendCsv(body, name, res) {
   res.setHeader('Content-Type', 'text/csv');
-  res.setHeader('Content-Disposition', 'attachment; filename=\"' + name +'-' + Date.now() + '.csv\"');
+  res.setHeader('Content-Disposition', 'attachment; filename=\"' + name + '-' + Date.now() + '.csv\"');
   csvStringify(body, {
     header: true
   }).pipe(res);
 }
+

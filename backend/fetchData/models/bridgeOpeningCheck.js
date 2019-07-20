@@ -39,7 +39,8 @@ const bridgeOpeningCheck = (sequelize, DataTypes) => {
   });
 
   BridgeOpeningCheck.associate = models => {
-    BridgeOpeningCheck.belongsTo(models.BridgeOpening)
+    BridgeOpeningCheck.belongsTo(models.BridgeOpening);
+    BridgeOpeningCheck.eventId = 'bridgeOpeningId';
   }
 
   BridgeOpeningCheck.version = bridgeOpening => {

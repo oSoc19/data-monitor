@@ -46,7 +46,10 @@ const bridgeOpening = (sequelize, DataTypes) => {
 
   BridgeOpening.associate = models => {
     BridgeOpening.hasOne(models.BridgeOpeningCheck);
+    BridgeOpening.checkTable = models.BridgeOpeningCheck;
+
   };
+
 
 
   /* Create a bridge event corresponding to a situation record

@@ -50,7 +50,8 @@ const maintenanceWorks = (sequelize, DataTypes) => {
   });
 
   MaintenanceWorks.associate = models => {
-    MaintenanceWorks.hasOne(models.MaintenanceWorksCheck)
+    MaintenanceWorks.hasOne(models.MaintenanceWorksCheck);
+    MaintenanceWorks.checkTable = models.MaintenanceWorksCheck;
   }
 
   MaintenanceWorks.addMaintenanceWorks = async (situationRecord, models) => {

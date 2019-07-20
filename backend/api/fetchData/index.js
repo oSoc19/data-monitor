@@ -18,7 +18,9 @@ const models = {
   BridgeOpening: sequelize.import('./models/bridgeOpening.js'),
   BridgeOpeningCheck: sequelize.import('./models/bridgeOpeningCheck.js'),
   MaintenanceWorks: sequelize.import('./models/maintenanceWorks.js'),
-  MaintenanceWorksCheck: sequelize.import('./models/maintenanceWorksCheck.js')
+  MaintenanceWorksCheck: sequelize.import('./models/maintenanceWorksCheck.js'),
+  Accident: sequelize.import('./models/accident'),
+  AccidentCheck: sequelize.import('./models/accidentCheck')
 };
 
 /* Make all the association between models.
@@ -60,6 +62,17 @@ const loadMaintenanceWorks = async () => {
   console.log("END ROAD MAINTENANCE : " + Date.now())
 };
 
+const loadAccident = async () => {
+  await waitForDatabase();
+  await sequelize.sync();
+  const accidentUrl = 'http://opendata.ndw.nu/incidents.xml.gz'
+  console.log('fetching accidents')
+  await parse(accidentUrl, "situationRecord", (situation) => {
+    models.Accident.addAccident(situation, models)
+  });
+  console.log('fetching of accidents ended')
+}
+
 const waitForDatabase = async() => {
   console.log(`----- Trying to connect to database`);
   let counter = 0;
@@ -89,4 +102,4 @@ const sleep = (ms) => {
     });
 };
 
-module.exports = { models, loadBridges, loadMaintenanceWorks, associateModels };
+module.exports = { models, loadBridges, loadMaintenanceWorks, loadAccident, associateModels };
