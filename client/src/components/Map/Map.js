@@ -8,6 +8,8 @@ import bridgeOpenIcon from '../../assets/icons/bridge.png'
 import maintenanceIcon from '../../assets/icons/actualmaintenance.png'
 import { Mapbox } from '../../config'
 
+import Loader from '../../components/Loader'
+
 import { MapStylePicker } from './Controls'
 
 import { useStateValue } from '../../utilities/state'
@@ -22,8 +24,8 @@ const Map = props => {
     viewport: {
       latitude: 52.153,
       longitude: 5.5196,
-      width: '100vw',
-      height: '100vh',
+      width: '100%',
+      height: '100%',
       zoom: 7.1,
       bearing: 0,
       pitch: 0
@@ -36,12 +38,19 @@ const Map = props => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataSet])
 
+  /**
+   * TODO: refactor to fetch util
+   */
   const getData = async () => {
     let res = await fetch(dataSet.map)
     res = await res.json()
     setState({ ...state, dataFeatures: res.features })
   }
 
+  /**
+   *
+   * TODO: refactor to fetch util
+   */
   const getBridgeEvents = async id => {
     let res = await fetch(
       `http://82.196.10.230:8080/api/bridge_openings/?id=${id}`
@@ -63,7 +72,6 @@ const Map = props => {
 
   const renderIconLayer = () => {
     const { dataFeatures } = state
-
     const data = dataFeatures.map(feature => {
       return (feature = {
         coordinates: feature.geometry.coordinates,
@@ -94,9 +102,9 @@ const Map = props => {
     const data = dataFeatures.map(feature => {
       return {
         coordinates: feature.geometry.coordinates,
-        id: feature.properties.id
-        // createdAt: feature.properties.createdAt,
-        // updatedAt: feature.properties.updatedAt
+        id: feature.properties.id,
+        createdAt: feature.properties.createdAt,
+        updatedAt: feature.properties.updatedAt
       }
     })
 
@@ -154,50 +162,34 @@ const Map = props => {
 
   const { dataFeatures, bridgeEvents, viewport, style } = state
   return (
-    <React.Fragment>
-      {dataFeatures ? (
+    <div className='map'>
+      {dataFeatures.length > 0 ? (
         <ReactMapGL
           {...viewport}
           onViewportChange={viewport => _onViewportChange(viewport)}
           mapboxApiAccessToken={Mapbox.token}
           mapStyle={style}
         >
-          {bridgeEvents &&
+          {/* {bridgeEvents &&
             bridgeEvents.features.map(event => {
               console.log(event)
-            })}
-          <MapStylePicker
+            })} */}
+          {/* <MapStylePicker
             onStyleChange={onStyleChange}
             currentStyle={state.style}
-          />
+        /> */}
           <DeckGL
             layers={[/* renderScatterPlotLayer() */ renderIconLayer()]}
             initialViewState={viewport}
             controller
           ></DeckGL>
-          <button
-            style={{ position: 'absolute', zIndex: 1000 }}
-            onClick={() => {
-              flyTo({ latitude: 41.9028, longitude: 12.4964 })
-            }}
-          >
-            test
-          </button>
         </ReactMapGL>
       ) : (
-        <h1
-          style={{
-            display: 'flex',
-            width: '100vw',
-            height: '100vh',
-            justifyContent: 'center',
-            alignItems: 'center'
-          }}
-        >
-          Loading
-        </h1>
+        <div className='center'>
+          <Loader />
+        </div>
       )}
-    </React.Fragment>
+    </div>
   )
 }
 

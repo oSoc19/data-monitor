@@ -4,6 +4,8 @@ import { DashboardDetail } from '../DashboardDetail'
 import { Download, Check, X, Percent } from 'react-feather'
 import { Pie } from 'react-chartjs-2'
 
+import Loader from '../../components/Loader'
+
 import { useStateValue } from '../../utilities/state'
 
 /**
@@ -21,7 +23,7 @@ const DashboardTable = props => {
 
   useEffect(() => {
     fetchSummary()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataSet])
 
   const fetchSummary = async () => {
@@ -30,13 +32,8 @@ const DashboardTable = props => {
       dataSet.summary
     )
     let summary = await res.json()
+    console.log(summary)
     setState({ ...state, summary })
-  }
-
-  const fetchCities = async url => {
-    let res = await fetch(url)
-    let cities = await res.json()
-    setState({ cities })
   }
 
   const getEventDataQuality = (goodEvents, badEvents) => {
@@ -50,113 +47,125 @@ const DashboardTable = props => {
   }
 
   const { summary, level } = state
-  return (
-    <div className='dashboard-container'>
-      {summary && level < 3 ? (
-        summary.map(item => {
-          const { numberOfGoodEvents, numberOfBadEvents } = item.summary
-          return (
-            <div
-              onClick={() => {
-                fetch(`http://82.196.10.230:8080${item.nextUrl}`)
-                  .then(res => {
-                    return res.json()
-                  })
-                  .then(summary => {
-                    setState({ summary, level: level + 1 })
-                  })
-              }}
-              className='dashboard-item'
-              key={item.name}
-              style={{
-                border:
-                  getEventDataQuality(numberOfGoodEvents, numberOfBadEvents) ===
-                  100
-                    ? '20px solid rgba(0,255,0, .5)'
-                    : getEventDataQuality(
+  if (summary.length > 0) {
+    return (
+      <React.Fragment>
+        <div className='dashboard-container'>
+          {summary && level < 3 ? (
+            summary.map(item => {
+              const { numberOfGoodEvents, numberOfBadEvents } = item.summary
+              return (
+                <div
+                  onClick={() => {
+                    fetch(`http://82.196.10.230:8080${item.nextUrl}`)
+                      .then(res => {
+                        return res.json()
+                      })
+                      .then(summary => {
+                        setState({ summary, level: level + 1 })
+                      })
+                  }}
+                  className='dashboard-item'
+                  key={item.name}
+                  style={{
+                    border:
+                      getEventDataQuality(
                         numberOfGoodEvents,
                         numberOfBadEvents
-                      ) > 50
-                    ? '20px solid rgba(255,128,0, .5)'
-                    : '20px solid rgba(255,0,0, .5)',
-                borderWidth: '20px 1px 1px 1px'
-              }}
-            >
-              <h2>{item.name}</h2>
-              <hr />
-              {item.nextUrl && (
-                <React.Fragment>
-                  {/* <h4>API endpoint</h4>
-                    <pre>
-                      <code>{item.nextUrl}</code>
-                    </pre> */}
-                  <button
-                    className='btn-outline'
-                    type='submit'
-                    onClick={() => {
-                      console.log(item.nextUrl)
-                      const downloadUrlEndpoint = item.nextUrl.replace(
-                        'api/qa/bridge_openings/summary/provinces',
-                        'api/download/bridge_openings/summary/province'
-                      )
-                      const downloadUrl = `http://82.196.10.230:8080${downloadUrlEndpoint}`
-                      window.open(downloadUrl)
-                    }}
-                  >
-                    <Download />
-                    {`${item.name}.csv`}
-                  </button>
-                </React.Fragment>
-              )}
-
-              <h3>Event quality</h3>
-              <table>
-                <tr>
-                  <td>
-                    <Check />
-                  </td>
-                  <td>
-                    <X />
-                  </td>
-                  <td>
-                    <Percent />
-                  </td>
-                </tr>
-                <tr>
-                  <td>{numberOfGoodEvents}</td>
-                  <td>{numberOfBadEvents}</td>
-                  <td>
-                    {getEventDataQuality(
-                      numberOfGoodEvents,
-                      numberOfBadEvents
-                    ).toFixed(1)}
-                  </td>
-                </tr>
-              </table>
-              <div>
-                <Pie
-                  data={{
-                    datasets: [
-                      {
-                        data: [
-                          getEventDataQuality(
+                      ) === 100
+                        ? '20px solid rgba(0,255,0, .5)'
+                        : getEventDataQuality(
                             numberOfGoodEvents,
                             numberOfBadEvents
-                          )
-                        ]
-                      }
-                    ]
+                          ) > 50
+                        ? '20px solid rgba(255,128,0, .5)'
+                        : '20px solid rgba(255,0,0, .5)',
+                    borderWidth: '20px 1px 1px 1px'
                   }}
-                />
-              </div>
-            </div>
-          )
-        })
-      ) : (
-        <DashboardDetail summary={summary} />
-      )}
-    </div>
-  )
+                >
+                  <h2>{item.name}</h2>
+                  <hr />
+                  {item.nextUrl && (
+                    <React.Fragment>
+                      {/* <h4>API endpoint</h4>
+                    <pre>
+                    <code>{item.nextUrl}</code>
+                  </pre> */}
+                      <button
+                        className='btn-outline'
+                        type='submit'
+                        onClick={() => {
+                          console.log(item.nextUrl)
+                          const downloadUrlEndpoint = item.nextUrl.replace(
+                            'api/qa/bridge_openings/summary/provinces',
+                            'api/download/bridge_openings/summary/province'
+                          )
+                          const downloadUrl = `http://82.196.10.230:8080${downloadUrlEndpoint}`
+                          window.open(downloadUrl)
+                        }}
+                      >
+                        <Download />
+                        {`${item.name}.csv`}
+                      </button>
+                    </React.Fragment>
+                  )}
+
+                  <h3>Event quality</h3>
+                  <table>
+                    <tr>
+                      <td>
+                        <Check />
+                      </td>
+                      <td>
+                        <X />
+                      </td>
+                      <td>
+                        <Percent />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>{numberOfGoodEvents}</td>
+                      <td>{numberOfBadEvents}</td>
+                      <td>
+                        {getEventDataQuality(
+                          numberOfGoodEvents,
+                          numberOfBadEvents
+                        ).toFixed(1)}
+                      </td>
+                    </tr>
+                  </table>
+                  <div>
+                    <Pie
+                      data={{
+                        datasets: [
+                          {
+                            data: [
+                              getEventDataQuality(
+                                numberOfGoodEvents,
+                                numberOfBadEvents
+                              )
+                            ]
+                          }
+                        ]
+                      }}
+                    />
+                  </div>
+                </div>
+              )
+            })
+          ) : (
+            <DashboardDetail summary={summary} />
+          )}
+        </div>
+      </React.Fragment>
+    )
+  } else {
+    return (
+      <div className='center'>
+        <Loader />
+      </div>
+    )
+  }
 }
 
 export default DashboardTable

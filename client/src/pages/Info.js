@@ -2,20 +2,23 @@ import React from 'react'
 
 import { bridgeOpenings, maintenanceWorks } from '../config/api'
 
+import LayoutWrapper from '../components/LayoutWrapper'
+
+
 const Info = () => {
   return (
-    <React.Fragment>
+    <LayoutWrapper>
       <div style={{ display: 'flex', flexDirection: 'column' }}>
-        <h3>Summary endpoints</h3>
+        <h4>Summary endpoints</h4>
         <code>{bridgeOpenings.summary}</code>
         <code>{maintenanceWorks.summary}</code>
-        <h3>CSV Download endpoints</h3>
+        <h4>CSV Download endpoints</h4>
         <code>{bridgeOpenings.csv}</code>
         <code>{maintenanceWorks.csv}</code>
-        <h3>Modify endpoint</h3>
+        <h4>Modify endpoint</h4>
         <code>{bridgeOpenings.modify}</code>
       </div>
-      <h1>About</h1>
+      <h4>About</h4>
       <p>
         <p>Description goes here</p>
       </p>
@@ -30,7 +33,7 @@ const Info = () => {
           </a>
         </li>
       </ul>
-      <h1>Open Data</h1>
+      <h4>Open Data</h4>
       <ul>
         <li>
           <a
@@ -42,7 +45,7 @@ const Info = () => {
           </a>
         </li>
       </ul>
-    </React.Fragment>
+    </LayoutWrapper>
   )
 }
 

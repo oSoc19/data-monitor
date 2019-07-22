@@ -1,8 +1,8 @@
 import React from 'react'
-
-import { NavLink, Redirect } from 'react-router-dom'
+import { Redirect } from 'react-router-dom'
 
 const Home = () => {
+  // localStorage.setItem('userType', 'bridge')
   // userType = localStorage.getItem('userType')
   return (
     <React.Fragment>

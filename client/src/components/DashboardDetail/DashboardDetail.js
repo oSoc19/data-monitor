@@ -8,24 +8,28 @@ const DashboardDetail = props => {
   return (
     <div>
       <table>
-        <tr>
-          <td>Event Id</td>
-          <td>Fields complete</td>
-          <td>Correct Id</td>
-          <td>Checksum</td>
-          {/* <td>Manual intervention</td>
+        <thead>
+          <tr>
+            <td>Event Id</td>
+            <td>Fields complete</td>
+            <td>Correct Id</td>
+            <td>Checksum</td>
+            {/* <td>Manual intervention</td>
           <td>Comment</td> */}
-        </tr>
+          </tr>
+        </thead>
         {summary.map(event => {
           return (
-            <tr>
-              <td>{event.bridgeOpeningId}</td>
-              <td>{event.allFields ? <Check /> : <X />}</td>
-              <td>{event.correctID ? <Check /> : <X />}</td>
-              <td>{event.checksum ? <Check /> : <X />}</td>
-              {/* <td>{event.manualIntervention ? <Check /> : <X />}</td>
+            <tbody>
+              <tr>
+                <td>{event.bridgeOpeningId}</td>
+                <td>{event.allFields ? <Check /> : <X />}</td>
+                <td>{event.correctID ? <Check /> : <X />}</td>
+                <td>{event.checksum ? <Check /> : <X />}</td>
+                {/* <td>{event.manualIntervention ? <Check /> : <X />}</td>
               <td>{event.comment}</td> */}
-            </tr>
+              </tr>
+            </tbody>
           )
         })}
       </table>
