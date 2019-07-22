@@ -131,14 +131,22 @@ const DashboardTable = props => {
                       data={{
                         datasets: [
                           {
+                            label: 'Event quality',
                             data: [
-                              getEventDataQuality(
-                                numberOfGoodEvents,
-                                numberOfBadEvents
-                              )
+                              numberOfGoodEvents,
+                              numberOfBadEvents
+                              // getEventDataQuality(
+                              //   numberOfGoodEvents,
+                              //   numberOfBadEvents
+                              // )
+                            ],
+                            backgroundColor: [
+                              'rgba(54, 162, 235, 0.2)',
+                              'rgba(255, 99, 132, 0.2)'
                             ]
                           }
-                        ]
+                        ],
+                        labels: ['Good events', 'Bad events']
                       }}
                     />
                   </div>
