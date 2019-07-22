@@ -35,9 +35,9 @@ const associateModels = () => {
 }
 
 /*
- * Fetch the all the bridge openings events 
- * 
-*/
+ * Fetch the all the bridge openings events
+ * and add each event in the database
+ */
 const loadBridges = async () => {
   await waitForDatabase();
   await sequelize.sync();
@@ -55,6 +55,10 @@ const loadBridges = async () => {
   console.log('fetching bridge is finished')
 };
 
+/*
+ * Fetch all the maintenance works events
+ * and add each event in the databse.
+ */
 const loadMaintenanceWorks = async () => {
   await waitForDatabase();
   await sequelize.sync();
@@ -66,6 +70,10 @@ const loadMaintenanceWorks = async () => {
   console.log("END ROAD MAINTENANCE : " + Date.now())
 };
 
+/*
+ * Fetch all the accident events
+ * and add each event in the database
+ */
 const loadAccident = async () => {
   await waitForDatabase();
   await sequelize.sync();
@@ -112,4 +120,3 @@ module.exports = {
   loadAccident,
   associateModels
 };
-
