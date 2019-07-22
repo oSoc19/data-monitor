@@ -2,6 +2,7 @@ import React from 'react'
 
 import Header from './Header'
 import Sidebar from './Sidebar'
+import BottomActions from './BottomActions'
 
 const LayoutWrapper = props => {
   return (
@@ -17,6 +18,7 @@ const LayoutWrapper = props => {
       >
         {props.sidebar && <Sidebar />}
         {props.children}
+        {/* <BottomActions /> */}
       </div>
     </div>
   )
