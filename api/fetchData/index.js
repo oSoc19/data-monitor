@@ -8,7 +8,7 @@ const sequelize = new Sequelize(
   process.env.DATABASE_PASSWORD, {
     host: 'database',
     dialect: 'postgres',
-		logging: false
+    logging: false
   }
 );
 
@@ -25,7 +25,7 @@ const models = {
 
 /* Make all the association between models.
  * Ex. A bridge has multiple bridge events (hasMany)
-*/
+ */
 const associateModels = () => {
   Object.keys(models).forEach(key => {
     if ('associate' in models[key]) {
@@ -39,21 +39,21 @@ const loadBridges = async () => {
   await sequelize.sync();
   const bridgeOpeningsUrl = 'http://opendata.ndw.nu/brugopeningen.xml.gz';
   let situations = [];
-	console.log('Start fetching bridges')
+  console.log('Start fetching bridges')
   // We want to run synchronusly the insertion of all bridge events in the table
   // And pipe used in the function parse are always asynchronous(see implementation of parse)
   await parse(bridgeOpeningsUrl, "situation", (situation) => {
     situations.push(situation);
   });
-  for(let situation of situations) {
+  for (let situation of situations) {
     await models.BridgeOpening.addBridgeOpening(situation, models)
   }
-	console.log('fetching bridge is finished')
+  console.log('fetching bridge is finished')
 };
 
 const loadMaintenanceWorks = async () => {
   await waitForDatabase();
-	await sequelize.sync();
+  await sequelize.sync();
   const roadMaintenancesUrl = 'http://opendata.ndw.nu/wegwerkzaamheden.xml.gz';
   console.log("START FETCHING MaintenanceWorks : " + Date.now())
   await parse(roadMaintenancesUrl, "situationRecord", (situation) => {
@@ -73,33 +73,39 @@ const loadAccident = async () => {
   console.log('fetching of accidents ended')
 }
 
-const waitForDatabase = async() => {
+const waitForDatabase = async () => {
   console.log(`----- Trying to connect to database`);
   let counter = 0;
   let maxAttempts = 300;
   let sleepTimeMs = 5000;
-  while(counter < maxAttempts){
-    try{
+  while (counter < maxAttempts) {
+    try {
       await sequelize.authenticate();
       break;
-    }
-    catch(error){
+    } catch (error) {
       counter += 1;
       console.log(`----- Database not alive, waiting ${sleepTimeMs}`);
       await sleep(sleepTimeMs);
     }
   }
 
-  if(counter === maxAttempts){
-    throw('Unable to connect to datase');
+  if (counter === maxAttempts) {
+    throw ('Unable to connect to datase');
   }
   console.log(`----- Connection ok`);
 };
 
 const sleep = (ms) => {
-    return new Promise(resolve=>{
-      setTimeout(resolve,ms);
-    });
+  return new Promise(resolve => {
+    setTimeout(resolve, ms);
+  });
 };
 
-module.exports = { models, loadBridges, loadMaintenanceWorks, loadAccident, associateModels };
+module.exports = {
+  models,
+  loadBridges,
+  loadMaintenanceWorks,
+  loadAccident,
+  associateModels
+};
+
