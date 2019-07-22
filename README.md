@@ -1,6 +1,5 @@
-# Backend for data-monitor
+# data-monitor
 
-The backend runs in docker and docker-compose
 
 ## Running locally
 ### Building
