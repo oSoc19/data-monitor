@@ -80,7 +80,7 @@ const DashboardTable = props => {
                     borderWidth: '20px 1px 1px 1px'
                   }}
                 >
-                  <h2>{item.name}</h2>
+                  <h4>{item.name}</h4>
                   <hr />
                   {item.nextUrl && (
                     <React.Fragment>
@@ -90,9 +90,10 @@ const DashboardTable = props => {
                         onClick={() => {
                           console.log(item.nextUrl)
                           const downloadUrlEndpoint = item.nextUrl.replace(
-                            'api/qa/bridge_openings/summary/provinces',
-                            'api/download/bridge_openings/summary/province'
+                            '/qa/',
+                            '/download/'
                           )
+                          // console.log(downloadUrlEndpoint)
                           const downloadUrl = `http://82.196.10.230:8080${downloadUrlEndpoint}`
                           window.open(downloadUrl)
                         }}
@@ -102,7 +103,7 @@ const DashboardTable = props => {
                       </button>
                     </React.Fragment>
                   )}
-                  <h3>Event quality</h3>
+                  {/* <h4>Data quality</h4>
                   <table>
                     <tr>
                       <td>
@@ -125,30 +126,37 @@ const DashboardTable = props => {
                         ).toFixed(1)}
                       </td>
                     </tr>
-                  </table>
+                  </table> */}
                   <div>
-                    <Pie
-                      data={{
-                        datasets: [
-                          {
-                            label: 'Event quality',
-                            data: [
-                              numberOfGoodEvents,
-                              numberOfBadEvents
-                              // getEventDataQuality(
-                              //   numberOfGoodEvents,
-                              //   numberOfBadEvents
-                              // )
-                            ],
-                            backgroundColor: [
-                              'rgba(0, 255, 0, .5)',
-                              'rgba(255, 0, 0, .5)'
-                            ]
-                          }
-                        ],
-                        labels: ['Good events', 'Bad events']
-                      }}
-                    />
+                    {numberOfGoodEvents > 0 || numberOfBadEvents > 0 ? (
+                      <Pie
+                        data={{
+                          datasets: [
+                            {
+                              label: 'Data quality',
+                              data: [
+                                numberOfGoodEvents,
+                                numberOfBadEvents
+                                // getEventDataQuality(
+                                //   numberOfGoodEvents,
+                                //   numberOfBadEvents
+                                // )
+                              ],
+                              backgroundColor: [
+                                'rgba(0, 255, 0, .5)',
+                                'rgba(255, 0, 0, .5)'
+                              ]
+                            }
+                          ],
+                          labels: [
+                            'Good events: ' + numberOfGoodEvents,
+                            'Bad events: ' + numberOfBadEvents
+                          ]
+                        }}
+                      />
+                    ) : (
+                      <h4>No event data available</h4>
+                    )}
                   </div>
                 </div>
               )
