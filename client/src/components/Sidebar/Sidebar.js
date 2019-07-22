@@ -2,9 +2,9 @@ import React, { useState } from 'react'
 import { useGlobalState } from '../../utilities/state'
 
 import './Sidebar.sass'
-import { bridgeOpenings, maintenanceWorks, incidents } from '../../config/api'
+import { bridgeOpenings, maintenanceWorks, accidents } from '../../config/api'
 
-import { today } from '../../utilities/calendar'
+import { now, yesterday, lastWeek, lastMonth } from '../../utilities/calendar'
 import { Filter, ArrowLeft } from 'react-feather'
 
 const Sidebar = props => {
@@ -32,12 +32,25 @@ const Sidebar = props => {
                 dispatch({
                   type: 'filterDataSet',
                   newFilter: {
-                    date:
-                      '?startTime=2019-07-10T12:20:38.000Z&endTime=2019-07-21T12:20:38.000Z'
+                    date: `/?startTime=${yesterday}&endTime=${now}`
                   }
                 })
               }}
-            ></button>
+            >
+              24 Hours
+            </button>
+            <button
+              onClick={() => {
+                dispatch({
+                  type: 'filterDataSet',
+                  newFilter: {
+                    date: `/?startTime=${lastWeek}&endTime=${now}`
+                  }
+                })
+              }}
+            >
+              7 Days
+            </button>
           </div>
           <div className='sidebar-section'>
             <h4>Datasets</h4>
@@ -82,17 +95,16 @@ const Sidebar = props => {
                   dispatch({
                     type: 'changeDataSet',
                     newDataSet: {
-                      name: 'incidents',
-                      summary: incidents.summary,
-                      map: incidents.map,
-                      download: incidents.csv,
-                      icon: 'incident'
+                      name: 'accidents',
+                      summary: accidents.summary,
+                      map: accidents.map,
+                      download: accidents.csv,
+                      icon: 'accident'
                     }
                   })
                 }}
-                disabled
               >
-                Incidents
+                Accidents
               </button>
             </div>
             {/* <pre>{dataSet.summary}</pre> */}
