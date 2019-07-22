@@ -153,7 +153,9 @@ const DashboardTable = props => {
                         }}
                       />
                     ) : (
-                      <h4>No event data available</h4>
+                      <div className='center'>
+                        <h4>No event data available</h4>
+                      </div>
                     )}
                   </div>
                 </div>
