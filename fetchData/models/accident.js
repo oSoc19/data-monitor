@@ -15,7 +15,6 @@ const accident = (sequelize, DataTypes) => {
     id: {
       type: DataTypes.STRING,
       primaryKey: true,
-      unique: true
     },
     version: {
       type: DataTypes.INTEGER
