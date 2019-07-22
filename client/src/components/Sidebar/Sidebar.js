@@ -29,7 +29,13 @@ const Sidebar = props => {
             <input type='text' value='2019-07-20T12:20:38.000Z' />
             <button
               onClick={() => {
-                dispatch({ type: 'filterDataSet', newFilter: { date: 'test' } })
+                dispatch({
+                  type: 'filterDataSet',
+                  newFilter: {
+                    date:
+                      '?startTime=2019-07-10T12:20:38.000Z&endTime=2019-07-21T12:20:38.000Z'
+                  }
+                })
               }}
             ></button>
           </div>
@@ -37,6 +43,7 @@ const Sidebar = props => {
             <h4>Datasets</h4>
             <div className='data-toggle'>
               <button
+                activeClassName='active'
                 onClick={() => {
                   dispatch({
                     type: 'changeDataSet',
@@ -53,6 +60,7 @@ const Sidebar = props => {
                 Bridges
               </button>
               <button
+                activeClassName='active'
                 onClick={() => {
                   dispatch({
                     type: 'changeDataSet',
@@ -69,6 +77,7 @@ const Sidebar = props => {
                 Maintenance
               </button>
               <button
+                activeClassName='active'
                 onClick={() => {
                   dispatch({
                     type: 'changeDataSet',

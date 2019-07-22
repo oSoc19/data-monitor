@@ -1,4 +1,4 @@
-export const today = new Date(Date.getDat)
+export const today = new Date()
 
 export const weekDays = {
   sunday: 'Sun',

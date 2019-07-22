@@ -12,10 +12,9 @@ import Loader from '../../components/Loader'
 import { MapStylePicker } from './Controls'
 
 import { useGlobalState } from '../../utilities/state'
-import { maintenanceWorks } from '../../config/api'
 
 const Map = props => {
-  const [{ dataSet }] = useGlobalState()
+  const [{ dataSet, filter }] = useGlobalState()
   const [state, setState] = useState({
     dataFeatures: [],
     bridgeEvents: null,
@@ -32,24 +31,22 @@ const Map = props => {
     }
   })
 
+  /**
+   * Trigger rerender when global state updates
+   */
   useEffect(() => {
     getData()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dataSet])
+  }, [dataSet, filter])
 
-  /**
-   * TODO: refactor to fetch util
-   */
+  // TODO: refactor to fetch util
   const getData = async () => {
-    let res = await fetch(dataSet.map)
+    let res = await fetch(dataSet.map + filter.date)
     res = await res.json()
     setState({ ...state, dataFeatures: res.features })
   }
 
-  /**
-   *
-   * TODO: refactor to fetch util
-   */
+  // TODO: refactor to fetch util
   const getBridgeEvents = async id => {
     let res = await fetch(
       `http://82.196.10.230:8080/api/bridge_openings/?id=${id}`
@@ -162,6 +159,7 @@ const Map = props => {
   const { dataFeatures, bridgeEvents, viewport, style } = state
   return (
     <div className='map'>
+      {console.log('render')}
       {dataFeatures.length > 0 ? (
         <ReactMapGL
           {...viewport}

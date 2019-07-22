@@ -13,6 +13,8 @@ import { Route } from 'react-router-dom'
 
 import { bridgeOpenings } from './config/api'
 
+import { today } from './utilities/calendar'
+
 const App = () => {
   /**
    * Global state
@@ -26,7 +28,7 @@ const App = () => {
       icon: 'bridge'
     },
     filter: {
-      date: 'default'
+      date: `?startTime=2019-07-20T12:20:38.000Z&endTime=2019-07-21T12:20:38.000Z`
     }
   }
 
@@ -42,7 +44,9 @@ const App = () => {
         }
       /**
        * Filter data sets
-       * - date
+       * - date:
+       *   - startDate
+       *   - endDate
        */
       case 'filterDataSet':
         return {
