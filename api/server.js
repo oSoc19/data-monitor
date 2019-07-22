@@ -250,6 +250,7 @@ app.use('*', function(req, res) {
 });
 
 /**
+ * Get all the bridge openings between the start time and the end time if those are defined. Can also check for a specific bridge with its id.
  * @param  {String} startTime
  * @param  {String} endTime
  * @param  {String} bridgeId
@@ -282,7 +283,8 @@ async function getBridgeOpenings(startTime, endTime, bridgeId) {
 
 }
 /**
- * @param  {String} table
+ * Get a GeoJSON feature collection with all the elements of the table between start time and endtime
+ * @param  {Object} table
  * @param  {String} startTime
  * @param  {String} endTime
  */
@@ -307,7 +309,8 @@ async function createFeatureCollection(table, startTime, endTime) {
   return featureCollection;
 }
 /**
- * @param  {String} table
+ * Get all the events between the start time and the end time
+ * @param  {Object} table
  * @param  {String} startTime
  * @param  {String} endTime
  */
@@ -335,7 +338,8 @@ async function getAllEvents(table, startTime, endTime) {
 
 }
 /**
- * @param  {String} table
+ * Get a summary of all the provincies with their good and bad events from the table.
+ * @param  {Object} table
  */
 async function getSummary(table) {
   let results = [];
@@ -361,8 +365,9 @@ async function getSummary(table) {
 
 }
 /**
+ * Get a summary of all the cities of the specified province with their good and bad events from the table.
  * @param  {String} province
- * @param  {String} table
+ * @param  {Object} table
  */
 async function getProvinceSummary(province, table) {
   province = province.split('_').join(' ');
@@ -390,8 +395,9 @@ async function getProvinceSummary(province, table) {
   return results;
 }
 /**
+ * Get a summary of all the events of the specified city with their good and bad events from the table.
  * @param  {String} city
- * @param  {String} table
+ * @param  {Object} table
  */
 async function getCitySummary(city, table) {
   city = city.split('_').join(' ');
@@ -409,7 +415,7 @@ async function getCitySummary(city, table) {
   return checkEvents;
 }
 /**
- * @param  {} table
+ * @param  {Object} table
  * @param  {String} as
  * @param  {String} attributes
  * @param  {String} boundariesName
@@ -423,7 +429,8 @@ async function intersects(table, as, attributes, boundariesName, level) {
   );
 }
 /**
- * @param  {} model
+ * Get all the good events from the events in the model.
+ * @param  {Object} model
  * @param  {Number} ids
  */
 async function findGoodEvents(model, ids) {
@@ -436,7 +443,8 @@ async function findGoodEvents(model, ids) {
   return goodEvents;
 }
 /**
- * @param  {} model
+ * Get all the bad events from the events in the model.
+ * @param  {Object} model
  * @param  {Number} ids
  */
 async function findBadEvents(model, ids) {
@@ -451,7 +459,8 @@ async function findBadEvents(model, ids) {
   return badEvents;
 }
 /**
- * @param  {} table
+ * 
+ * @param  {Object} table
  */
 async function getEventSummary(table) {
   let results = [];
@@ -462,8 +471,8 @@ async function getEventSummary(table) {
   return results;
 }
 /**
- * @param  {} province
- * @param  {} table
+ * @param  {String} province
+ * @param  {Object} table
  */
 async function getEventProvinceSummary(province, table) {
   let provinceName = province.split('_').join(' ');
@@ -472,7 +481,7 @@ async function getEventProvinceSummary(province, table) {
 }
 /**
  * @param  {String} city
- * @param  {} table
+ * @param  {Object} table
  */
 async function getEventCitySummary(city, table) {
   city = city.split('_').join(' ');
@@ -480,9 +489,9 @@ async function getEventCitySummary(city, table) {
   return result[0];
 }
 /**
- * @param  {} body
- * @param  {} name
- * @param  {} res
+ * @param  {String} body
+ * @param  {String} name
+ * @param  {String} res
  */
 function sendCsv(body, name, res) {
   res.setHeader('Content-Type', 'text/csv');
