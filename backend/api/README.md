@@ -69,7 +69,48 @@ ___
 This call will send you details on the maintenance works in the specified city.
 ___
 
+### Accidents
 
+```
+/api/accidents/:id
+```
+Send details on a the particular event that has the id specified.
+___
+```
+/api/accidents/?startTime=now&endTime=later
+```
+This api call will send you all the accidents. It is also possible to add an endTime and a startTime to the call, but it is optional.
+___
+```
+/api/qa/accidents/summary/
+```
+This call will send you a summary of all the provinces of the Netherlands
+___
+```
+/api/qa/accidents/summary/provinces/:province
+```
+This call will send you a summary of all the cities of the specified province.
+___
+```
+/api/qa/accidents/summary/cities/:city
+```
+This call will send you details on the accidents in the specified city.
+___
+```
+/api/download/accidents/summary/
+```
+CSV export for the whole Netherlands
+___
+```
+/api/download/accidents/summary/provinces/:province
+```
+CSV export for the specified province
+___
+```
+/api/download/accidents/summary/cities/:city
+```
+CSV export for the specified city
+___
 ## PUT calls
 
 ```
