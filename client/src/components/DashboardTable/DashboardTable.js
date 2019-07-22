@@ -53,11 +53,9 @@ const DashboardTable = props => {
               const { numberOfGoodEvents, numberOfBadEvents } = item.summary
               return (
                 <div
-                  onClick={() => {
+                  onClick={async () => {
                     fetch(`http://82.196.10.230:8080${item.nextUrl}`)
-                      .then(res => {
-                        return res.json()
-                      })
+                      .then(res => res.json())
                       .then(summary => {
                         setState({ summary, level: level + 1 })
                       })
