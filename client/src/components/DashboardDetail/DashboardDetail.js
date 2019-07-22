@@ -31,7 +31,11 @@ const DashboardDetail = props => {
               <tr>
                 <td
                   onClick={() => {
-                    console.log(event)
+                    fetch(`http://82.196.10.230:8080${event.nextUrl}`)
+                      .then(res => res.json())
+                      .then(eventDetails => {
+                        console.log(eventDetails)
+                      })
                   }}
                 >
                   {event.bridgeOpeningId}

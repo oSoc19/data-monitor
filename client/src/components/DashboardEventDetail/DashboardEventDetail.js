@@ -1,6 +1,6 @@
 import React from 'react'
 
-const DashboardEventDetail = () => {
+const DashboardEventDetail = eventDetail => {
   return (
     <div>
       <h4>Event detail</h4>
