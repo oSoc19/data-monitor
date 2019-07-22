@@ -249,7 +249,11 @@ app.use('*', function(req, res) {
   }, 404);
 });
 
-
+/**
+ * @param  {String} startTime
+ * @param  {String} endTime
+ * @param  {String} bridgeId
+ */
 async function getBridgeOpenings(startTime, endTime, bridgeId) {
   if (startTime === undefined) {
     startTime = 0;
@@ -277,7 +281,11 @@ async function getBridgeOpenings(startTime, endTime, bridgeId) {
   return bridgeOpenings;
 
 }
-
+/**
+ * @param  {String} table
+ * @param  {String} startTime
+ * @param  {String} endTime
+ */
 async function createFeatureCollection(table, startTime, endTime) {
   let events = await getAllEvents(table, startTime, endTime);
   let features = [];
@@ -298,7 +306,11 @@ async function createFeatureCollection(table, startTime, endTime) {
 
   return featureCollection;
 }
-
+/**
+ * @param  {String} table
+ * @param  {String} startTime
+ * @param  {String} endTime
+ */
 async function getAllEvents(table, startTime, endTime) {
   if (startTime === undefined) {
     startTime = 0;
@@ -322,7 +334,9 @@ async function getAllEvents(table, startTime, endTime) {
   return events;
 
 }
-
+/**
+ * @param  {String} table
+ */
 async function getSummary(table) {
   let results = [];
   for (let province of PROVINCES) {
@@ -346,7 +360,10 @@ async function getSummary(table) {
   return results;
 
 }
-
+/**
+ * @param  {String} province
+ * @param  {String} table
+ */
 async function getProvinceSummary(province, table) {
   province = province.split('_').join(' ');
   let results = [];
@@ -372,7 +389,10 @@ async function getProvinceSummary(province, table) {
   }
   return results;
 }
-
+/**
+ * @param  {String} city
+ * @param  {String} table
+ */
 async function getCitySummary(city, table) {
   city = city.split('_').join(' ');
   let cityQuery = city.replace("'", "''");
@@ -388,7 +408,13 @@ async function getCitySummary(city, table) {
   });
   return checkEvents;
 }
-
+/**
+ * @param  {} table
+ * @param  {String} as
+ * @param  {String} attributes
+ * @param  {String} boundariesName
+ * @param  {Number} level
+ */
 async function intersects(table, as, attributes, boundariesName, level) {
   return [results, metadata] = await sequelize.query(
     `SELECT ${attributes} FROM ${table.getTableName()} AS ${as}, administrative_boundaries AS a
@@ -396,7 +422,10 @@ async function intersects(table, as, attributes, boundariesName, level) {
          ST_Intersects(${as}."locationForDisplay", a.geog)`
   );
 }
-
+/**
+ * @param  {} model
+ * @param  {Number} ids
+ */
 async function findGoodEvents(model, ids) {
   let goodEvents = await model.findAndCountAll({
     where: {
@@ -406,7 +435,10 @@ async function findGoodEvents(model, ids) {
   });
   return goodEvents;
 }
-
+/**
+ * @param  {} model
+ * @param  {Number} ids
+ */
 async function findBadEvents(model, ids) {
   let badEvents = await model.findAndCountAll({
     where: {
@@ -418,7 +450,9 @@ async function findBadEvents(model, ids) {
   });
   return badEvents;
 }
-
+/**
+ * @param  {} table
+ */
 async function getEventSummary(table) {
   let results = [];
   for (let province of PROVINCES) {
@@ -427,19 +461,29 @@ async function getEventSummary(table) {
   }
   return results;
 }
-
+/**
+ * @param  {} province
+ * @param  {} table
+ */
 async function getEventProvinceSummary(province, table) {
   let provinceName = province.split('_').join(' ');
   let result = await intersects(table, 'b', 'b.*', provinceName, PROVINCE_LEVEL);
   return result[0];
 }
-
+/**
+ * @param  {String} city
+ * @param  {} table
+ */
 async function getEventCitySummary(city, table) {
   city = city.split('_').join(' ');
   let result = await intersects(table, 'b', 'b.*', city, CITY_LEVEL);
   return result[0];
 }
-
+/**
+ * @param  {} body
+ * @param  {} name
+ * @param  {} res
+ */
 function sendCsv(body, name, res) {
   res.setHeader('Content-Type', 'text/csv');
   res.setHeader('Content-Disposition', 'attachment; filename=\"' + name + '-' + Date.now() + '.csv\"');
