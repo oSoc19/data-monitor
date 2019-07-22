@@ -53,6 +53,13 @@ const DashboardTable = props => {
               const { numberOfGoodEvents, numberOfBadEvents } = item.summary
               return (
                 <div
+                  onClick={async () => {
+                    fetch(`http://82.196.10.230:8080${item.nextUrl}`)
+                      .then(res => res.json())
+                      .then(summary => {
+                        setState({ summary, level: level + 1 })
+                      })
+                  }}
                   className='dashboard-item'
                   key={item.name}
                   style={{
@@ -71,25 +78,14 @@ const DashboardTable = props => {
                   }}
                 >
                   <h4>{item.name}</h4>
-                  <button
-                    onClick={async () => {
-                      fetch(`http://82.196.10.230:8080${item.nextUrl}`)
-                        .then(res => res.json())
-                        .then(summary => {
-                          setState({ summary, level: level + 1 })
-                        })
-                    }}
-                  >
-                    <Plus />
-                    Cities
-                  </button>
                   <hr />
                   {item.nextUrl && (
                     <React.Fragment>
                       <button
                         className='btn-outline'
                         type='submit'
-                        onClick={() => {
+                        onClick={e => {
+                          e.stopPropagation()
                           console.log(item.nextUrl)
                           const downloadUrlEndpoint = item.nextUrl.replace(
                             '/qa/',
