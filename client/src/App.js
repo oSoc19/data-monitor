@@ -1,5 +1,4 @@
 import React from 'react'
-import './sass/main.sass'
 
 import { StateProvider } from './utilities/state'
 
@@ -35,6 +34,9 @@ const App = () => {
           ...state,
           dataSet: action.newDataSet
         }
+      /**
+       * TODO: filter actions
+       */
       default:
         return state
     }
@@ -42,13 +44,13 @@ const App = () => {
 
   return (
     <React.Fragment>
-      <Route path='/' exact component={Home} />
-      <Route path='/leaflet' component={LeafletMap} />
       <StateProvider initialState={initialState} reducer={reducer}>
+        <Route path='/' exact component={Home} />
+        <Route path='/leaflet' component={LeafletMap} />
         <Route path='/mapbox' component={MapOverview} />
         <Route path='/dashboard' component={Dashboard} />
+        <Route path='/info' component={Info} />
       </StateProvider>
-      <Route path='/info' component={Info} />
     </React.Fragment>
   )
 }
