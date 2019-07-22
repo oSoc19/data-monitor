@@ -77,6 +77,14 @@ app.get('/api/bridges/', async (req, res, next) => {
   res.send(featureCollection);
 });
 
+app.get('/api/bridge_openings/:id', async (req, res) => {
+  let result = await models.BridgeOpening.findOne({
+    where: {
+      id: req.params.id
+    }
+  });
+  res.send(result);
+});
 
 app.get('/api/bridge_openings/', async (req, res, next) => {
   let startTime = req.query.startTime;
@@ -426,6 +434,9 @@ async function getCitySummary(city, table) {
     where: {
       [table.checkTable.eventId]: ids
     }
+  });
+  checkEvents.map((value) => {
+    value.dataValues.nextUrl = `/api/${table.getTableName()}/${value[table.checkTable.eventId]}`;
   });
   return checkEvents;
 }

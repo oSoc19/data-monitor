@@ -12,7 +12,7 @@ const sequelize = new Sequelize(
   }
 );
 
-// TODO: Refactor by iterate in the models folder
+// All the models that are in the database
 const models = {
   Bridge: sequelize.import('./models/bridge.js'),
   BridgeOpening: sequelize.import('./models/bridgeOpening.js'),
@@ -34,6 +34,10 @@ const associateModels = () => {
   });
 }
 
+/*
+ * Fetch the all the bridge openings events 
+ * 
+*/
 const loadBridges = async () => {
   await waitForDatabase();
   await sequelize.sync();

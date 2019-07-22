@@ -1,6 +1,10 @@
 const get = require('../getNested.js');
 
 const accidentCheck = (sequelize, DataTypes) => {
+  /**
+   * AccidentCheck Model which contains all the check for the quality assessment
+   * This model is used to display the dashboard on the website
+   */
   const AccidentCheck = sequelize.define('accident_checks', {
     version: {
       type: DataTypes.FLOAT
@@ -31,17 +35,28 @@ const accidentCheck = (sequelize, DataTypes) => {
     }
   })
 
+  /**
+   * Associate the accident check model with the accident model.
+   */
   AccidentCheck.associate = models => {
     AccidentCheck.belongsTo(models.Accident);
+    // Name of the column corresponding to the accident id
     AccidentCheck.eventId = 'accidentId';
   }
 
+  /**
+   * Check if the "version" field is defined.
+   */
   AccidentCheck.version = accident => {
     if (get(['dataValues', 'version'], accident) !== undefined)
       return 1;
     else
       return 0;
   }
+
+  /**
+   * Check if the "probabilityOfOccurence" field is defined and has a correct value.
+   */
   AccidentCheck.probabilityOfOccurence = accident => {
     let value = get(['dataValues', 'probabilityOfOccurrence'], accident);
     if (value === 'certain' || value === 'probable' || value === 'riskOf') {
@@ -49,6 +64,10 @@ const accidentCheck = (sequelize, DataTypes) => {
     }
     else return 0
   }
+
+  /**
+   * Check if the "locationForDisplay" field is defined.
+   */
   AccidentCheck.locationForDisplay = accident => {
     if (get(['dataValues', 'locationForDisplay'], accident) !== undefined)
       return 1;
@@ -56,12 +75,19 @@ const accidentCheck = (sequelize, DataTypes) => {
       return 0;
   }
 
+  /**
+   * Check if the "location" field is defined.
+   */
   AccidentCheck.location = accident => {
     if (get(['dataValues', 'location'], accident) !== undefined)
       return 1;
     else
       return 0;
   }
+
+  /**
+   * Check if the "accidentType" field is defined and has a correct value.
+   */
   AccidentCheck.accidentType = accident => {
     let possibleTypes = ['accident',
       'accidentInvolvingBicycles',
@@ -99,6 +125,9 @@ const accidentCheck = (sequelize, DataTypes) => {
       return 0;
   }
 
+  /**
+   * Check if each column of the table made for the object is defined and return the proportion a float between 0 and 1 that is the ratio (number of field)/(number of defined field)
+   */
   AccidentCheck.allFields = accident => {
     let accidentValues = Object.values(accident.dataValues)
     let c = 0;
@@ -110,6 +139,9 @@ const accidentCheck = (sequelize, DataTypes) => {
     return ((c - 2) / (accidentValues.length - 2))
   }
 
+  /**
+   * Provide an average value for all the tests
+   */
   AccidentCheck.checksum = accident => {
     let c = 0;
     c += AccidentCheck.version(accident);
@@ -121,6 +153,10 @@ const accidentCheck = (sequelize, DataTypes) => {
     return c / 6
   }
 
+  /**
+   * Create a check for the accident event.
+   * @param  {Object} event
+   */
   AccidentCheck.createCheck = async (event) => {
     let accidentCheck = await AccidentCheck.findOne({
       where: {

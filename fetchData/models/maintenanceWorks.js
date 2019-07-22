@@ -5,7 +5,7 @@ const get = require('../getNested.js');
  * A maintenance works indicate actual and planned road maintenance works.
  * Model based on objects from the opendata provided by the NDW.
  * Data found at http://opendata.ndw.nu/wegwerkzaamheden.xml.gz
- * Documentation found at http://docs.ndwcloud.nu/
+ * Documentation found at http://docs.ndwcloud.nu/en/sb/algemeen/specialisatie/MaintenanceWorks_wwz.html
  */
 const maintenanceWorks = (sequelize, DataTypes) => {
   /**
@@ -52,9 +52,6 @@ const maintenanceWorks = (sequelize, DataTypes) => {
     locationForDisplay: {
       type: DataTypes.GEOMETRY('POINT')
     },
-    location: {
-      type: DataTypes.GEOMETRY('MULTILINESTRING')
-    },
   });
 
   /**
@@ -82,52 +79,24 @@ const maintenanceWorks = (sequelize, DataTypes) => {
 
     let locationForDisplay;
     let groupOfLocations = get(['groupOfLocations'], situationRecord)
-    let listOfLines;
-    let lineString = [];
     if (groupOfLocations['$']['xsi:type'] === 'Point') {
       locationForDisplay = get(['locationForDisplay'], groupOfLocations)
 
     } else if (groupOfLocations['$']['xsi:type'] === 'Linear') {
       locationForDisplay = get(['locationForDisplay'], groupOfLocations)
-      listOfLines = [{
-        location: groupOfLocations
-      }] // To keep the same format
 
     } else if (groupOfLocations['$']['xsi:type'] === 'ItineraryByIndexedLocations') {
       if (Array.isArray(get(['locationContainedInItinerary'], groupOfLocations))) {
         locationForDisplay = get(['locationContainedInItinerary[0]', 'location', 'locationForDisplay'], groupOfLocations)
-        listOfLines = get(['locationContainedInItinerary'], groupOfLocations);
 
       } else {
         locationForDisplay = get(['locationContainedInItinerary', 'location', 'locationForDisplay'], groupOfLocations)
-        listOfLines = [groupOfLocations.locationContainedInItinerary];
       }
     }
 
-    if (listOfLines) {
-      for (let i = 0; i < listOfLines.length; i++) {
-        if (listOfLines[i].location['$']['xsi:type'] === 'Point') {
-          return;
-        }
-        let startPoint = get(['location', 'linearExtension', 'linearByCoordinatesExtension', 'linearCoordinatesStartPoint', 'pointCoordinates'], listOfLines[i])
-        let endPoint = get(['location', 'linearExtension', 'linearByCoordinatesExtension', 'linearCoordinatesEndPoint', 'pointCoordinates'], listOfLines[i])
-        lineString.push([
-          [startPoint.longitude, startPoint.latitude],
-          [endPoint.longitude, endPoint.latitude]
-        ]);
-      }
-    }
     // Error in the situation record
     if (!locationForDisplay) {
       return;
-    } 
-    let location = GeoJson.parse({
-      lineString: lineString
-    }, {
-        MultiLineString: 'lineString'
-      }).geometry
-    if (location.coordinates.length === 0) {
-      location = null;
     }
     // If the maintenanceWorks event doesn't exist, it is created, otherwise it is updated.
     let maintenanceWorksEntry = {
@@ -146,8 +115,6 @@ const maintenanceWorks = (sequelize, DataTypes) => {
       locationForDisplay: GeoJson.parse(locationForDisplay, {
         Point: ['latitude', 'longitude']
       }).geometry,
-      location: location,
-
     }
 
     let maintenanceWorks = await models.MaintenanceWorks.findOne({

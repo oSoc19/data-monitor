@@ -40,6 +40,7 @@ const accidentCheck = (sequelize, DataTypes) => {
    */
   AccidentCheck.associate = models => {
     AccidentCheck.belongsTo(models.Accident);
+    // Name of the column corresponding to the accident id
     AccidentCheck.eventId = 'accidentId';
   }
 
