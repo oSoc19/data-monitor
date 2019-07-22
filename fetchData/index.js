@@ -65,12 +65,6 @@ const loadMaintenanceWorks = async () => {
 const loadAccident = async () => {
   await waitForDatabase();
   await sequelize.sync();
-  models.Accident.destroy({
-    where: {}
-  }); //Delete all rows in the table
-  models.AccidentCheck.destroy({
-    where: {}
-  }); // Delete all rows in the check table
   const accidentUrl = 'http://opendata.ndw.nu/incidents.xml.gz'
   console.log('fetching accidents')
   await parse(accidentUrl, "situationRecord", (situation) => {

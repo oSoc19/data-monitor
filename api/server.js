@@ -324,7 +324,7 @@ async function getAllEvents(table, startTime, endTime) {
 
   let events = await table.findAll({
     raw: true,
-    attributes: ['id', 'locationForDisplay'],
+    attributes: [sequelize.literal('array_agg(id) as id'), 'locationForDisplay'],
     where: {
       situationRecordVersionTime: {
         [op.and]: {
@@ -332,7 +332,8 @@ async function getAllEvents(table, startTime, endTime) {
           [op.lte]: new Date(endTime)
         }
       }
-    }
+    },
+    group: ['locationForDisplay']
   });
   return events;
 
@@ -500,4 +501,3 @@ function sendCsv(body, name, res) {
     header: true
   }).pipe(res);
 }
-
