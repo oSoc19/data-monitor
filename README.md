@@ -2,35 +2,65 @@
 
 The backend runs in docker and docker-compose
 
-## Basic running
+## Running locally
 ### Building
 
 The first time you need to build your backend.
 ```
-docker-compose build
+docker-compose -f docker-compose.yml -f docker-compose.local.yml build
 ```
 
 ### Running
 ```
-docker-compose up
+docker-compose -f docker-compose.yml -f docker-compose.local.yml up
 ```
+
+The API will be availible on port 8080.
 
 ### Stopping
 ```
-docker-compose stop
+docker-compose -f docker-compose.yml -f docker-compose.local.yml stop
 ```
 
-### cleaning up
+### Cleaning up
 
 This is the agressive command, there are more subtle ones.
 ```
-docker-compose down
+docker-compose -f docker-compose.yml -f docker-compose.local.yml down
 ```
 This will keep the data in the data folder.
 The data folder is kept locally, and not included in git.
 
+## Running on a server.
+The passwords and extra config should be hidden. Therefore, you can have a docker-compose.override.yml file, which is ignored by git.
 
-## Developing
+### Building
+
+The first time you need to build your backend.
+```
+docker-compose -f docker-compose.yml -f docker-compose.override.yml build
+```
+
+### Running
+```
+docker-compose -f docker-compose.yml -f docker-compose.override.yml up
+```
+
+The API will be availible on port 8080.
+
+### Stopping
+```
+docker-compose -f docker-compose.yml -f docker-compose.override.yml stop
+```
+
+### Cleaning up
+
+This is the agressive command, there are more subtle ones.
+```
+docker-compose -f docker-compose.yml -f docker-compose.override.yml down
+```
+
+## Developing Locally
 
 The development mode depends on the type of service. The config of each service to run in development mode, is in the docker-compose.dev.yml file.
 
@@ -53,9 +83,9 @@ services:
 ```
 Running
 ```
-docker-compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.override.yml up -d  # will start in daemon mode
-docker-compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.override.yml up logs -f --tail=200 # will tail logs
-docker-compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.override.yml restart api # if you want to restart a service, better do it in another terminal
+docker-compose -f docker-compose.yml -f docker-compose.local.yml -f docker-compose.dev.yml -f docker-compose.override.yml up -d  # will start in daemon mode
+docker-compose -f docker-compose.yml -f docker-compose.local.yml -f docker-compose.dev.yml -f docker-compose.override.yml up logs -f --tail=200 # will tail logs
+docker-compose -f docker-compose.yml -f docker-compose.local.yml -f docker-compose.dev.yml -f docker-compose.override.yml restart api # if you want to restart a service, better do it in another terminal
 ```
 To go and debug this, use chrome and go to
 ```
@@ -97,7 +127,7 @@ services:
 ```
 To take these into account, you can run:
 ```
-docker-compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.override.yml up -d  # will start in daemon mode
+docker-compose -f docker-compose.yml -f docker-compose.local.yml -f docker-compose.dev.yml -f docker-compose.override.yml up -d  # will start in daemon mode
 ```
 Please note: there are shorter ways, but leave em like it is for now.
 
