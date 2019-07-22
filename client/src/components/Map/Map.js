@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import ReactMapGL, { Marker, FlyToInterpolator } from 'react-map-gl'
 import DeckGL, { ScatterplotLayer, IconLayer } from 'deck.gl'
-import { Circle } from 'react-feather'
 import './Map.sass'
 import Legend from '../Legend'
 import bridgeOpenIcon from '../../assets/icons/bridge.png'
@@ -12,11 +11,11 @@ import Loader from '../../components/Loader'
 
 import { MapStylePicker } from './Controls'
 
-import { useStateValue } from '../../utilities/state'
+import { useGlobalState } from '../../utilities/state'
 import { maintenanceWorks } from '../../config/api'
 
 const Map = props => {
-  const [{ dataSet }] = useStateValue()
+  const [{ dataSet }] = useGlobalState()
   const [state, setState] = useState({
     dataFeatures: [],
     bridgeEvents: null,
@@ -28,8 +27,8 @@ const Map = props => {
       height: '100%',
       zoom: 7.1,
       bearing: 0,
-      pitch: 0
-      // TODO: min & max zoom
+      pitch: 0,
+      minZoom: 6
     }
   })
 
