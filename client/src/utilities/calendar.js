@@ -10,7 +10,7 @@ export const weekDays = {
   saturday: 'Sat'
 }
 
-export const CALENDAR_MONTHS = {
+export const months = {
   january: 'Jan',
   february: 'Feb',
   march: 'Mar',
