@@ -7,7 +7,7 @@ set -e
 export PGUSER="$POSTGRES_USER"
 export POSTGRES_DB="datamonitor"
 
-psql -U "$POSTGRES_USER" -c "ALTER USER postgres SET timezone='Europe/Brussels';"
+psql -U "$POSTGRES_USER" -c "ALTER USER $POSTGRES_USER SET timezone='Europe/Brussels';"
 
 # create db
 psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" <<-EOSQL
@@ -37,7 +37,6 @@ done
 
 #create table
 for DB in "$POSTGRES_DB"; do
-    echo "creating tables, assuming WSG84"
     "${psql[@]}" --dbname="$DB" <<-'EOSQL'
       CREATE TABLE administrative_boundaries (
         id SERIAL PRIMARY KEY,
