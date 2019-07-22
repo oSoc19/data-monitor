@@ -1,15 +1,16 @@
 import React, { useState } from 'react'
-import { useStateValue } from '../../utilities/state'
+import { useGlobalState } from '../../utilities/state'
 
 import './Sidebar.sass'
 import { bridgeOpenings, maintenanceWorks, incidents } from '../../config/api'
 
 import { today } from '../../utilities/calendar'
-import { Filter } from 'react-feather'
+import { Filter, ArrowLeft } from 'react-feather'
 
 const Sidebar = props => {
-  const [{ dataSet }, dispatch] = useStateValue()
+  const [{ dataSet, filter }, dispatch] = useGlobalState()
   const [visible, toggleVisible] = useState(true)
+
   return (
     <React.Fragment>
       <button
@@ -18,11 +19,20 @@ const Sidebar = props => {
           toggleVisible(!visible)
         }}
       >
+        {visible ? <ArrowLeft /> : null}
         <Filter />
       </button>
       {visible && (
         <div className='sidebar' style={props.style}>
-          <div className='sidebar-section'></div>
+          <div className='sidebar-section'>
+            <input type='text' value='2019-07-08T12:20:38.000Z' />
+            <input type='text' value='2019-07-20T12:20:38.000Z' />
+            <button
+              onClick={() => {
+                dispatch({ type: 'filterDataSet', newFilter: { date: 'test' } })
+              }}
+            ></button>
+          </div>
           <div className='sidebar-section'>
             <h4>Datasets</h4>
             <div className='data-toggle'>
@@ -50,7 +60,7 @@ const Sidebar = props => {
                       name: 'maintenance',
                       summary: maintenanceWorks.summary,
                       map: maintenanceWorks.map,
-                      download: bridgeOpenings.csv,
+                      download: maintenanceWorks.csv,
                       icon: 'maintenance'
                     }
                   })

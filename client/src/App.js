@@ -24,19 +24,31 @@ const App = () => {
       map: bridgeOpenings.map,
       download: bridgeOpenings.csv,
       icon: 'bridge'
+    },
+    filter: {
+      date: 'default'
     }
   }
 
   const reducer = (state, action) => {
     switch (action.type) {
+      /**
+       * Switch between datasets
+       */
       case 'changeDataSet':
         return {
           ...state,
           dataSet: action.newDataSet
         }
       /**
-       * TODO: filter actions
+       * Filter data sets
+       * - date
        */
+      case 'filterDataSet':
+        return {
+          ...state,
+          filter: action.newFilter
+        }
       default:
         return state
     }

@@ -6,7 +6,7 @@ import { Pie } from 'react-chartjs-2'
 
 import Loader from '../../components/Loader'
 
-import { useStateValue } from '../../utilities/state'
+import { useGlobalState } from '../../utilities/state'
 
 /**
  * Region levels
@@ -18,8 +18,8 @@ import { useStateValue } from '../../utilities/state'
 const levelInfo = ['country', 'region', 'province', 'city']
 
 const DashboardTable = props => {
-  const [state, setState] = useState({ level: 1, summary: [] })
-  const [{ dataSet }] = useStateValue()
+  const [state, setState] = useState({ level: 1, summary: [], loading: true })
+  const [{ dataSet }] = useGlobalState()
 
   useEffect(() => {
     fetchSummary()
@@ -27,13 +27,10 @@ const DashboardTable = props => {
   }, [dataSet])
 
   const fetchSummary = async () => {
-    let res = await fetch(
-      // `http://82.196.10.230:8080/api/qa/bridge_openings/summary`
-      dataSet.summary
-    )
+    let res = await fetch(dataSet.summary)
     let summary = await res.json()
     console.log(summary)
-    setState({ ...state, summary })
+    setState({ ...state, summary, loading: false })
   }
 
   const getEventDataQuality = (goodEvents, badEvents) => {
@@ -46,8 +43,8 @@ const DashboardTable = props => {
     }
   }
 
-  const { summary, level } = state
-  if (summary.length > 0) {
+  const { summary, level, loading } = state
+  if (!loading) {
     return (
       <React.Fragment>
         <div className='dashboard-container'>
@@ -87,10 +84,6 @@ const DashboardTable = props => {
                   <hr />
                   {item.nextUrl && (
                     <React.Fragment>
-                      {/* <h4>API endpoint</h4>
-                    <pre>
-                    <code>{item.nextUrl}</code>
-                  </pre> */}
                       <button
                         className='btn-outline'
                         type='submit'
@@ -109,7 +102,6 @@ const DashboardTable = props => {
                       </button>
                     </React.Fragment>
                   )}
-
                   <h3>Event quality</h3>
                   <table>
                     <tr>
