@@ -151,8 +151,8 @@ app.get('/api/maintenance_works/:id', async (req, res) => {
 });
 
 app.get('/api/maintenance_works/', async (req, res, next) => {
-  let startTime = req.params.startTime;
-  let endTime = req.params.endTime;
+  let startTime = req.query.startTime;
+  let endTime = req.query.endTime;
   let featureCollection = await createFeatureCollection(models.MaintenanceWorks, startTime, endTime);
   res.send(featureCollection);
 });
