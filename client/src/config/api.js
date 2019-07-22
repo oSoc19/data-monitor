@@ -21,8 +21,8 @@ export const maintenanceWorks = {
   query: `/?startTime=2019-07-08T12:20:38.000Z&endTime=2019-07-20T12:20:38.000Z`
 }
 
-export const incidents = {
-  summary: ``,
-  map: ``,
-  csv: ``
+export const accidents = {
+  summary: `${apiUrl}qa/accidents/summary/`,
+  map: `${apiUrl}accidents`,
+  csv: `${apiUrl}download/accidents/summary/`
 }

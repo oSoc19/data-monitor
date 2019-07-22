@@ -5,6 +5,7 @@ import './Map.sass'
 import Legend from '../Legend'
 import bridgeOpenIcon from '../../assets/icons/bridge.png'
 import maintenanceIcon from '../../assets/icons/actualmaintenance.png'
+import accidentIcon from '../../assets/icons/incident.png'
 import { Mapbox } from '../../config'
 
 import Loader from '../../components/Loader'
@@ -61,11 +62,14 @@ const Map = props => {
         return bridgeOpenIcon
       case 'maintenance':
         return maintenanceIcon
+      case 'accident':
+        return accidentIcon
       default:
         return 'none'
     }
   }
 
+  // TODO: refactor to map layer component
   const renderIconLayer = () => {
     const { dataFeatures } = state
     const data = dataFeatures.map(feature => {
@@ -92,6 +96,7 @@ const Map = props => {
     })
   }
 
+  // TODO: refactor to map layer component
   const renderScatterPlotLayer = () => {
     const { dataFeatures } = state
 
