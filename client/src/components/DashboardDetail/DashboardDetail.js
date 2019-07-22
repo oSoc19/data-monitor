@@ -4,16 +4,20 @@ import './DashboardDetail.sass'
 import { Check, X } from 'react-feather'
 
 const DashboardDetail = props => {
+  const renderBool = bool => {
+    return bool ? <Check /> : <X />
+  }
+
   const { summary } = props
+  console.log(summary)
   return summary.length > 0 ? (
     <div>
       <table>
         <thead>
           <tr>
             <td>Event Id</td>
-            <td>Fields complete</td>
-            <td>Correct Id</td>
             <td>Version</td>
+            <td>Fields complete</td>
             <td>Probability of occurence</td>
             <td>Source</td>
             <td>Location for display</td>
@@ -25,15 +29,20 @@ const DashboardDetail = props => {
           return (
             <tbody>
               <tr>
-                <td>{event.bridgeOpeningId}</td>
-                <td>{event.allFields ? <Check /> : <X />}</td>
-                <td>{event.correctID ? <Check /> : <X />}</td>
+                <td
+                  onClick={() => {
+                    console.log(event)
+                  }}
+                >
+                  {event.bridgeOpeningId}
+                </td>
                 <td>{event.version}</td>
-                <td>{event.probabilityOfOccurence}</td>
-                <td>{event.source}</td>
-                <td>{event.locationForDisplay}</td>
-                <td>{event.location}</td>
-                <td>{event.generalNetworkManagementType}</td>
+                <td>{renderBool(event.allFields)}</td>
+                <td>{renderBool(event.probabilityOfOccurence)}</td>
+                <td>{renderBool(event.source)}</td>
+                <td>{renderBool(event.locationForDisplay)}</td>
+                <td>{renderBool(event.location)}</td>
+                <td>{renderBool(event.generalNetworkManagementType)}</td>
               </tr>
             </tbody>
           )
