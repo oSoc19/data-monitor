@@ -46,7 +46,10 @@ const bridgeOpening = (sequelize, DataTypes) => {
 
   BridgeOpening.associate = models => {
     BridgeOpening.hasOne(models.BridgeOpeningCheck);
+    BridgeOpening.checkTable = models.BridgeOpeningCheck;
+
   };
+
 
 
   /* Create a bridge event corresponding to a situation record
@@ -83,7 +86,7 @@ const bridgeOpening = (sequelize, DataTypes) => {
         endTime: get(['validity', 'validityTimeSpecification', 'overallEndTime'], situationRecord),
         probabilityOfOccurence: get(['probabilityOfOccurrence'], situationRecord),
         locationForDisplay: GeoJson.parse(location, {
-          Point: ['longitude', 'latitude']
+          Point: ['latitude', 'longitude']
         }).geometry,
         generalNetworkManagementType: get(['generalNetworkManagementType'], situationRecord),
         bridgeId: bridge.id
