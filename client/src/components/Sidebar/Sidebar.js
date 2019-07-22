@@ -13,7 +13,7 @@ const Sidebar = props => {
 
   return (
     <React.Fragment>
-      <button
+      {/* <button
         style={{ position: 'absolute', zIndex: 100 }}
         onClick={() => {
           toggleVisible(!visible)
@@ -21,12 +21,13 @@ const Sidebar = props => {
       >
         {visible ? <ArrowLeft /> : null}
         <Filter />
-      </button>
+      </button> */}
       {visible && (
         <div className='sidebar' style={props.style}>
           <div className='sidebar-section'>
-            <input type='text' value='2019-07-08T12:20:38.000Z' />
-            <input type='text' value='2019-07-20T12:20:38.000Z' />
+            <h4>Filter</h4>
+            {/* <input type='text' value='2019-07-08T12:20:38.000Z' />
+            <input type='text' value='2019-07-20T12:20:38.000Z' /> */}
             <button
               onClick={() => {
                 dispatch({
@@ -50,6 +51,18 @@ const Sidebar = props => {
               }}
             >
               7 Days
+            </button>
+            <button
+              onClick={() => {
+                dispatch({
+                  type: 'filterDataSet',
+                  newFilter: {
+                    date: `/?startTime=${lastMonth}&endTime=${now}`
+                  }
+                })
+              }}
+            >
+              1 Month
             </button>
           </div>
           <div className='sidebar-section'>
