@@ -68,14 +68,13 @@ const DashboardTable = props => {
                         numberOfGoodEvents,
                         numberOfBadEvents
                       ) === 100
-                        ? '20px solid rgba(0,255,0, .5)'
+                        ? '1px solid rgba(0,255,0, .5)'
                         : getEventDataQuality(
                             numberOfGoodEvents,
                             numberOfBadEvents
                           ) > 50
-                        ? '20px solid rgba(255,128,0, .5)'
-                        : '20px solid rgba(255,0,0, .5)',
-                    borderWidth: '20px 1px 1px 1px'
+                        ? '1px solid rgba(255,128,0, .5)'
+                        : '1px solid rgba(255,0,0, .5)'
                   }}
                 >
                   <h4>{item.name}</h4>
