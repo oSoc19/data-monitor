@@ -1,9 +1,9 @@
 const get = require('../getNested');
-/*
- * BridgeOpeningCheck Model which contains all the check for the quality assessment
- * This model is used to display the dashboard on the website
- */
 const bridgeOpeningCheck = (sequelize, DataTypes) => {
+  /**
+   * BridgeOpeningCheck Model which contains all the check for the quality assessment
+   * This model is used to display the dashboard on the website
+   */
   const BridgeOpeningCheck = sequelize.define('bridge_opening_check', {
     version: {
       type: DataTypes.FLOAT
@@ -23,7 +23,6 @@ const bridgeOpeningCheck = (sequelize, DataTypes) => {
     generalNetworkManagementType: {
       type: DataTypes.FLOAT
     },
-    // Checksum of all the others checks
     checksum: {
       type: DataTypes.FLOAT
     },
@@ -38,11 +37,17 @@ const bridgeOpeningCheck = (sequelize, DataTypes) => {
     }
   });
 
+  /**
+   * Associate the bridge opening check model with the bridge opening model.
+   */
   BridgeOpeningCheck.associate = models => {
     BridgeOpeningCheck.belongsTo(models.BridgeOpening);
     BridgeOpeningCheck.eventId = 'bridgeOpeningId';
   }
 
+  /**
+   * Check if the "version" field is defined.
+   */
   BridgeOpeningCheck.version = bridgeOpening => {
     if (get(['dataValues', 'version'], bridgeOpening) !== undefined)
       return 1;
@@ -50,6 +55,9 @@ const bridgeOpeningCheck = (sequelize, DataTypes) => {
       return 0;
   }
 
+  /**
+   * Check if the "probabilityOfOccurence" field is defined and has a correct value.
+   */
   BridgeOpeningCheck.probabilityOfOccurence = bridgeOpening => {
     let value = get(['dataValues', 'probabilityOfOccurence'], bridgeOpening);
     if (value === 'certain' || value === 'probable' || value === 'riskOf') {
@@ -58,6 +66,9 @@ const bridgeOpeningCheck = (sequelize, DataTypes) => {
     else return 0
   }
 
+  /**
+   * Check if the "source" field is defined.
+   */
   BridgeOpeningCheck.source = bridgeOpening => {
     if (get(['dataValues', 'source'], bridgeOpening) !== undefined) {
       return 1
@@ -65,6 +76,9 @@ const bridgeOpeningCheck = (sequelize, DataTypes) => {
     else return 0
   }
 
+  /**
+   * Check if the "locationForDisplay" field is defined.
+   */
   BridgeOpeningCheck.locationForDisplay = bridgeOpening => {
     if (get(['dataValues', 'locationForDisplay'], bridgeOpening) !== undefined)
       return 1;
@@ -72,6 +86,9 @@ const bridgeOpeningCheck = (sequelize, DataTypes) => {
       return 0;
   }
 
+  /**
+   * Check if the "location" field is defined.
+   */
   BridgeOpeningCheck.location = bridgeOpening => {
     if (get(['dataValues', 'location'], bridgeOpening) !== undefined)
       return 1;
@@ -79,6 +96,9 @@ const bridgeOpeningCheck = (sequelize, DataTypes) => {
       return 0;
   }
 
+  /**
+   * Check if the "generalNetworkManagementType" field is defined.
+   */
   BridgeOpeningCheck.generalNetworkManagementType = bridgeOpening => {
     if (get(['dataValues', 'generalNetworkManagementType'], bridgeOpening) !== undefined)
       return 1;
@@ -86,6 +106,9 @@ const bridgeOpeningCheck = (sequelize, DataTypes) => {
       return 0;
   }
 
+  /**
+   * Check if each column of the table made for the object is defined and return the proportion a float between 0 and 1 that is the ratio (number of field)/(number of defined field)
+   */
   BridgeOpeningCheck.allFields = bridgeOpening => {
     let bridgeOpeningKeys = Object.values(bridgeOpening.dataValues)
     let c = 0;
@@ -94,9 +117,12 @@ const bridgeOpeningCheck = (sequelize, DataTypes) => {
         c++;
       }
     }
-    return ((c-2) / (bridgeOpeningKeys.length-2));
+    return ((c - 2) / (bridgeOpeningKeys.length - 2));
   }
 
+  /**
+   * Provide an average value for all the tests
+   */
   BridgeOpeningCheck.checksum = bridgeOpening => {
     let c = 0;
     c += BridgeOpeningCheck.version(bridgeOpening);
@@ -109,6 +135,10 @@ const bridgeOpeningCheck = (sequelize, DataTypes) => {
     return c / 7
   }
 
+  /**
+   * Create a check for the bridge opening event.
+   * @param  {Object} event
+   */
   BridgeOpeningCheck.createCheck = async (event) => {
     let bridgeOpeningCheck = await BridgeOpeningCheck.findOne({
       where: {
