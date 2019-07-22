@@ -24,10 +24,13 @@ const sequelize = new Sequelize(
 associateModels();
 
 // Load the file with all the provincie and cities
-const citiesByProvince = JSON.parse(fs.readFileSync('./data/dutchCitiesBigger.json'));
+const citiesByProvince = JSON.parse(fs.readFileSync('./data/dutchCities.json'));
 const PROVINCES = Object.keys(citiesByProvince);
 
-// City and province level defined in the administrative table
+/*
+ * City and province level defined in the administrative table
+ * See administrative-boundaries-loader/data/nl.zip
+ */
 const CITY_LEVEL = 8;
 const PROVINCE_LEVEL = 4;
 
@@ -42,6 +45,7 @@ app.listen(8080, () => {
 });
 
 // Bridge and Bridge Openings API
+// For the documentation of the endpoints see api/README.md
 
 app.get('/api/bridges/', async (req, res, next) => {
   let startTime = req.query.startTime;
@@ -147,7 +151,6 @@ app.get('/api/maintenance_works/:id', async (req, res) => {
   });
   res.send(result);
 
-
 });
 
 app.get('/api/maintenance_works/', async (req, res, next) => {
@@ -156,7 +159,6 @@ app.get('/api/maintenance_works/', async (req, res, next) => {
   let featureCollection = await createFeatureCollection(models.MaintenanceWorks, startTime, endTime);
   res.send(featureCollection);
 });
-
 
 app.get('/api/qa/maintenance_works/summary/', async (req, res) => {
   let results = await getSummary(models.MaintenanceWorks);
@@ -197,7 +199,6 @@ app.get('/api/accidents/:id', async (req, res) => {
   });
   res.send(result);
 
-
 });
 
 app.get('/api/accidents/', async (req, res, next) => {
@@ -206,7 +207,6 @@ app.get('/api/accidents/', async (req, res, next) => {
   let featureCollection = await createFeatureCollection(models.Accident, startTime, endTime);
   res.send(featureCollection);
 });
-
 
 app.get('/api/qa/accidents/summary/', async (req, res) => {
   let results = await getSummary(models.Accident);
@@ -250,10 +250,13 @@ app.use('*', function(req, res) {
 });
 
 /**
- * Get all the bridge openings between the start time and the end time if those are defined. Can also check for a specific bridge with its id.
- * @param  {String} startTime
- * @param  {String} endTime
- * @param  {String} bridgeId
+ * Get all the bridge openings events for a bridgeId
+ * between the start time and the end time if those are defined.
+ * @param  {String} startTime string that contains a date and the situationRecordVersionTime field
+ * of the bridge opening event will be bigger than this date.
+ * @param  {String} endTime string that contains a date and the situationRecordVersionTime field
+ * of the bridge opening event will be smaller than this date.
+ * @param  {Number} bridgeId id of the bridge, this id is store in the table "bridges" in the database
  */
 async function getBridgeOpenings(startTime, endTime, bridgeId) {
   if (startTime === undefined) {
@@ -271,22 +274,24 @@ async function getBridgeOpenings(startTime, endTime, bridgeId) {
     raw: true,
     where: {
       bridgeId: bridgeId,
-      startTime: {
-        [op.gte]: new Date(startTime)
-      },
-      endTime: {
-        [op.lte]: new Date(endTime)
+      situationRecordVersionTime: {
+        [op.and]: {
+          [op.gte]: new Date(startTime),
+          [op.lte]: new Date(endTime)
+        }
       }
     }
   });
   return bridgeOpenings;
-
 }
+
 /**
  * Get a GeoJSON feature collection with all the elements of the table between start time and endtime
- * @param  {Object} table
- * @param  {String} startTime
- * @param  {String} endTime
+ * @param  {Object} table the table that contains all the events (ex. models.BridgeOpening)
+ * @param  {String} startTime string that contains a date and the situationRecordVersionTime field
+ * of the event will be bigger than this date.
+ * @param  {String} endTime string that contains a date and the situationRecordVersionTime field
+ * of the event will be smaller than this date.
  */
 async function createFeatureCollection(table, startTime, endTime) {
   let events = await getAllEvents(table, startTime, endTime);
@@ -308,11 +313,14 @@ async function createFeatureCollection(table, startTime, endTime) {
 
   return featureCollection;
 }
+
 /**
  * Get all the events between the start time and the end time
- * @param  {Object} table
- * @param  {String} startTime
- * @param  {String} endTime
+ * @param  {Object} table the table that contains all the events (ex. models.BridgeOpening)
+ * @param  {String} startTime string that contains a date and the situationRecordVersionTime field
+ * of the event will be bigger than this date.
+ * @param  {String} endTime string that contains a date and the situationRecordVersionTime field
+ * of the event will be smaller than this date.
  */
 async function getAllEvents(table, startTime, endTime) {
   if (startTime === undefined) {
@@ -322,6 +330,7 @@ async function getAllEvents(table, startTime, endTime) {
     endTime = '9999-12-01';
   }
 
+  // Query that returns all the ids for a specific location between startTime and endTime
   let events = await table.findAll({
     raw: true,
     attributes: [sequelize.literal('array_agg(id) as id'), 'locationForDisplay'],
@@ -336,22 +345,23 @@ async function getAllEvents(table, startTime, endTime) {
     group: ['locationForDisplay']
   });
   return events;
-
 }
+
 /**
  * Get a summary of all the provincies with their good and bad events from the table.
- * @param  {Object} table
+ * @param  {Object} table the table that contains all the events (ex. models.BridgeOpening)
  */
 async function getSummary(table) {
   let results = [];
   for (let province of PROVINCES) {
-    let result = await intersects(table, 'b', 'b.id', province, PROVINCE_LEVEL);
+    let events = await intersects(table, 'b', 'b.id', province, PROVINCE_LEVEL);
     let ids = [];
-    for (let event of result[0]) {
+    for (let event of events[0]) {
       ids.push(event.id);
     }
     let goodEvents = await findGoodEvents(table.checkTable, ids);
     let badEvents = await findBadEvents(table.checkTable, ids);
+    // Change all spaces by underscores to make a valid url
     let provinceName = province.split(' ').join('_');
     results.push({
       name: province,
@@ -363,18 +373,19 @@ async function getSummary(table) {
     });
   }
   return results;
-
 }
+
 /**
  * Get a summary of all the cities of the specified province with their good and bad events from the table.
  * @param  {String} province
- * @param  {Object} table
+ * @param  {Object} table the table that contains all the events (ex. models.BridgeOpening)
  */
 async function getProvinceSummary(province, table) {
   province = province.split('_').join(' ');
   let results = [];
   for (let city of citiesByProvince[province]) {
     // String in query which contain ' must be changed to ''
+    // To respect postgresql query
     let cityQuery = city.replace("'", "''");
     let result = await intersects(table, 'b', 'b.id', cityQuery, CITY_LEVEL);
     let ids = [];
@@ -395,13 +406,16 @@ async function getProvinceSummary(province, table) {
   }
   return results;
 }
+
 /**
  * Get a summary of all the events of the specified city with their good and bad events from the table.
  * @param  {String} city
- * @param  {Object} table
+ * @param  {Object} table the table that contains all the events (ex. models.BridgeOpening)
  */
 async function getCitySummary(city, table) {
   city = city.split('_').join(' ');
+  // String in query which contain ' must be changed to ''
+  // To respect postgresql query
   let cityQuery = city.replace("'", "''");
   let result = await intersects(table, 'b', 'b.id', city, CITY_LEVEL);
   let ids = [];
@@ -415,43 +429,46 @@ async function getCitySummary(city, table) {
   });
   return checkEvents;
 }
+
 /**
- * @param  {Object} table
- * @param  {String} as
- * @param  {String} attributes
- * @param  {String} boundariesName
- * @param  {Number} level
+ * Return all the events that are inside the polygon coressponding to the boundariesName
+ * @param  {Object} table the table that contains all the events (ex. models.BridgeOpening)
+ * @param  {String} as table name in the query
+ * @param  {String} attributes columns that must be keep in the query
+ * @param  {String} boundariesName province or city name (ex. Amsterdam, North Holland)
+ * @param  {Number} level CITY_LEVEL or PROVINCE_LEVEL defined at the beginning of this file
  */
 async function intersects(table, as, attributes, boundariesName, level) {
   return [results, metadata] = await sequelize.query(
     `SELECT ${attributes} FROM ${table.getTableName()} AS ${as}, administrative_boundaries AS a
        WHERE a.name = '${boundariesName}' AND a.level=${level} AND
-         ST_Intersects(${as}."locationForDisplay", a.geog)`
-  );
+         ST_Intersects(${as}."locationForDisplay", a.geog)`);
 }
+
 /**
  * Get all the good events from the events in the model.
- * @param  {Object} model
- * @param  {Number} ids
+ * @param  {Object} table the table that contains all the events (ex. models.BridgeOpening)
+ * @param  {Number} ids ids of events
  */
-async function findGoodEvents(model, ids) {
-  let goodEvents = await model.findAndCountAll({
+async function findGoodEvents(table, ids) {
+  let goodEvents = await table.findAndCountAll({
     where: {
-      [model.eventId]: ids,
+      [table.eventId]: ids,
       checksum: 1
     }
   });
   return goodEvents;
 }
+
 /**
  * Get all the bad events from the events in the model.
- * @param  {Object} model
- * @param  {Number} ids
+ * @param  {Object} table the table that contains all the events (ex. models.BridgeOpening)
+ * @param  {Number} ids ids of events
  */
-async function findBadEvents(model, ids) {
-  let badEvents = await model.findAndCountAll({
+async function findBadEvents(table, ids) {
+  let badEvents = await table.findAndCountAll({
     where: {
-      [model.eventId]: ids,
+      [table.eventId]: ids,
       checksum: {
         [op.ne]: 1
       }
@@ -459,9 +476,10 @@ async function findBadEvents(model, ids) {
   });
   return badEvents;
 }
+
 /**
- * 
- * @param  {Object} table
+ * Get all events from the Netherlands
+ * @param  {Object} table the table that contains all the events (ex. models.BridgeOpening)
  */
 async function getEventSummary(table) {
   let results = [];
@@ -471,16 +489,20 @@ async function getEventSummary(table) {
   }
   return results;
 }
+
 /**
+ * Get all events from the Province
  * @param  {String} province
- * @param  {Object} table
+ * @param  {Object} table the table that contains all the events (ex. models.BridgeOpening)
  */
 async function getEventProvinceSummary(province, table) {
   let provinceName = province.split('_').join(' ');
   let result = await intersects(table, 'b', 'b.*', provinceName, PROVINCE_LEVEL);
   return result[0];
 }
+
 /**
+ * Get all events from the city
  * @param  {String} city
  * @param  {Object} table
  */
@@ -489,10 +511,12 @@ async function getEventCitySummary(city, table) {
   let result = await intersects(table, 'b', 'b.*', city, CITY_LEVEL);
   return result[0];
 }
+
 /**
- * @param  {String} body
- * @param  {String} name
- * @param  {String} res
+ * Sendd a csv file to the user
+ * @param  {String} body body of the csv file
+ * @param  {String} name name of the csv file
+ * @param  {String} res the res object of express app.get()
  */
 function sendCsv(body, name, res) {
   res.setHeader('Content-Type', 'text/csv');
