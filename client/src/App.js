@@ -15,6 +15,8 @@ import { bridgeOpenings } from './config/api'
 
 import { today } from './utilities/calendar'
 
+import './App.sass'
+
 const App = () => {
   /**
    * Global state
