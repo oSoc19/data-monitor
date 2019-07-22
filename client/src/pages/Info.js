@@ -4,10 +4,9 @@ import { bridgeOpenings, maintenanceWorks } from '../config/api'
 
 import LayoutWrapper from '../components/LayoutWrapper'
 
-
 const Info = () => {
   return (
-    <LayoutWrapper>
+    <LayoutWrapper direction='column'>
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         <h4>Summary endpoints</h4>
         <code>{bridgeOpenings.summary}</code>

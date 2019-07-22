@@ -5,7 +5,7 @@ import LayoutWrapper from '../components/LayoutWrapper'
 
 const Dashboard = () => {
   return (
-    <LayoutWrapper>
+    <LayoutWrapper sidebar={true}>
       <DashboardTable />
     </LayoutWrapper>
   )

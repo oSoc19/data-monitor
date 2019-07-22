@@ -6,7 +6,7 @@ import Sidebar from './Sidebar'
 const LayoutWrapper = props => {
   return (
     <div className='container'>
-      <Header />
+      {props.header && <Header />}
       <div
         style={{
           display: 'flex',
@@ -15,11 +15,15 @@ const LayoutWrapper = props => {
           flexDirection: props.direction
         }}
       >
-        <Sidebar />
+        {props.sidebar && <Sidebar />}
         {props.children}
       </div>
     </div>
   )
+}
+
+LayoutWrapper.defaultProps = {
+  header: true
 }
 
 export default LayoutWrapper
