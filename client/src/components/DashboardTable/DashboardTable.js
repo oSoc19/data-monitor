@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import './DashboardTable.sass'
 import { DashboardDetail } from '../DashboardDetail'
-import { Download, Check, X, Percent } from 'react-feather'
+import { Download, Check, X, Percent, Plus } from 'react-feather'
 import { Pie } from 'react-chartjs-2'
 
 import Loader from '../../components/Loader'
@@ -53,13 +53,6 @@ const DashboardTable = props => {
               const { numberOfGoodEvents, numberOfBadEvents } = item.summary
               return (
                 <div
-                  onClick={async () => {
-                    fetch(`http://82.196.10.230:8080${item.nextUrl}`)
-                      .then(res => res.json())
-                      .then(summary => {
-                        setState({ summary, level: level + 1 })
-                      })
-                  }}
                   className='dashboard-item'
                   key={item.name}
                   style={{
@@ -78,6 +71,18 @@ const DashboardTable = props => {
                   }}
                 >
                   <h4>{item.name}</h4>
+                  <button
+                    onClick={async () => {
+                      fetch(`http://82.196.10.230:8080${item.nextUrl}`)
+                        .then(res => res.json())
+                        .then(summary => {
+                          setState({ summary, level: level + 1 })
+                        })
+                    }}
+                  >
+                    <Plus />
+                    Cities
+                  </button>
                   <hr />
                   {item.nextUrl && (
                     <React.Fragment>
