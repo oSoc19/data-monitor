@@ -1,7 +1,16 @@
 const GeoJson = require('geojson');
 const get = require('../getNested.js');
 
+/**
+ * Accident indicate if an accident is happening or just happpened.
+ * Model based on objects from the opendata provided by the NDW.
+ * Data found at http://opendata.ndw.nu/incidents.xml.gz
+ * Documentation found at http://docs.ndwcloud.nu/
+ */
 const accident = (sequelize, DataTypes) => {
+  /**
+   * The model of the accident with all its components.
+   */
   const Accident = sequelize.define('accident', {
     id: {
       type: DataTypes.STRING,
@@ -34,11 +43,19 @@ const accident = (sequelize, DataTypes) => {
     }
   })
 
+  /**
+   * Associate the accident model with the accident check model.
+   */
   Accident.associate = models => {
     Accident.hasOne(models.AccidentCheck, { onDelete: 'cascade' });
     Accident.checkTable = models.AccidentCheck;
   }
 
+  /**
+   * Create an accident object corresponding to a situationRecord.
+   * @param  {Object} situationRecord
+   * @param  {Object} models
+   */
   Accident.addAccident = async (situationRecord, models) => {
     if (get(['$', 'xsi:type'], situationRecord) != 'Accident') {
       return;
@@ -65,7 +82,7 @@ const accident = (sequelize, DataTypes) => {
       }
     })
 
-    if(!accident){
+    if (!accident) {
       accident = await models.Accident.create(accidentEntry)
     }
     else {

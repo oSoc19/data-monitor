@@ -1,7 +1,16 @@
 const GeoJson = require('geojson');
 const get = require('../getNested.js');
 
+/**
+ * A maintenance works indicate actual and planned road maintenance works.
+ * Model based on objects from the opendata provided by the NDW.
+ * Data found at http://opendata.ndw.nu/wegwerkzaamheden.xml.gz
+ * Documentation found at http://docs.ndwcloud.nu/
+ */
 const maintenanceWorks = (sequelize, DataTypes) => {
+  /**
+   * The model of the maitenance works with all its components.
+   */
   const MaintenanceWorks = sequelize.define('maintenance_works', {
     id: {
       type: DataTypes.STRING,
@@ -20,19 +29,19 @@ const maintenanceWorks = (sequelize, DataTypes) => {
     situationRecordVersionTime: {
       type: DataTypes.DATE
     },
-    probabilityOfOccurrence: { // Not required
+    probabilityOfOccurrence: {
       type: DataTypes.STRING
     },
     operatorActionStatus: {
       type: DataTypes.STRING
     },
-    source: { // Not required
+    source: {
       type: DataTypes.STRING
     },
-    overallStartTime: { // Not required
+    overallStartTime: {
       type: DataTypes.DATE
     },
-    overallEndTime: { // Not required
+    overallEndTime: {
       type: DataTypes.DATE
     },
     mobilityType: {
@@ -49,20 +58,29 @@ const maintenanceWorks = (sequelize, DataTypes) => {
     },
   });
 
+  /**
+   * Associate the maintenance works model with the maintenance works check model.
+   */
   MaintenanceWorks.associate = models => {
     MaintenanceWorks.hasOne(models.MaintenanceWorksCheck);
     MaintenanceWorks.checkTable = models.MaintenanceWorksCheck;
   }
-
+  /**
+   * Create a maintenance works object corresponding to a situationRecord.
+   * @param  {Object} situationRecord
+   * @param  {Object} models
+   */
   MaintenanceWorks.addMaintenanceWorks = async (situationRecord, models) => {
+    // If it is not a situationRecord, return.
     if (get(['$', 'xsi:type'], situationRecord) != 'MaintenanceWorks') {
       return;
     }
 
-    if (!isNewData(new Date(get(['situationRecordVersionTime'],situationRecord)))) {
+    //If it is not a recent data, return.
+    if (!isNewData(new Date(get(['situationRecordVersionTime'], situationRecord)))) {
       return;
     }
-    
+
     let locationForDisplay;
     let groupOfLocations = get(['groupOfLocations'], situationRecord)
     let listOfLines;
@@ -90,7 +108,7 @@ const maintenanceWorks = (sequelize, DataTypes) => {
     if (listOfLines) {
       for (let i = 0; i < listOfLines.length; i++) {
         if (listOfLines[i].location['$']['xsi:type'] === 'Point') {
-          return; //Need to manage this case later
+          return;
         }
         let startPoint = get(['location', 'linearExtension', 'linearByCoordinatesExtension', 'linearCoordinatesStartPoint', 'pointCoordinates'], listOfLines[i])
         let endPoint = get(['location', 'linearExtension', 'linearByCoordinatesExtension', 'linearCoordinatesEndPoint', 'pointCoordinates'], listOfLines[i])
@@ -100,21 +118,19 @@ const maintenanceWorks = (sequelize, DataTypes) => {
         ]);
       }
     }
-
+    // Error in the situation record
     if (!locationForDisplay) {
       return;
-
-    } // Error in the situation record
-
+    } 
     let location = GeoJson.parse({
       lineString: lineString
     }, {
-      MultiLineString: 'lineString'
-    }).geometry
+        MultiLineString: 'lineString'
+      }).geometry
     if (location.coordinates.length === 0) {
       location = null;
     }
-    // If the maintenanceWorks event doesn't exist we create it else we update it
+    // If the maintenanceWorks event doesn't exist, it is created, otherwise it is updated.
     let maintenanceWorksEntry = {
       id: get(['$', 'id'], situationRecord),
       version: get(['$', 'version'], situationRecord),
@@ -151,6 +167,10 @@ const maintenanceWorks = (sequelize, DataTypes) => {
   return MaintenanceWorks;
 };
 
+/**
+ * Return true if the date is 3 months old or less
+ * @param  {String} date
+ */
 function isNewData(date) {
   let maxCreationDate = new Date();
   // We allow only events that were created after the current time - 3 months

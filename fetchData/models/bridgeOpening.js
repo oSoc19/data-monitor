@@ -1,13 +1,17 @@
 const GeoJson = require('geojson');
 const get = require('../getNested.js');
-/*
- * A BridgeOpening indicates when a bridge will be open or close
- * (Note: a bridge is considered open if a boat can pass below it.
- *  OPEN  : __/ \__
- *  CLOSE : _______)
- */
 
+/**
+ * A BridgeOpening indicates when a bridge will be open or close
+ * (Note: a bridge is considered open if a boat can pass below it.)
+ * Model based on objects from the opendata provided by the NDW.
+ * Data found at http://opendata.ndw.nu/brugopeningen.xml.gz
+ * Documentation found at http://docs.ndwcloud.nu/
+ */
 const bridgeOpening = (sequelize, DataTypes) => {
+  /**
+   * The model of the bridge opening with all its components.
+   */
   const BridgeOpening = sequelize.define('bridge_opening', {
     id: {
       type: DataTypes.STRING,
@@ -29,7 +33,6 @@ const bridgeOpening = (sequelize, DataTypes) => {
     locationForDisplay: {
       type: DataTypes.GEOMETRY('POINT')
     },
-    // The date when the bridge will be open
     startTime: {
       type: DataTypes.DATE
     },
@@ -44,6 +47,9 @@ const bridgeOpening = (sequelize, DataTypes) => {
     }
   });
 
+  /**
+   * Associate the bridge opening model with the bridge opening check model.
+   */
   BridgeOpening.associate = models => {
     BridgeOpening.hasOne(models.BridgeOpeningCheck);
     BridgeOpening.checkTable = models.BridgeOpeningCheck;
@@ -52,8 +58,10 @@ const bridgeOpening = (sequelize, DataTypes) => {
 
 
 
-  /* Create a bridge event corresponding to a situation record
+  /** Create a bridge opening event corresponding to a situation record
    * and associate this event to a bridge.
+   * @param  {Object} situationRecord
+   * @param  {Object} models
    */
   BridgeOpening.addBridgeOpening = async (situation, models) => {
     let location = get(['situationRecord', 'groupOfLocations', 'locationForDisplay'], situation);
@@ -65,7 +73,7 @@ const bridgeOpening = (sequelize, DataTypes) => {
     });
 
     /* Try to find the bridge associate to the bridge event. If the bridge doesn't
-     * exist, we create a new one.
+     * exist, a new one is created.
      */
     let bridge = await models.Bridge.findOne({
       where: {
@@ -78,18 +86,18 @@ const bridgeOpening = (sequelize, DataTypes) => {
 
     let bridgeOpeningEntry = {
       id: situationRecord['$'].id,
-        version: situationRecord['$'].version,
-        source: get(['source', 'sourceName', 'values', 'value', '_'], situationRecord),
-        location: [location.longitude, location.latitude],
-        creationTime: get(['situationRecordCreationTime'], situationRecord),
-        startTime: get(['validity', 'validityTimeSpecification', 'overallStartTime'], situationRecord),
-        endTime: get(['validity', 'validityTimeSpecification', 'overallEndTime'], situationRecord),
-        probabilityOfOccurence: get(['probabilityOfOccurrence'], situationRecord),
-        locationForDisplay: GeoJson.parse(location, {
-          Point: ['latitude', 'longitude']
-        }).geometry,
-        generalNetworkManagementType: get(['generalNetworkManagementType'], situationRecord),
-        bridgeId: bridge.id
+      version: situationRecord['$'].version,
+      source: get(['source', 'sourceName', 'values', 'value', '_'], situationRecord),
+      location: [location.longitude, location.latitude],
+      creationTime: get(['situationRecordCreationTime'], situationRecord),
+      startTime: get(['validity', 'validityTimeSpecification', 'overallStartTime'], situationRecord),
+      endTime: get(['validity', 'validityTimeSpecification', 'overallEndTime'], situationRecord),
+      probabilityOfOccurence: get(['probabilityOfOccurrence'], situationRecord),
+      locationForDisplay: GeoJson.parse(location, {
+        Point: ['latitude', 'longitude']
+      }).geometry,
+      generalNetworkManagementType: get(['generalNetworkManagementType'], situationRecord),
+      bridgeId: bridge.id
     };
     if (!bridgeOpening) {
       // console.log(`Creating bridge_opening ${situationRecord['$'].id}`);
