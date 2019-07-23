@@ -2,6 +2,7 @@ const http = require('http');
 const zlib = require('zlib');
 const xtreamer = require('xtreamer');
 const parseString = require('xml2js').parseString;
+
 /**
  * Parse a xml datex2 feed into a json-ld feed
  * @param  {string} source a valid URL that goes to an xml datex2 feed
@@ -20,15 +21,17 @@ function parse(url, node, next) {
        * We first need to unzip it.
        */
       res.pipe(gunzip).pipe(xtreamerTransform);
+      // Then we pipe the unzipped file to xtreamer
+      // and xtreamer extract each node with the node name given as a parameter
       xtreamerTransform.on('data', data => {
         let xmlSituation = data.toString();
         parseString(xmlSituation, {
           explicitArray: false
-        },  (err, result) => {
+        }, (err, result) => {
           if (err) {
             reject(err);
           }
-          // Run asynchronusly the next function on each node
+          // Apply the next function given as a parameter to the node
           next(result[node]);
         })
       });
@@ -40,4 +43,3 @@ function parse(url, node, next) {
 }
 
 module.exports = parse;
-

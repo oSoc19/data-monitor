@@ -4,8 +4,8 @@ export const apiUrl = process.env.API_DOMAIN ?
 
 export const bridgeOpenings = {
   summary: `${apiUrl}/api/qa/bridge_openings/summary`,
-  fetchEvent: `${apiUrl}/api/bridge_openings/?id=`,
-  map: `${apiUrl}/api/bridges`,
+  fetchEvent: `${apiUrl}/api/bridge_openings/`,
+  map: `${apiUrl}/api/bridge_openings`,
   csv: `${apiUrl}/api/download/bridge_openings/summary`,
   modify: `${apiUrl}/api/qa/bridge_openings/:id`,
   query: ``

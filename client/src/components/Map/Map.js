@@ -49,7 +49,7 @@ const Map = props => {
 
   // TODO: refactor to fetch util
   const getBridgeEvents = async id => {
-    let res = await fetch(`${apiUrl}/api/bridge_openings/?id=${id}`)
+    let res = await fetch(`${dataSet.fetchEvent}${id}`)
     let bridgeEvents = await res.json()
     setState({ ...state, bridgeEvents })
   }
@@ -98,18 +98,15 @@ const Map = props => {
           popupInfo: ['Loading information...']
         })
         let ids = iconObject.object.properties.id
-        let id 
+        let id
         if(Array.isArray(ids) && ids.length > 0) {
           id = ids[0]
         } else {
-          id = ids
+          return // bad response
         }
         let res = await fetch(dataSet.fetchEvent + id)
         res = await res.json()
         console.log('res', res)
-        if(Array.isArray(res) && res.length > 0) {
-          res = res[0]
-        }
         let popupInfo = []
         for(let [key, value] of Object.entries(res)) {
           if(typeof(value) !== 'object') {
