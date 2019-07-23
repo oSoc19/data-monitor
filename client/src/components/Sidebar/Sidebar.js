@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { useGlobalState } from '../../utilities/state'
 
 import './Sidebar.sass'
+
 import { bridgeOpenings, maintenanceWorks, accidents } from '../../config/api'
 
 import { now, yesterday, lastWeek, lastMonth } from '../../utilities/calendar'
