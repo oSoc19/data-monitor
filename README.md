@@ -1,5 +1,4 @@
-# data-monitor
-
+# Data Monitor 
 
 ## Running locally
 ### Building
@@ -45,8 +44,6 @@ docker-compose -f docker-compose.yml -f docker-compose.override.yml build
 docker-compose -f docker-compose.yml -f docker-compose.override.yml up
 ```
 
-The API will be availible on port 8080.
-
 ### Stopping
 ```
 docker-compose -f docker-compose.yml -f docker-compose.override.yml stop
@@ -67,7 +64,7 @@ Always make sure you build your images before.
 
 Also note: debugging API service and fetch_data service is difficult at the same time.
 
-### before developing
+### Before developing
 You will need to make a docker-compose.override.yml, where local config will be stored.
 
 ### Dev api service
@@ -112,8 +109,7 @@ To go and debug this, use chrome and go to
 chrome://inspect/#devices
 ```
 
-
-## making configurations local to your machine.
+## Making configurations local to your machine.
 Suppose you want to access the DB directly, you can use a docker-compose.override.yml.
 This file will keep track of your changes, and won't be commit to git.
 
@@ -128,11 +124,9 @@ To take these into account, you can run:
 ```
 docker-compose -f docker-compose.yml -f docker-compose.local.yml -f docker-compose.dev.yml -f docker-compose.override.yml up -d  # will start in daemon mode
 ```
-Please note: there are shorter ways, but leave em like it is for now.
 
-
-### useful commands
+### Useful commands
 Connect locally from your machine to database (assumes an update docker-compose.override.yml)
 ```
- psql -h localhost -p 5432 -U postgres
+ psql -h localhost -p 5432 -U <NAME_OF_POSTGRES_USER>
 ```
