@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import './DashboardDetail.sass'
+import { apiUrl } from '../../config/api'
 
 import { Check, X } from 'react-feather'
 
@@ -57,7 +58,7 @@ const DashboardDetail = props => {
                   <td
                     className='detail-link'
                     onClick={() => {
-                      fetch(`http://82.196.10.230:8080${event.nextUrl}`)
+                      fetch(`${apiUrl}${event.nextUrl}`)
                         .then(res => res.json())
                         .then(eventDetails => {
                           setEventDetails(eventDetails)

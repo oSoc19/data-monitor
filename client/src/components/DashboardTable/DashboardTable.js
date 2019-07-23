@@ -3,6 +3,7 @@ import './DashboardTable.sass'
 import { DashboardDetail } from '../DashboardDetail'
 import { Download, Check, X, Percent, Plus } from 'react-feather'
 import { Pie } from 'react-chartjs-2'
+import { apiUrl } from '../../config/api'
 
 import Loader from '../../components/Loader'
 
@@ -54,7 +55,7 @@ const DashboardTable = props => {
               return (
                 <div
                   onClick={async () => {
-                    fetch(`http://82.196.10.230:8080${item.nextUrl}`)
+                    fetch(`${apiUrl}${item.nextUrl}`)
                       .then(res => res.json())
                       .then(summary => {
                         setState({ summary, level: level + 1 })

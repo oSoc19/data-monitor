@@ -7,6 +7,7 @@ import bridgeOpenIcon from '../../assets/markers/bridge.png'
 import maintenanceIcon from '../../assets/markers/actualmaintenance.png'
 import accidentIcon from '../../assets/markers/incident.png'
 import { Mapbox } from '../../config'
+import { apiUrl } from "../../config/api"
 
 import Loader from '../../components/Loader'
 
@@ -50,7 +51,7 @@ const Map = props => {
   // TODO: refactor to fetch util
   const getBridgeEvents = async id => {
     let res = await fetch(
-      `http://82.196.10.230:8080/api/bridge_openings/?id=${id}`
+      `${apiUrl}/api/bridge_openings/?id=${id}`
     )
     let bridgeEvents = await res.json()
     setState({ ...state, bridgeEvents })
