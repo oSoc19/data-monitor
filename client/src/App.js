@@ -13,7 +13,7 @@ import { Route } from 'react-router-dom'
 
 import { bridgeOpenings } from './config/api'
 
-import { today } from './utilities/calendar'
+import { lastWeek, now } from './utilities/calendar'
 
 import './App.sass'
 
@@ -30,7 +30,7 @@ const App = () => {
       icon: 'bridge'
     },
     filter: {
-      date: `?startTime=2019-07-20T12:20:38.000Z&endTime=2019-07-21T12:20:38.000Z`
+      date: `/?startTime=${lastWeek}&endTime=${now}`
     }
   }
 

@@ -70,7 +70,6 @@ const Sidebar = props => {
             <h4>Datasets</h4>
             <div className='data-toggle'>
               <button
-                activeClassName='active'
                 onClick={() => {
                   dispatch({
                     type: 'changeDataSet',
