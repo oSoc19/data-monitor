@@ -77,30 +77,29 @@ const DashboardTable = props => {
                         : '1px solid rgba(255,0,0, .5)'
                   }}
                 >
-                  <h4>{item.name}</h4>
+                  <div className='dashboard-item_header'>
+                    <h4>{item.name}</h4>
+                    <button
+                      className='btn-outline'
+                      type='submit'
+                      onClick={e => {
+                        e.stopPropagation()
+                        console.log(item.nextUrl)
+                        const downloadUrlEndpoint = item.nextUrl.replace(
+                          '/qa/',
+                          '/download/'
+                        )
+                        // console.log(downloadUrlEndpoint)
+                        const downloadUrl = `http://82.196.10.230:8080${downloadUrlEndpoint}`
+                        window.open(downloadUrl)
+                      }}
+                    >
+                      <Download />
+                      csv
+                    </button>
+                  </div>
                   <hr />
-                  {item.nextUrl && (
-                    <React.Fragment>
-                      <button
-                        className='btn-outline'
-                        type='submit'
-                        onClick={e => {
-                          e.stopPropagation()
-                          console.log(item.nextUrl)
-                          const downloadUrlEndpoint = item.nextUrl.replace(
-                            '/qa/',
-                            '/download/'
-                          )
-                          // console.log(downloadUrlEndpoint)
-                          const downloadUrl = `http://82.196.10.230:8080${downloadUrlEndpoint}`
-                          window.open(downloadUrl)
-                        }}
-                      >
-                        <Download />
-                        {`${item.name}.csv`}
-                      </button>
-                    </React.Fragment>
-                  )}
+                  {item.nextUrl && <React.Fragment></React.Fragment>}
                   {/* <h4>Data quality</h4>
                   <table>
                     <tr>
@@ -146,10 +145,7 @@ const DashboardTable = props => {
                               ]
                             }
                           ],
-                          labels: [
-                            'Good events: ' + numberOfGoodEvents,
-                            'Bad events: ' + numberOfBadEvents
-                          ]
+                          labels: ['Correct events', 'Incorrect events']
                         }}
                       />
                     ) : (

@@ -6,7 +6,7 @@ import LayoutWrapper from '../components/LayoutWrapper'
 
 const Info = () => {
   return (
-    <LayoutWrapper direction='column'>
+    <LayoutWrapper>
       <h4>About</h4>
       <p>Let’s suppose you own an autonomous car and you want to navigate to Amsterdam. You set up your car to calculate a route and start following the directions. On the way, the car system included the passage of a bridge as part of the route, but upon arrival you can’t cross it. This is because incorrect data has been sent to the car and hasn’t been changed ever since. With Verkeersdatamonitor problems like these are resolved. Accurate mobility data fixes the problem of traffic jams and unnecessary detours and makes way for a fluid traffic.</p>
       <p>Verkeersdatamonitor is a web-based project for Dutch municipalities, provinces and the government, launched by the Dutch Ministry of Infrastructure and Water Management. The project is about monitoring the quality of mobility data about the Netherlands.</p>
