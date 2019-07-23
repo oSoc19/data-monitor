@@ -34,8 +34,8 @@ const Info = () => {
           table. You can edit the data where needed and <b>download a csv-file</b> about this dataset.
         </p>
         <p>
-          The tests to monitor the quality of the data are mostly based on the
-          <b>completeness</b> of the data and the <b>correctness</b>. So if we miss some data,
+          The tests to monitor the quality of the data are mostly based on the <b>completeness</b> of 
+          the data and the <b>correctness</b>. So if we miss some data,
           or if it is not what it is supposed to be, then it is considered
           wrong.
         </p>
