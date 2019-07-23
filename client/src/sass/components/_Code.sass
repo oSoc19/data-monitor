@@ -1,0 +1,25 @@
+@import url('https://fonts.googleapis.com/css?family=IBM+Plex+Mono&display=swap')
+
+pre, code
+	font-family: 'IBM Plex Mono', monospace
+	font-weight: 500
+	font-size: 80%
+	background: $info100
+
+	
+code
+	border-radius: 3rem
+	margin: 0 .2rem
+	padding: .2rem .5rem
+	white-space: nowrap
+
+pre
+	border-bottom: .33rem solid $info
+	overflow-y: hidden
+	border-radius: 3rem
+
+	& > code
+		border-radius: 0
+		display: block
+		padding: 1rem 1.5rem
+		white-space: pre

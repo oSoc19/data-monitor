@@ -1,0 +1,28 @@
+version: "3.4"
+services:
+  api:
+    ports:
+      - 8080:8080
+    environment:
+      - "DATABASE=datamonitor"
+      - "DATABASE_USER=postgres_local_user"
+      - "DATABASE_PASSWORD=postgres"
+  fetch_data:
+    ports:
+      - 8081:8080
+    environment:
+      - "DATABASE=datamonitor"
+      - "DATABASE_USER=postgres_local_user"
+      - "DATABASE_PASSWORD=postgres"
+  database:
+    build:
+      args:
+        - "POSTGRES_USER=postgres_local_user"
+        - "POSTGRES_PASSWORD=postgres"
+    environment:
+      - "POSTGRES_USER=postgres_local_user"
+      - "POSTGRES_PASSWORD=postgres"
+  administrative-boundaries-loader:
+    environment:
+      - "POSTGRES_USER=postgres_local_user"
+      - "POSTGRES_PASSWORD=postgres"

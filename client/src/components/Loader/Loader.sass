@@ -1,0 +1,30 @@
+.loader,
+.loader:after
+  border-radius: 70%
+  width: 9rem
+  height: 9rem
+
+.loader
+  border: 1rem solid #fff
+  border-left: 1rem solid rgba(0,0,0,0.5)
+  -webkit-animation: spin 1s infinite cubic-bezier(.8,.5,.5,.2)
+  animation: spin 1s infinite cubic-bezier(.8,.5,.5,.2)
+
+@-webkit-keyframes spin
+  0%
+    -webkit-transform: rotate(0deg)
+    transform: rotate(0deg)
+  
+  100%
+    -webkit-transform: rotate(360deg)
+    transform: rotate(360deg)
+  
+
+@keyframes spin
+  0%
+    -webkit-transform: rotate(0deg)
+    transform: rotate(0deg)
+  
+  100%
+    -webkit-transform: rotate(360deg)
+    transform: rotate(360deg)

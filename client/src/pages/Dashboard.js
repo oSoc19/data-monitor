@@ -1,10 +1,14 @@
 import React from 'react'
 
-export default function Dashboard() {
+import { DashboardTable } from '../components/DashboardTable'
+import LayoutWrapper from '../components/LayoutWrapper'
+
+const Dashboard = () => {
   return (
-    <div>
-      <h1>Dashboard</h1>
-      <div className="grid-wrapper"></div>
-    </div>
+    <LayoutWrapper sidebar={true}>
+      <DashboardTable />
+    </LayoutWrapper>
   )
 }
+
+export default Dashboard

@@ -1,0 +1,16 @@
+version: "3.4"
+services:
+  api:
+    volumes:
+      - ./api:/usr/src/app
+    environment:
+      - "NODE_ENV=development"
+    command: >
+      sh -c "npm install && supervisor -w . -- --inspect=0.0.0.0:9229 server.js"
+  fetch_data:
+    volumes:
+      - ./fetchData:/usr/src/app
+    environment:
+      - "NODE_ENV=development"
+    command: >
+      sh -c "npm install && supervisor -w . -n exit -- --inspect=0.0.0.0:9229 server.js"

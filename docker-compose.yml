@@ -1,0 +1,18 @@
+version: "3.4"
+services:
+  api:
+    build: ./api
+    links:
+      - database:database
+  fetch_data:
+    build: ./fetchData
+    links:
+      - database:database
+  database:
+    build: ./database
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+  administrative-boundaries-loader:
+    build: ./administrative-boundaries-loader
+    links:
+      - database:database
