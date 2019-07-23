@@ -10,37 +10,32 @@ const Info = () => {
       <div className='content-wrapper'>
         <h2>About</h2>
         <p>
-          Let’s suppose you own an autonomous car and you want to navigate to
-          Amsterdam. You set up your car to calculate a route and start
-          following the directions. On the way, the car system included the
-          passage of a bridge as part of the route, but upon arrival you can’t
-          cross it. This is because incorrect data has been sent to the car and
-          hasn’t been changed ever since. With Verkeersdatamonitor problems like
-          these are resolved. Accurate mobility data fixes the problem of
-          traffic jams and unnecessary detours and makes way for a fluid
-          traffic.
+          Let’s suppose in a few years, <b>every vehicle</b> in traffic is <b>managed by a system</b>.
+          As a result, all these cars can <b>take the best routes</b> and <b>avoid issues</b> along their way by using data in real-time.
+          However, if that <b>data contains errors</b>, lots of <b>things can go wrong</b>: ambulances can get stuck behind closed bridges,
+          trucks would enter cities at the wrong time and search for unloading areas that are not there and so on.
+          With data monitor we want to <b>avoid</b> this.
         </p>
         <p>
           Verkeersdatamonitor is a web-based project for Dutch municipalities,
           provinces and the government, launched by the Dutch Ministry of
-          Infrastructure and Water Management. The project is about monitoring
-          the quality of mobility data about the Netherlands.
+          Infrastructure and Water Management. The project is about <b>monitoring
+          the quality of mobility data</b> in the Netherlands.
         </p>
         <p>
-          It shows a map with a sidebar by default. On the sidebar there is a
-          possibility to toggle multiple datasets on and off. Apart from that
+          It shows a <b>map</b> with a sidebar by default. On the sidebar there is a
+          possibility to toggle <b>multiple datasets</b> on and off. Apart from that
           you can also select a date range. The results show several pinpoints
-          on the map. You can switch to a dashboard view, that’s divided in
+          on the map. You can switch to a <b>dashboard view</b>, that’s divided in
           clickable tiles named after and ordered by the Dutch municipalities,
           regions and provinces. Each tile shows the data in a graph and with
           each click you can narrow down to the smallest part of the
-          Netherlands. Finally it gives a detailed view of the dataset as a
-          table. You can edit the data where needed and download a csv-file
-          about this dataset.
+          Netherlands. Finally it gives a <b>detailed view</b> of the dataset as a
+          table. You can edit the data where needed and <b>download a csv-file</b> about this dataset.
         </p>
         <p>
-          The tests to monitor the quality of the data are mostly based on the
-          completeness of the data and the correctness. So if we miss some data,
+          The tests to monitor the quality of the data are mostly based on the <b>completeness</b> of 
+          the data and the <b>correctness</b>. So if we miss some data,
           or if it is not what it is supposed to be, then it is considered
           wrong.
         </p>
