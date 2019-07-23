@@ -1,16 +1,33 @@
 import React, { useState } from 'react'
 import './DashboardDetail.sass'
 import { apiUrl } from '../../config/api'
-
 import { Check, X } from 'react-feather'
 
+
 const DashboardDetail = props => {
-  const renderBool = number => {
+  /**
+   * @param {bool} boolean
+   * @return Icon
+   */
+  const renderBoolIcon = number => {
     return number === 1 ? <Check /> : <X />
   }
 
-  const [eventDetails, setEventDetails] = useState([])
+  /**
+   * Fetch event detail data
+   */
+  const getEventDetails = event => {
+    fetch(`${apiUrl}${event.nextUrl}`)
+      .then(res => res.json())
+      .then(eventDetails => {
+        setEventDetails(eventDetails)
+      })
+  }
 
+  /**
+   * Hook for event detail modal
+   */
+  const [eventDetails, setEventDetails] = useState([])
   const { summary } = props
   return summary.length > 0 ? (
     <div>
@@ -73,7 +90,7 @@ const DashboardDetail = props => {
                     
                     // } else if() {
                     } else if(typeof(event[key]) === 'number') {
-                      return(<td>{renderBool(event[key])}</td>)
+                      return(<td>{renderBoolIcon(event[key])}</td>)
                     } else {
                       return(<td>{event[key]}</td>)
                     }

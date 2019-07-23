@@ -1,24 +1,23 @@
 import React from 'react'
+import { Route } from 'react-router-dom'
 
-import { StateProvider } from './utilities/state'
-
+/**
+ * Import pages
+ */
 import MapOverview from './pages/MapOverview'
 import Dashboard from './pages/Dashboard'
-
 import Home from './pages/Home'
 import Info from './pages/Info'
 
-import { Route } from 'react-router-dom'
-
 import { bridgeOpenings } from './config/api'
-
+import { StateProvider } from './utilities/state'
 import { lastWeek, now } from './utilities/calendar'
 
 import './App.sass'
 
 const App = () => {
   /**
-   * Global state
+   * Initial global state
    */
   const initialState = {
     dataSet: {
@@ -33,29 +32,28 @@ const App = () => {
     }
   }
 
+  /**
+   * reducer actions
+   * - Switch data sets
+   * - Filter data sets
+   *   - date:
+   *     - startDate (as ISOString)
+   *     - endDate   (as ISOString)
+   */
   const reducer = (state, action) => {
     switch (action.type) {
-      /**
-       * Switch between datasets
-       */
       case 'changeDataSet':
         return {
           ...state,
           dataSet: action.newDataSet
         }
-      /**
-       * Filter data sets
-       * - date:
-       *   - startDate
-       *   - endDate
-       */
       case 'filterDataSet':
         return {
           ...state,
           filter: action.newFilter
         }
       default:
-        return state
+        throw new Error(`Unhandled action type: ${action.type}`)
     }
   }
 

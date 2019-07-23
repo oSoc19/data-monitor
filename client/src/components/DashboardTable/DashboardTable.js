@@ -22,11 +22,18 @@ const DashboardTable = props => {
   const [state, setState] = useState({ level: 1, summary: [], loading: true })
   const [{ dataSet }] = useGlobalState()
 
+  /**
+   * Fetch data on mount
+   * Fetch data on dataset change
+   */
   useEffect(() => {
     fetchSummary()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataSet])
 
+  /**
+   * Fetch data from global state endpoint
+   */
   const fetchSummary = async () => {
     let res = await fetch(dataSet.summary)
     let summary = await res.json()
@@ -34,6 +41,11 @@ const DashboardTable = props => {
     setState({ ...state, summary, loading: false })
   }
 
+  /**
+   * @param {number} goodEvents
+   * @param {number} badEvents
+   * @return {number} percentage
+   */
   const getEventDataQuality = (goodEvents, badEvents) => {
     if ((goodEvents === 0 && badEvents === 0) || goodEvents === 0) {
       return 0
