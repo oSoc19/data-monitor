@@ -16,13 +16,13 @@ You can switch to a dashboard view, that’s divided in clickable tiles named af
       <p>Three datasets are implemented for now. "Bridge Openings", "Maintenance Works" (from "Road Works") and "Accidents" (from "Incidents"). More datasets from the NDW opendata should be implemented in the future, as well as more tests.</p>
       <h3>Example</h3>
       <p>If you want to download a CSV file that contains all the bridge openings in Amsterdam for the last week, you have to :</p>
-      <ul>
+      <ol>
         <li>Click on "7 days" on the sidebar.</li>
         <li>Click on "Bridges" on the sidebar.</li>
         <li>Click on the dashboard icon on the header of the webpage.</li>
         <li>Click on the "Noth Holland" tile.</li>
         <li>Click on "Amsterdam.csv" on the Amsterdam tile.</li>
-      </ul>
+      </ol>
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         <h4>Summary endpoints</h4>
         <code>{bridgeOpenings.summary}</code>
