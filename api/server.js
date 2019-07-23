@@ -47,36 +47,6 @@ app.listen(8080, () => {
 // Bridge and Bridge Openings API
 // For the documentation of the endpoints see api/README.md
 
-app.get('/api/bridges/', async (req, res, next) => {
-  let startTime = req.query.startTime;
-  let endTime = req.query.endTime;
-
-  let bridges = await models.Bridge.findAll({
-    raw: true
-  });
-  let features = [];
-  for (let i = 0; i < bridges.length; i++) {
-    let bridgeOpenings = await getBridgeOpenings(startTime, endTime, bridges[i].id);
-    // If the bridge has at least one bridge event between the startTime and the endTime
-    // we can add it to the list of bridges to show on the map
-    let feature = geojson.parse(bridges[i], {
-      Point: 'location'
-    });
-
-    if (bridgeOpenings.length > 0) {
-      features.push(geojson.parse(bridges[i], {
-        Point: 'location'
-      }));
-    }
-  }
-
-  let featureCollection = {
-    "type": "FeatureCollection",
-    "features": features
-  };
-  res.send(featureCollection);
-});
-
 app.get('/api/bridge_openings/:id', async (req, res) => {
   let result = await models.BridgeOpening.findOne({
     where: {
@@ -89,9 +59,8 @@ app.get('/api/bridge_openings/:id', async (req, res) => {
 app.get('/api/bridge_openings/', async (req, res, next) => {
   let startTime = req.query.startTime;
   let endTime = req.query.endTime;
-  let bridgeId = req.query.id;
-  res.send(await getBridgeOpenings(startTime, endTime, bridgeId));
-
+  let featureCollection = await createFeatureCollection(models.BridgeOpening, startTime, endTime);
+  res.send(featureCollection);
 });
 
 app.get('/api/qa/bridge_openings/summary/', async (req, res) => {

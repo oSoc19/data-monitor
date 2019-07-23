@@ -24,6 +24,7 @@ const App = () => {
       name: 'bridges',
       summary: bridgeOpenings.summary,
       map: bridgeOpenings.map,
+      fetchEvent: bridgeOpenings.fetchEvent,
       download: bridgeOpenings.csv,
       icon: 'bridge'
     },

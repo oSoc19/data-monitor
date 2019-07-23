@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import ReactMapGL, { Marker, FlyToInterpolator } from 'react-map-gl'
+import ReactMapGL, { Marker, Popup } from 'react-map-gl'
 import DeckGL, { ScatterplotLayer, IconLayer } from 'deck.gl'
 import './Map.sass'
 import Legend from '../Legend'
@@ -19,6 +19,7 @@ const Map = props => {
     dataFeatures: [],
     bridgeEvents: null,
     style: 'mapbox://styles/mapbox/light-v9',
+    showPopup: false,
     viewport: {
       latitude: 52.153,
       longitude: 5.5196,
@@ -48,7 +49,7 @@ const Map = props => {
 
   // TODO: refactor to fetch util
   const getBridgeEvents = async id => {
-    let res = await fetch(`${apiUrl}/api/bridge_openings/?id=${id}`)
+    let res = await fetch(`${dataSet.fetchEvent}${id}`)
     let bridgeEvents = await res.json()
     setState({ ...state, bridgeEvents })
   }
@@ -89,62 +90,37 @@ const Map = props => {
       getIcon: d => 'marker',
       sizeScale: 1,
       getPosition: d => d.coordinates,
-      getSize: d => 32
-    })
-  }
-
-  // TODO: refactor to map layer component
-  const renderScatterPlotLayer = () => {
-    const { dataFeatures } = state
-
-    const data = dataFeatures.map(feature => {
-      return {
-        coordinates: feature.geometry.coordinates,
-        id: feature.properties.id,
-        createdAt: feature.properties.createdAt,
-        updatedAt: feature.properties.updatedAt
+      getSize: d => 32,
+      onClick: async (iconObject, x, y) => {
+        setState({ ...state,
+          showPopup: true,
+          popupCoordinates: iconObject.object.coordinates,
+          popupInfo: ['Loading information...']
+        })
+        let ids = iconObject.object.properties.id
+        let id
+        if(Array.isArray(ids) && ids.length > 0) {
+          id = ids[0]
+        } else {
+          return // bad response
+        }
+        let res = await fetch(dataSet.fetchEvent + id)
+        res = await res.json()
+        let popupInfo = []
+        for(let [key, value] of Object.entries(res)) {
+          if(typeof(value) !== 'object') {
+            // Get a string with spaces from a camelCase string
+            key = key.split(/(?=[A-Z])/).map(s => s.toLowerCase()).join(' ')
+            popupInfo.push(`${key}: ${value}`) 
+          }
+        }
+        setState({ ...state,
+          showPopup: true,
+          popupCoordinates: iconObject.object.coordinates,
+          popupInfo: popupInfo
+        })
       }
     })
-
-    return new ScatterplotLayer({
-      data,
-      getPosition: d => d.coordinates,
-      getRadius: 10000,
-      getFillColor: d => [128, 128, 128],
-      opacity: 0.1,
-      radiusMinPixels: 10,
-      radiusMaxPixels: 15,
-      pickable: true,
-      // onHover: ({ object, x, y }) => {
-      //   const tooltip = object ? `${object.id}` : 'no tooltip'
-      //   console.log(tooltip)
-      // }
-      onClick: ({ object, x, y }) => {
-        const tooltip = object ? `${object.id}` : console.log('no valid point')
-        getBridgeEvents(object.id)
-
-        /**
-         * TODO: Zoom to point onClick
-         */
-      }
-    })
-  }
-
-  const flyTo = coordinates => {
-    const viewport = {
-      ...state.viewport,
-      ...coordinates,
-      // longitude: -74.1,
-      // latitude: 40.7,
-      zoom: 14,
-      transitionDuration: 5000,
-      transitionInterpolator: new FlyToInterpolator(),
-      transitionEasing: t =>
-        ((t *= 2) <= 1
-          ? Math.pow(2, 10 * t - 10)
-          : 2 - Math.pow(2, 10 - 10 * t)) / 2
-    }
-    setState({ ...state, viewport })
   }
 
   const onStyleChange = style => {
@@ -158,10 +134,9 @@ const Map = props => {
     })
   }
 
-  const { dataFeatures, bridgeEvents, viewport, style } = state
+  const { dataFeatures, bridgeEvents, viewport, style, showPopup, popupInfo, popupCoordinates } = state
   return (
     <div className='map'>
-      {console.log('render')}
       {dataFeatures.length > 0 ? (
         <ReactMapGL
           {...viewport}
@@ -170,10 +145,22 @@ const Map = props => {
           mapStyle={style}
         >
           <DeckGL
-            layers={[/* renderScatterPlotLayer() */ renderIconLayer()]}
+            layers={[renderIconLayer()]}
             initialViewState={viewport}
             controller
           ></DeckGL>
+          {showPopup && <Popup
+          latitude={popupCoordinates[1]}
+          longitude={popupCoordinates[0]}
+          closeButton={true}
+          closeOnClick={false}
+          dynamicPosition={false}
+          onClose={() => setState({ ...state, showPopup: false })} 
+          anchor="bottom" >
+          <ul>{popupInfo.map((value) => {
+            return(<li>{value}</li>)
+          })}</ul>
+        </Popup>}
         </ReactMapGL>
       ) : (
         <div className='center'>
