@@ -61,15 +61,13 @@ const App = () => {
   }
 
   return (
-    <React.Fragment>
-      <StateProvider initialState={initialState} reducer={reducer}>
-        <Route path='/' exact component={Home} />
-        <Route path='/leaflet' component={LeafletMap} />
-        <Route path='/mapbox' component={MapOverview} />
-        <Route path='/dashboard' component={Dashboard} />
-        <Route path='/info' component={Info} />
-      </StateProvider>
-    </React.Fragment>
+    <StateProvider initialState={initialState} reducer={reducer}>
+      <Route path='/' exact component={Home} />
+      <Route path='/leaflet' component={LeafletMap} />
+      <Route path='/mapbox' component={MapOverview} />
+      <Route path='/dashboard' component={Dashboard} />
+      <Route path='/info' component={Info} />
+    </StateProvider>
   )
 }
 
