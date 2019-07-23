@@ -1,16 +1,35 @@
 import React, { useState } from 'react'
 import './DashboardDetail.sass'
 import { apiUrl } from '../../config/api'
-
 import { Check, X } from 'react-feather'
 
+/**
+ * Table for city events
+ */
 const DashboardDetail = props => {
-  const renderBool = bool => {
+  /**
+   * @param {bool} boolean
+   * @return Icon
+   */
+  const renderBoolIcon = bool => {
     return bool ? <Check /> : <X />
   }
 
-  const [eventDetails, setEventDetails] = useState([])
+  /**
+   * Fetch event detail data
+   */
+  const getEventDetails = event => {
+    fetch(`${apiUrl}${event.nextUrl}`)
+      .then(res => res.json())
+      .then(eventDetails => {
+        setEventDetails(eventDetails)
+      })
+  }
 
+  /**
+   * Hook for event detail modal
+   */
+  const [eventDetails, setEventDetails] = useState([])
   const { summary } = props
   return summary.length > 0 ? (
     <div>
@@ -55,25 +74,16 @@ const DashboardDetail = props => {
             return (
               <tbody>
                 <tr>
-                  <td
-                    className='detail-link'
-                    onClick={() => {
-                      fetch(`${apiUrl}${event.nextUrl}`)
-                        .then(res => res.json())
-                        .then(eventDetails => {
-                          setEventDetails(eventDetails)
-                        })
-                    }}
-                  >
+                  <td className='detail-link' onClick={getEventDetails(event)}>
                     {event.bridgeOpeningId}
                   </td>
                   <td>{event.version}</td>
-                  <td>{renderBool(event.allFields)}</td>
-                  <td>{renderBool(event.probabilityOfOccurence)}</td>
-                  <td>{renderBool(event.source)}</td>
-                  <td>{renderBool(event.locationForDisplay)}</td>
-                  <td>{renderBool(event.location)}</td>
-                  <td>{renderBool(event.generalNetworkManagementType)}</td>
+                  <td>{renderBoolIcon(event.allFields)}</td>
+                  <td>{renderBoolIcon(event.probabilityOfOccurence)}</td>
+                  <td>{renderBoolIcon(event.source)}</td>
+                  <td>{renderBoolIcon(event.locationForDisplay)}</td>
+                  <td>{renderBoolIcon(event.location)}</td>
+                  <td>{renderBoolIcon(event.generalNetworkManagementType)}</td>
                 </tr>
               </tbody>
             )
