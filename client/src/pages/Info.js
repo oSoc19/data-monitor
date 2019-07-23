@@ -13,7 +13,16 @@ const Info = () => {
       <p>It shows a map with a sidebar by default. On the sidebar there is a possibility to toggle multiple datasets on and off. Apart from that you can also select a date range. The results show several pinpoints on the map.
 You can switch to a dashboard view, that’s divided in clickable tiles named after and ordered by the Dutch municipalities, regions and provinces. Each tile shows the data in a graph and with each click you can narrow down to the smallest part of the Netherlands. Finally it gives a detailed view of the dataset as a table. You can edit the data where needed and download a csv-file about this dataset.</p>
       <p>The tests to monitor the quality of the data are mostly based on the completeness of the data and the correctness. So if we miss some data, or if it is not what it is supposed to be, then it is considered wrong.</p>
-      <p>Three datasets are implemented for now. "Bridge Openings", "Maintenance Works" (from "Road Works") and "Accidents" (from "Incidents"). More datasets from the NDW opendata should be implemented in the future.</p>
+      <p>Three datasets are implemented for now. "Bridge Openings", "Maintenance Works" (from "Road Works") and "Accidents" (from "Incidents"). More datasets from the NDW opendata should be implemented in the future, as well as more tests.</p>
+      <h3>Example</h3>
+      <p>If you want to download a CSV file that contains all the bridge openings in Amsterdam for the last week, you have to :</p>
+      <ul>
+        <li>Click on "7 days" on the sidebar.</li>
+        <li>Click on "Bridges" on the sidebar.</li>
+        <li>Click on the dashboard icon on the header of the webpage.</li>
+        <li>Click on the "Noth Holland" tile.</li>
+        <li>Click on "Amsterdam.csv" on the Amsterdam tile.</li>
+      </ul>
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         <h4>Summary endpoints</h4>
         <code>{bridgeOpenings.summary}</code>
