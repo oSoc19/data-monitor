@@ -5,8 +5,8 @@ import { apiUrl } from '../../config/api'
 import { Check, X } from 'react-feather'
 
 const DashboardDetail = props => {
-  const renderBool = bool => {
-    return bool ? <Check /> : <X />
+  const renderBool = number => {
+    return number === 1 ? <Check /> : <X />
   }
 
   const [eventDetails, setEventDetails] = useState([])
@@ -41,39 +41,43 @@ const DashboardDetail = props => {
         <table>
           <thead>
             <tr>
-              <td>Event Id</td>
-              <td>Version</td>
-              <td>Fields complete</td>
-              <td>Probability of occurence</td>
-              <td>Source</td>
-              <td>Location for display</td>
-              <td>Location</td>
-              <td>General network management type</td>
+              {Object.keys(summary[0]).map(key => {
+                if(key !== 'nextUrl') {
+                  return (<td>{splitCamelCase(key)}</td>)
+                }
+              })}
             </tr>
           </thead>
           {summary.map(event => {
             return (
               <tbody>
                 <tr>
-                  <td
-                    className='detail-link'
-                    onClick={() => {
-                      fetch(`${apiUrl}${event.nextUrl}`)
-                        .then(res => res.json())
-                        .then(eventDetails => {
-                          setEventDetails(eventDetails)
-                        })
-                    }}
-                  >
-                    {event.bridgeOpeningId}
-                  </td>
-                  <td>{event.version}</td>
-                  <td>{renderBool(event.allFields)}</td>
-                  <td>{renderBool(event.probabilityOfOccurence)}</td>
-                  <td>{renderBool(event.source)}</td>
-                  <td>{renderBool(event.locationForDisplay)}</td>
-                  <td>{renderBool(event.location)}</td>
-                  <td>{renderBool(event.generalNetworkManagementType)}</td>
+                  {Object.keys(event).map(key => {
+                    console.log(key, typeof(event[key]))
+                    if(key === 'nextUrl') {
+                      return
+                    }
+                    if(key === 'id') {
+                      return(<td
+                        className='detail-link'
+                        onClick={() => {
+                          fetch(`${apiUrl}${event.nextUrl}`)
+                            .then(res => res.json())
+                            .then(eventDetails => {
+                              setEventDetails(eventDetails)
+                            })
+                        }}
+                      >
+                        {event[key]}
+                      </td>)
+                    
+                    // } else if() {
+                    } else if(typeof(event[key]) === 'number') {
+                      return(<td>{renderBool(event[key])}</td>)
+                    } else {
+                      return(<td>{event[key]}</td>)
+                    }
+                  })}
                 </tr>
               </tbody>
             )
@@ -85,5 +89,21 @@ const DashboardDetail = props => {
     <h4>No events for this city</h4>
   )
 }
+
+function getId(event) {    
+  if (!event.bridgeOpeningId)    
+    return event.bridgeOpeningId;    
+      
+  if (!event.maintenanceWorkId)    
+    return event.maintenanceWorkId;    
+     
+  if (!event.accidentId)    
+    return event.accidentId;    
+  return null;    
+}    
+     
+function splitCamelCase(string) {    
+  return string.split(/(?=[A-Z])/).map(s => s.toLowerCase()).join(' ');    
+}  
 
 export default DashboardDetail
