@@ -7,11 +7,9 @@ import bridgeOpenIcon from '../../assets/markers/bridge.png'
 import maintenanceIcon from '../../assets/markers/actualmaintenance.png'
 import accidentIcon from '../../assets/markers/incident.png'
 import { Mapbox } from '../../config'
-import { apiUrl } from "../../config/api"
+import { apiUrl } from '../../config/api'
 
 import Loader from '../../components/Loader'
-
-import { MapStylePicker } from './Controls'
 
 import { useGlobalState } from '../../utilities/state'
 
@@ -50,9 +48,7 @@ const Map = props => {
 
   // TODO: refactor to fetch util
   const getBridgeEvents = async id => {
-    let res = await fetch(
-      `${apiUrl}/api/bridge_openings/?id=${id}`
-    )
+    let res = await fetch(`${apiUrl}/api/bridge_openings/?id=${id}`)
     let bridgeEvents = await res.json()
     setState({ ...state, bridgeEvents })
   }
@@ -173,14 +169,6 @@ const Map = props => {
           mapboxApiAccessToken={Mapbox.token}
           mapStyle={style}
         >
-          {/* {bridgeEvents &&
-            bridgeEvents.features.map(event => {
-              console.log(event)
-            })} */}
-          {/* <MapStylePicker
-            onStyleChange={onStyleChange}
-            currentStyle={state.style}
-        /> */}
           <DeckGL
             layers={[/* renderScatterPlotLayer() */ renderIconLayer()]}
             initialViewState={viewport}

@@ -2,7 +2,6 @@ import React from 'react'
 
 import { StateProvider } from './utilities/state'
 
-import LeafletMap from './pages/LeafletMap'
 import MapOverview from './pages/MapOverview'
 import Dashboard from './pages/Dashboard'
 
@@ -63,7 +62,6 @@ const App = () => {
   return (
     <StateProvider initialState={initialState} reducer={reducer}>
       <Route path='/' exact component={Home} />
-      <Route path='/leaflet' component={LeafletMap} />
       <Route path='/mapbox' component={MapOverview} />
       <Route path='/dashboard' component={Dashboard} />
       <Route path='/info' component={Info} />
