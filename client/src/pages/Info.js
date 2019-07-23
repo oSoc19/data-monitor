@@ -6,7 +6,7 @@ import LayoutWrapper from '../components/LayoutWrapper'
 
 const Info = () => {
   return (
-    <LayoutWrapper direction='column'>
+    <LayoutWrapper>
       <h4>About</h4>
       <p>Let’s suppose you own an autonomous car and you want to navigate to Amsterdam. You set up your car to calculate a route and start following the directions. On the way, the car system included the passage of a bridge as part of the route, but upon arrival you can’t cross it. This is because incorrect data has been sent to the car and hasn’t been changed ever since. With Verkeersdatamonitor problems like these are resolved. Accurate mobility data fixes the problem of traffic jams and unnecessary detours and makes way for a fluid traffic.</p>
       <p>Verkeersdatamonitor is a web-based project for Dutch municipalities, provinces and the government, launched by the Dutch Ministry of Infrastructure and Water Management. The project is about monitoring the quality of mobility data about the Netherlands.</p>
@@ -16,13 +16,13 @@ You can switch to a dashboard view, that’s divided in clickable tiles named af
       <p>Three datasets are implemented for now. "Bridge Openings", "Maintenance Works" (from "Road Works") and "Accidents" (from "Incidents"). More datasets from the NDW opendata should be implemented in the future, as well as more tests.</p>
       <h3>Example</h3>
       <p>If you want to download a CSV file that contains all the bridge openings in Amsterdam for the last week, you have to :</p>
-      <ul>
+      <ol>
         <li>Click on "7 days" on the sidebar.</li>
         <li>Click on "Bridges" on the sidebar.</li>
         <li>Click on the dashboard icon on the header of the webpage.</li>
         <li>Click on the "Noth Holland" tile.</li>
         <li>Click on "Amsterdam.csv" on the Amsterdam tile.</li>
-      </ul>
+      </ol>
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         <h4>Summary endpoints</h4>
         <code>{bridgeOpenings.summary}</code>
