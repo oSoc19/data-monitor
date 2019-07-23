@@ -64,7 +64,7 @@ Always make sure you build your images before.
 
 Also note: debugging API service and fetch_data service is difficult at the same time.
 
-### before developing
+### Before developing
 You will need to make a docker-compose.override.yml, where local config will be stored.
 
 ### Dev api service
