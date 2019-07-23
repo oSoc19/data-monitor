@@ -106,7 +106,6 @@ const Map = props => {
         }
         let res = await fetch(dataSet.fetchEvent + id)
         res = await res.json()
-        console.log('res', res)
         let popupInfo = []
         for(let [key, value] of Object.entries(res)) {
           if(typeof(value) !== 'object') {
@@ -115,7 +114,6 @@ const Map = props => {
             popupInfo.push(`${key}: ${value}`) 
           }
         }
-        console.log(popupInfo)
         setState({ ...state,
           showPopup: true,
           popupCoordinates: iconObject.object.coordinates,
@@ -151,7 +149,6 @@ const Map = props => {
             initialViewState={viewport}
             controller
           ></DeckGL>
-          {console.log(showPopup, "showPopup")}
           {showPopup && <Popup
           latitude={popupCoordinates[1]}
           longitude={popupCoordinates[0]}

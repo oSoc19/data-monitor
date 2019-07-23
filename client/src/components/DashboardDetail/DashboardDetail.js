@@ -70,7 +70,6 @@ const DashboardDetail = props => {
               <tbody>
                 <tr>
                   {Object.keys(event).map(key => {
-                    console.log(key, typeof(event[key]))
                     if(key === 'nextUrl') {
                       return
                     }
