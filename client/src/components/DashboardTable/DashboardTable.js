@@ -91,7 +91,7 @@ const DashboardTable = props => {
                           '/download/'
                         )
                         // console.log(downloadUrlEndpoint)
-                        const downloadUrl = `http://82.196.10.230:8080${downloadUrlEndpoint}`
+                        const downloadUrl = `${apiUrl}/api/${downloadUrlEndpoint}`
                         window.open(downloadUrl)
                       }}
                     >
