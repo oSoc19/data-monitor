@@ -1,6 +1,6 @@
 const api = {
-  domain: 'http://82.196.10.230',
-  port: 8080,
+  domain: process.env.API_DOMAIN ? process.env.API_DOAMIN : 'http://verkeersdatamonitor.nl',
+  port: 80,
   endPoint: '/api/'
 }
 
