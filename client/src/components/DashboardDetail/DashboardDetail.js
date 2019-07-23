@@ -8,16 +8,16 @@ const DashboardDetail = props => {
     return bool ? <Check /> : <X />
   }
 
-  const [eventDetails, setEventDetails] = useState({ eventDetails: null })
+  const [eventDetails, setEventDetails] = useState([])
 
   const { summary } = props
   return summary.length > 0 ? (
     <div>
-      {eventDetails && (
+      {eventDetails.length !== 0 ? (
         <div className='event-detail-container'>
           <button
             onClick={() => {
-              setEventDetails(null)
+              setEventDetails([])
             }}
           >
             <X />
@@ -36,48 +36,49 @@ const DashboardDetail = props => {
           <p>{eventDetails.updatedAt}</p>
           <p>{eventDetails.bridgeId}</p>
         </div>
+      ) : (
+        <table>
+          <thead>
+            <tr>
+              <td>Event Id</td>
+              <td>Version</td>
+              <td>Fields complete</td>
+              <td>Probability of occurence</td>
+              <td>Source</td>
+              <td>Location for display</td>
+              <td>Location</td>
+              <td>General network management type</td>
+            </tr>
+          </thead>
+          {summary.map(event => {
+            return (
+              <tbody>
+                <tr>
+                  <td
+                    className='detail-link'
+                    onClick={() => {
+                      fetch(`http://82.196.10.230:8080${event.nextUrl}`)
+                        .then(res => res.json())
+                        .then(eventDetails => {
+                          setEventDetails(eventDetails)
+                        })
+                    }}
+                  >
+                    {event.bridgeOpeningId}
+                  </td>
+                  <td>{event.version}</td>
+                  <td>{renderBool(event.allFields)}</td>
+                  <td>{renderBool(event.probabilityOfOccurence)}</td>
+                  <td>{renderBool(event.source)}</td>
+                  <td>{renderBool(event.locationForDisplay)}</td>
+                  <td>{renderBool(event.location)}</td>
+                  <td>{renderBool(event.generalNetworkManagementType)}</td>
+                </tr>
+              </tbody>
+            )
+          })}
+        </table>
       )}
-      <table>
-        <thead>
-          <tr>
-            <td>Event Id</td>
-            <td>Version</td>
-            <td>Fields complete</td>
-            <td>Probability of occurence</td>
-            <td>Source</td>
-            <td>Location for display</td>
-            <td>Location</td>
-            <td>General network management type</td>
-          </tr>
-        </thead>
-        {summary.map(event => {
-          return (
-            <tbody>
-              <tr>
-                <td
-                  className='detail-link'
-                  onClick={() => {
-                    fetch(`http://82.196.10.230:8080${event.nextUrl}`)
-                      .then(res => res.json())
-                      .then(eventDetails => {
-                        setEventDetails(eventDetails)
-                      })
-                  }}
-                >
-                  {event.bridgeOpeningId}
-                </td>
-                <td>{event.version}</td>
-                <td>{renderBool(event.allFields)}</td>
-                <td>{renderBool(event.probabilityOfOccurence)}</td>
-                <td>{renderBool(event.source)}</td>
-                <td>{renderBool(event.locationForDisplay)}</td>
-                <td>{renderBool(event.location)}</td>
-                <td>{renderBool(event.generalNetworkManagementType)}</td>
-              </tr>
-            </tbody>
-          )
-        })}
-      </table>
     </div>
   ) : (
     <h4>No events for this city</h4>
