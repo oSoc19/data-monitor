@@ -1,7 +1,10 @@
-export const apiUrl = process.env.API_DOMAIN ?
-  process.env.API_DOMAIN :
-  'http://localhost:8080'
+/**
+ * API config
+ * - base
+ * - endpoints for different data sets
+ */
 
+export const apiUrl = 'https://api.verkeersdatamonitor.nl'
 export const bridgeOpenings = {
   summary: `${apiUrl}/api/qa/bridge_openings/summary`,
   fetchEvent: `${apiUrl}/api/bridge_openings/`,

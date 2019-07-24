@@ -1,5 +1,8 @@
 import React from 'react'
 
+/**
+ * 404 Page
+ */
 const NotFound = ({ location }) => {
   return (
     <div>
