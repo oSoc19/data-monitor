@@ -164,7 +164,7 @@ const Map = props => {
         </ReactMapGL>
       ) : (
         <div className='center'>
-          <Loader />
+          <Loader text='Loading map' />
         </div>
       )}
     </div>

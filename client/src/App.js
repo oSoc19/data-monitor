@@ -1,5 +1,6 @@
 import React from 'react'
 import { Route } from 'react-router-dom'
+import './App.sass'
 
 /**
  * Import pages
@@ -12,8 +13,6 @@ import Info from './pages/Info'
 import { bridgeOpenings } from './config/api'
 import { StateProvider } from './utilities/state'
 import { lastWeek, now } from './utilities/calendar'
-
-import './App.sass'
 
 const App = () => {
   /**
