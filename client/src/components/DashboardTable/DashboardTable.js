@@ -179,7 +179,7 @@ const DashboardTable = props => {
   } else {
     return (
       <div className='center'>
-        <Loader />
+        <Loader text='Loading dashboard'/>
       </div>
     )
   }
