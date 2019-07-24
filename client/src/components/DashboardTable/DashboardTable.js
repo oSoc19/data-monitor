@@ -20,7 +20,7 @@ const levelInfo = ['country', 'region', 'province', 'city']
 
 const DashboardTable = props => {
   const [state, setState] = useState({ level: 1, summary: [], loading: true })
-  const [{ dataSet }] = useGlobalState()
+  const [{ dataSet, filter }] = useGlobalState()
 
   /**
    * Fetch data on mount
@@ -43,7 +43,7 @@ const DashboardTable = props => {
   /**
    * @param {number} goodEvents
    * @param {number} badEvents
-   * @return {number} percentage
+   * @return {number} data quality percentage
    */
   const getEventDataQuality = (goodEvents, badEvents) => {
     if ((goodEvents === 0 && badEvents === 0) || goodEvents === 0) {
@@ -59,6 +59,7 @@ const DashboardTable = props => {
   if (!loading) {
     return (
       <React.Fragment>
+        <h4>Overview {dataSet.name} datapoints</h4>
         <div className='dashboard-container'>
           {summary && level < 3 ? (
             summary.map(item => {
@@ -76,6 +77,10 @@ const DashboardTable = props => {
                   key={item.name}
                   style={{
                     border:
+                      /**
+                       * Get border color from percentage
+                       * TODO: use getColorFromValue utility ('../../utilities/visualisation)'
+                       */
                       getEventDataQuality(
                         numberOfGoodEvents,
                         numberOfBadEvents
@@ -94,7 +99,11 @@ const DashboardTable = props => {
                     <button
                       className='btn-outline'
                       type='submit'
+                      title='csv'
                       onClick={e => {
+                        /**
+                         * Download dataset
+                         */
                         e.stopPropagation()
                         const downloadUrlEndpoint = item.nextUrl.replace(
                           '/qa/',
@@ -109,31 +118,6 @@ const DashboardTable = props => {
                     </button>
                   </div>
                   <hr />
-                  {item.nextUrl && <React.Fragment></React.Fragment>}
-                  {/* <h4>Data quality</h4>
-                  <table>
-                    <tr>
-                      <td>
-                        <Check />
-                      </td>
-                      <td>
-                        <X />
-                      </td>
-                      <td>
-                        <Percent />
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>{numberOfGoodEvents}</td>
-                      <td>{numberOfBadEvents}</td>
-                      <td>
-                        {getEventDataQuality(
-                          numberOfGoodEvents,
-                          numberOfBadEvents
-                        ).toFixed(1)}
-                      </td>
-                    </tr>
-                  </table> */}
                   <div>
                     {numberOfGoodEvents > 0 || numberOfBadEvents > 0 ? (
                       <Pie
@@ -141,26 +125,19 @@ const DashboardTable = props => {
                           datasets: [
                             {
                               label: 'Data quality',
-                              data: [
-                                numberOfGoodEvents,
-                                numberOfBadEvents
-                                // getEventDataQuality(
-                                //   numberOfGoodEvents,
-                                //   numberOfBadEvents
-                                // )
-                              ],
+                              data: [numberOfGoodEvents, numberOfBadEvents],
                               backgroundColor: [
                                 'rgba(0, 255, 0, .5)',
                                 'rgba(255, 0, 0, .5)'
                               ]
                             }
                           ],
-                          labels: ['Correct events', 'Incorrect events']
+                          labels: ['Correct datapoints', 'Incorrect datapoints']
                         }}
                       />
                     ) : (
                       <div className='center'>
-                        <h4>No event data available</h4>
+                        <h5>No event data available</h5>
                       </div>
                     )}
                   </div>
@@ -176,7 +153,7 @@ const DashboardTable = props => {
   } else {
     return (
       <div className='center'>
-        <Loader />
+        <Loader text='Loading dashboard' />
       </div>
     )
   }

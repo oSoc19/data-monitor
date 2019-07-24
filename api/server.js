@@ -1,6 +1,5 @@
 const express = require('express');
 const cors = require('cors');
-const geojson = require('geojson');
 const Sequelize = require('sequelize');
 const models = require('./fetchData/index').models;
 const bodyParser = require('body-parser');
@@ -93,33 +92,7 @@ app.get('/api/download/bridge_openings/summary/cities/:city', async (req, res) =
   sendCsv(result, models.BridgeOpening.getTableName(), res);
 });
 
-app.put('/api/qa/bridge_openings/:id', async (req, res, next) => {
-  let id = req.params.id;
-
-  let checks = await models.BridgeOpeningCheck.findOne({
-    where: {
-      bridgeOpeningId: id
-    }
-  });
-
-  if (checks) {
-    try {
-      await checks.update({
-        manualIntervention: req.body.manualIntervention,
-        comment: req.body.comment
-      });
-      res.send(checks);
-    } catch (e) {
-      console.error(e);
-      res.status(500).json({
-        'error': 'internal server error'
-      });
-    }
-  }
-});
-
 // Maintenance works API
-
 app.get('/api/maintenance_works/:id', async (req, res) => {
   let result = await models.MaintenanceWorks.findOne({
     where: {
@@ -225,42 +198,6 @@ app.use('*', function(req, res) {
     'msg': 'route not found'
   }, 404);
 });
-
-/**
- * Get all the bridge openings events for a bridgeId
- * between the start time and the end time if those are defined.
- * @param  {String} startTime string that contains a date and the situationRecordVersionTime field
- * of the bridge opening event will be bigger than this date.
- * @param  {String} endTime string that contains a date and the situationRecordVersionTime field
- * of the bridge opening event will be smaller than this date.
- * @param  {Number} bridgeId id of the bridge, this id is store in the table "bridges" in the database
- */
-async function getBridgeOpenings(startTime, endTime, bridgeId) {
-  if (startTime === undefined) {
-    startTime = 0;
-  }
-  if (endTime === undefined) {
-    endTime = '9999-12-01';
-  }
-
-  if (bridgeId === undefined) {
-    return [];
-  }
-
-  let bridgeOpenings = await models.BridgeOpening.findAll({
-    raw: true,
-    where: {
-      bridgeId: bridgeId,
-      situationRecordVersionTime: {
-        [op.and]: {
-          [op.gte]: new Date(startTime),
-          [op.lte]: new Date(endTime)
-        }
-      }
-    }
-  });
-  return bridgeOpenings;
-}
 
 /**
  * Get a GeoJSON feature collection with all the elements of the table between start time and endtime
@@ -426,7 +363,7 @@ async function intersects(table, as, attributes, boundariesName, level) {
 }
 
 /**
- * Get all the good events from the events in the model.
+ * Get all the good events from the events in the model. (i.e. checksum=1)
  * @param  {Object} table the table that contains all the events (ex. models.BridgeOpening)
  * @param  {Number} ids ids of events
  */
@@ -441,7 +378,7 @@ async function findGoodEvents(table, ids) {
 }
 
 /**
- * Get all the bad events from the events in the model.
+ * Get all the bad events from the events in the model. (i.e. checksum!=1)
  * @param  {Object} table the table that contains all the events (ex. models.BridgeOpening)
  * @param  {Number} ids ids of events
  */

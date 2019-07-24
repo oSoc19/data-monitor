@@ -3,7 +3,6 @@ import './DashboardDetail.sass'
 import { apiUrl } from '../../config/api'
 import { Check, X } from 'react-feather'
 
-
 const DashboardDetail = props => {
   /**
    * @param {bool} boolean
@@ -16,8 +15,8 @@ const DashboardDetail = props => {
   /**
    * Fetch event detail data
    */
-  const getEventDetails = event => {
-    fetch(`${apiUrl}${event.nextUrl}`)
+  const getEventDetails = endpoint => {
+    fetch(`${apiUrl}${endpoint}`)
       .then(res => res.json())
       .then(eventDetails => {
         setEventDetails(eventDetails)
@@ -41,8 +40,8 @@ const DashboardDetail = props => {
             <X />
           </button>
           <ul>
-            {Object.keys(eventDetails).map((key) => {
-              return(<li>{`${key} : ${eventDetails[key]}`}</li>)
+            {Object.keys(eventDetails).map(key => {
+              return <li>{`${key} : ${eventDetails[key]}`}</li>
             })}
           </ul>
         </div>
@@ -51,8 +50,8 @@ const DashboardDetail = props => {
           <thead>
             <tr>
               {Object.keys(summary[0]).map(key => {
-                if(key !== 'nextUrl') {
-                  return (<td>{splitCamelCase(key)}</td>)
+                if (key !== 'nextUrl') {
+                  return <td>{splitCamelCase(key)}</td>
                 }
               })}
             </tr>
@@ -62,28 +61,26 @@ const DashboardDetail = props => {
               <tbody>
                 <tr>
                   {Object.keys(event).map(key => {
-                    if(key === 'nextUrl') {
+                    if (key === 'nextUrl') {
                       return
                     }
-                    if(key === 'id') {
-                      return(<td
-                        className='detail-link'
-                        onClick={() => {
-                          fetch(`${apiUrl}${event.nextUrl}`)
-                            .then(res => res.json())
-                            .then(eventDetails => {
-                              setEventDetails(eventDetails)
-                            })
-                        }}
-                      >
-                        {event[key]}
-                      </td>)
-                    
-                    // } else if() {
-                    } else if(typeof(event[key]) === 'number') {
-                      return(<td>{renderBoolIcon(event[key])}</td>)
+                    if (key === 'id') {
+                      return (
+                        <td
+                          className='detail-link'
+                          onClick={() => {
+                            getEventDetails(event.nextUrl)
+                          }}
+                        >
+                          {event[key]}
+                        </td>
+                      )
+
+                      // } else if() {
+                    } else if (typeof event[key] === 'number') {
+                      return <td>{renderBoolIcon(event[key])}</td>
                     } else {
-                      return(<td>{event[key]}</td>)
+                      return <td>{event[key]}</td>
                     }
                   })}
                 </tr>
@@ -98,20 +95,20 @@ const DashboardDetail = props => {
   )
 }
 
-function getId(event) {    
-  if (!event.bridgeOpeningId)    
-    return event.bridgeOpeningId;    
-      
-  if (!event.maintenanceWorkId)    
-    return event.maintenanceWorkId;    
-     
-  if (!event.accidentId)    
-    return event.accidentId;    
-  return null;    
-}    
-     
-function splitCamelCase(string) {    
-  return string.split(/(?=[A-Z])/).map(s => s.toLowerCase()).join(' ');    
-}  
+function getId(event) {
+  if (!event.bridgeOpeningId) return event.bridgeOpeningId
+
+  if (!event.maintenanceWorkId) return event.maintenanceWorkId
+
+  if (!event.accidentId) return event.accidentId
+  return null
+}
+
+function splitCamelCase(string) {
+  return string
+    .split(/(?=[A-Z])/)
+    .map(s => s.toLowerCase())
+    .join(' ')
+}
 
 export default DashboardDetail

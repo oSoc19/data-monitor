@@ -4,6 +4,9 @@ import Header from '../Header'
 import Sidebar from '../Sidebar'
 import BottomActions from '../BottomActions'
 
+/**
+ * Wrap content with ui components & container style
+ */
 const LayoutWrapper = props => {
   return (
     <React.Fragment>
@@ -11,9 +14,8 @@ const LayoutWrapper = props => {
         {props.header && <Header />}
         <div className='content-container'>
           {props.sidebar && <Sidebar />}
-          <div className='content'> {props.children}</div>
+          <div className='content'>{props.children}</div>
         </div>
-        {/* <BottomActions /> */}
       </div>
     </React.Fragment>
   )

@@ -1,7 +1,9 @@
 import React from 'react'
-
 import './BottomActions.sass'
 
+/**
+ * Import icons
+ */
 import bridgeIcon from '../../assets/icons/bridge.png'
 import maintenanceIcon from '../../assets/icons/plannedmaintenance.png'
 import accidentIcon from '../../assets/icons/incident.png'

@@ -42,7 +42,7 @@ const Map = props => {
 
   // TODO: refactor to fetch util
   const getData = async () => {
-    let res = await fetch(dataSet.map + filter.date)
+    let res = await fetch(dataSet.map + filter.date.query)
     res = await res.json()
     setState({ ...state, dataFeatures: res.features })
   }
@@ -92,14 +92,15 @@ const Map = props => {
       getPosition: d => d.coordinates,
       getSize: d => 32,
       onClick: async (iconObject, x, y) => {
-        setState({ ...state,
+        setState({
+          ...state,
           showPopup: true,
           popupCoordinates: iconObject.object.coordinates,
           popupInfo: ['Loading information...']
         })
         let ids = iconObject.object.properties.id
         let id
-        if(Array.isArray(ids) && ids.length > 0) {
+        if (Array.isArray(ids) && ids.length > 0) {
           id = ids[0]
         } else {
           return // bad response
@@ -107,14 +108,18 @@ const Map = props => {
         let res = await fetch(dataSet.fetchEvent + id)
         res = await res.json()
         let popupInfo = []
-        for(let [key, value] of Object.entries(res)) {
-          if(typeof(value) !== 'object') {
+        for (let [key, value] of Object.entries(res)) {
+          if (typeof value !== 'object') {
             // Get a string with spaces from a camelCase string
-            key = key.split(/(?=[A-Z])/).map(s => s.toLowerCase()).join(' ')
-            popupInfo.push(`${key}: ${value}`) 
+            key = key
+              .split(/(?=[A-Z])/)
+              .map(s => s.toLowerCase())
+              .join(' ')
+            popupInfo.push(`${key}: ${value}`)
           }
         }
-        setState({ ...state,
+        setState({
+          ...state,
           showPopup: true,
           popupCoordinates: iconObject.object.coordinates,
           popupInfo: popupInfo
@@ -134,40 +139,56 @@ const Map = props => {
     })
   }
 
-  const { dataFeatures, bridgeEvents, viewport, style, showPopup, popupInfo, popupCoordinates } = state
+  const {
+    dataFeatures,
+    bridgeEvents,
+    viewport,
+    style,
+    showPopup,
+    popupInfo,
+    popupCoordinates
+  } = state
   return (
-    <div className='map'>
-      {dataFeatures.length > 0 ? (
-        <ReactMapGL
-          {...viewport}
-          onViewportChange={viewport => _onViewportChange(viewport)}
-          mapboxApiAccessToken={Mapbox.token}
-          mapStyle={style}
-        >
-          <DeckGL
-            layers={[renderIconLayer()]}
-            initialViewState={viewport}
-            controller
-          ></DeckGL>
-          {showPopup && <Popup
-          latitude={popupCoordinates[1]}
-          longitude={popupCoordinates[0]}
-          closeButton={true}
-          closeOnClick={false}
-          dynamicPosition={false}
-          onClose={() => setState({ ...state, showPopup: false })} 
-          anchor="bottom" >
-          <ul>{popupInfo.map((value) => {
-            return(<li>{value}</li>)
-          })}</ul>
-        </Popup>}
-        </ReactMapGL>
-      ) : (
-        <div className='center'>
-          <Loader />
-        </div>
-      )}
-    </div>
+    <React.Fragment>
+      <h4>Overview {dataSet.name} datapoints</h4>
+      <div className='map'>
+        {dataFeatures.length > 0 ? (
+          <ReactMapGL
+            {...viewport}
+            onViewportChange={viewport => _onViewportChange(viewport)}
+            mapboxApiAccessToken={Mapbox.token}
+            mapStyle={style}
+          >
+            <DeckGL
+              layers={[renderIconLayer()]}
+              initialViewState={viewport}
+              controller
+            ></DeckGL>
+            {showPopup && (
+              <Popup
+                latitude={popupCoordinates[1]}
+                longitude={popupCoordinates[0]}
+                closeButton={true}
+                closeOnClick={false}
+                dynamicPosition={false}
+                onClose={() => setState({ ...state, showPopup: false })}
+                anchor='bottom'
+              >
+                <ul>
+                  {popupInfo.map(value => {
+                    return <li>{value}</li>
+                  })}
+                </ul>
+              </Popup>
+            )}
+          </ReactMapGL>
+        ) : (
+          <div className='center'>
+            <Loader text='Loading map' />
+          </div>
+        )}
+      </div>
+    </React.Fragment>
   )
 }
 
