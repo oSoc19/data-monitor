@@ -23,9 +23,9 @@ class Legend extends Component {
   render() {
     const { collapsed } = this.state
     return (
-      <div className="legend" style={this.props.style}>
+      <div className='legend' style={this.props.style}>
         {!collapsed && (
-          <ul className="legend_list">
+          <ul className='legend_list'>
             <h3>
               <BarChart />
               Data quality
@@ -52,7 +52,7 @@ class Legend extends Component {
             </li>
           </ul>
         )}
-        <button className="legend_btn" onClick={this.toggleLegend}>
+        <button className='legend_btn' onClick={this.toggleLegend}>
           {collapsed ? <PlusCircle /> : <XCircle />}
           Legend
         </button>

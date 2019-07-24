@@ -5,7 +5,7 @@ import Sidebar from '../Sidebar'
 import BottomActions from '../BottomActions'
 
 /**
- * Wrap content in ui
+ * Wrap content with ui components & container style
  */
 const LayoutWrapper = props => {
   return (

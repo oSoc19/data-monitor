@@ -99,7 +99,11 @@ const DashboardTable = props => {
                     <button
                       className='btn-outline'
                       type='submit'
+                      title='csv'
                       onClick={e => {
+                        /**
+                         * Download dataset
+                         */
                         e.stopPropagation()
                         const downloadUrlEndpoint = item.nextUrl.replace(
                           '/qa/',
@@ -110,7 +114,7 @@ const DashboardTable = props => {
                       }}
                     >
                       <Download />
-                      csv
+                      {/* csv */}
                     </button>
                   </div>
                   <hr />

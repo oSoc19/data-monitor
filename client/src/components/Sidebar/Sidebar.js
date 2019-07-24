@@ -6,7 +6,11 @@ import './Sidebar.sass'
 import { bridgeOpenings, maintenanceWorks, accidents } from '../../config/api'
 
 import { now, yesterday, lastWeek, lastMonth } from '../../utilities/calendar'
-import { Filter, ArrowLeft } from 'react-feather'
+import { Filter, ArrowLeft, Download } from 'react-feather'
+
+import bridgeIcon from '../../assets/icons/bridge.png'
+import maintenanceIcon from '../../assets/icons/maintenance.png'
+import accidentIcon from '../../assets/icons/incident.png'
 
 const Sidebar = props => {
   const [{ dataSet, filter }, dispatch] = useGlobalState()
@@ -76,6 +80,7 @@ const Sidebar = props => {
             <h4>Datasets</h4>
             <div className='data-toggle'>
               <button
+                className={dataSet.name === 'bridges' ? 'btn-active' : ''}
                 onClick={() => {
                   dispatch({
                     type: 'changeDataSet',
@@ -90,10 +95,11 @@ const Sidebar = props => {
                   })
                 }}
               >
+                <img src={bridgeIcon} alt='' />
                 Bridges
               </button>
               <button
-                activeClassName='active'
+                className={dataSet.name === 'maintenance' ? 'btn-active' : ''}
                 onClick={() => {
                   dispatch({
                     type: 'changeDataSet',
@@ -108,15 +114,16 @@ const Sidebar = props => {
                   })
                 }}
               >
+                <img src={maintenanceIcon} alt='' />
                 Maintenance
               </button>
               <button
-                activeClassName='active'
+                className={dataSet.name === 'accident' ? 'btn-active' : ''}
                 onClick={() => {
                   dispatch({
                     type: 'changeDataSet',
                     newDataSet: {
-                      name: 'accidents',
+                      name: 'accident',
                       summary: accidents.summary,
                       map: accidents.map,
                       fetchEvent: accidents.fetchEvent,
@@ -126,6 +133,7 @@ const Sidebar = props => {
                   })
                 }}
               >
+                <img src={accidentIcon} alt='' />
                 Accidents
               </button>
             </div>
@@ -140,7 +148,8 @@ const Sidebar = props => {
                   window.open(downloadUrl)
                 }}
               >
-                {`Download ${dataSet.name}`}
+                <Download />
+                {`${dataSet.name}`}
               </button>
             </div>
           </div>
