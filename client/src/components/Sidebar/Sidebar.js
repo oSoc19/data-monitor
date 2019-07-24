@@ -132,15 +132,17 @@ const Sidebar = props => {
             {/* <pre>{dataSet.summary}</pre> */}
           </div>
           <div className='sidebar-section'>
-            <h4>Dataset actions</h4>
-            <button
-              onClick={() => {
-                const downloadUrl = dataSet.download
-                window.open(downloadUrl)
-              }}
-            >
-              {`Download ${dataSet.name}`}
-            </button>
+            <div className='data-toggle'>
+              <h4>Dataset actions</h4>
+              <button
+                onClick={() => {
+                  const downloadUrl = dataSet.download
+                  window.open(downloadUrl)
+                }}
+              >
+                {`Download ${dataSet.name}`}
+              </button>
+            </div>
           </div>
         </div>
       )}
