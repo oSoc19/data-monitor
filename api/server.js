@@ -1,6 +1,5 @@
 const express = require('express');
 const cors = require('cors');
-const geojson = require('geojson');
 const Sequelize = require('sequelize');
 const models = require('./fetchData/index').models;
 const bodyParser = require('body-parser');
@@ -93,33 +92,7 @@ app.get('/api/download/bridge_openings/summary/cities/:city', async (req, res) =
   sendCsv(result, models.BridgeOpening.getTableName(), res);
 });
 
-app.put('/api/qa/bridge_openings/:id', async (req, res, next) => {
-  let id = req.params.id;
-
-  let checks = await models.BridgeOpeningCheck.findOne({
-    where: {
-      bridgeOpeningId: id
-    }
-  });
-
-  if (checks) {
-    try {
-      await checks.update({
-        manualIntervention: req.body.manualIntervention,
-        comment: req.body.comment
-      });
-      res.send(checks);
-    } catch (e) {
-      console.error(e);
-      res.status(500).json({
-        'error': 'internal server error'
-      });
-    }
-  }
-});
-
 // Maintenance works API
-
 app.get('/api/maintenance_works/:id', async (req, res) => {
   let result = await models.MaintenanceWorks.findOne({
     where: {
