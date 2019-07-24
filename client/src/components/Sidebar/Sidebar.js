@@ -29,42 +29,48 @@ const Sidebar = props => {
             <h4>Filter</h4>
             {/* <input type='text' value='2019-07-08T12:20:38.000Z' />
             <input type='text' value='2019-07-20T12:20:38.000Z' /> */}
-            <button
-              onClick={() => {
-                dispatch({
-                  type: 'filterDataSet',
-                  newFilter: {
-                    date: `/?startTime=${yesterday}&endTime=${now}`
-                  }
-                })
-              }}
-            >
-              24 Hours
-            </button>
-            <button
-              onClick={() => {
-                dispatch({
-                  type: 'filterDataSet',
-                  newFilter: {
-                    date: `/?startTime=${lastWeek}&endTime=${now}`
-                  }
-                })
-              }}
-            >
-              7 Days
-            </button>
-            <button
-              onClick={() => {
-                dispatch({
-                  type: 'filterDataSet',
-                  newFilter: {
-                    date: `/?startTime=${lastMonth}&endTime=${now}`
-                  }
-                })
-              }}
-            >
-              1 Month
-            </button>
+            <div className='data-toggle'>
+              <button
+                onClick={() => {
+                  dispatch({
+                    type: 'filterDataSet',
+                    newFilter: {
+                      date: `/?startTime=${yesterday}&endTime=${now}`
+                    }
+                  })
+                }}
+              >
+                24 Hours
+              </button>
+            </div>
+            <div className='data-toggle'>
+              <button
+                onClick={() => {
+                  dispatch({
+                    type: 'filterDataSet',
+                    newFilter: {
+                      date: `/?startTime=${lastWeek}&endTime=${now}`
+                    }
+                  })
+                }}
+              >
+                7 Days
+              </button>
+            </div>
+            <div className='data-toggle'>
+              <button
+                onClick={() => {
+                  dispatch({
+                    type: 'filterDataSet',
+                    newFilter: {
+                      date: `/?startTime=${lastMonth}&endTime=${now}`
+                    }
+                  })
+                }}
+              >
+                1 Month
+              </button>
+            </div>
           </div>
           <div className='sidebar-section'>
             <h4>Datasets</h4>
