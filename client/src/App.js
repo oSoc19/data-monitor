@@ -28,7 +28,7 @@ const App = () => {
       icon: 'bridge'
     },
     filter: {
-      date: `/?startTime=${lastWeek}&endTime=${now}`
+      date: { range: 'week', query: `/?startTime=${lastWeek}&endTime=${now}` }
     }
   }
 

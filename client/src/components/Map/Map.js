@@ -42,7 +42,7 @@ const Map = props => {
 
   // TODO: refactor to fetch util
   const getData = async () => {
-    let res = await fetch(dataSet.map + filter.date)
+    let res = await fetch(dataSet.map + filter.date.query)
     res = await res.json()
     setState({ ...state, dataFeatures: res.features })
   }

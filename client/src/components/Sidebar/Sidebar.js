@@ -6,7 +6,7 @@ import './Sidebar.sass'
 import { bridgeOpenings, maintenanceWorks, accidents } from '../../config/api'
 
 import { now, yesterday, lastWeek, lastMonth } from '../../utilities/calendar'
-import { Filter, ArrowLeft, Download } from 'react-feather'
+import { Filter, X, Download } from 'react-feather'
 
 import bridgeIcon from '../../assets/icons/bridge.png'
 import maintenanceIcon from '../../assets/icons/maintenance.png'
@@ -16,15 +16,17 @@ const Sidebar = props => {
   const [{ dataSet, filter }, dispatch] = useGlobalState()
   const [visible, toggleVisible] = useState(true)
 
+  const { range } = filter.date
+
   return (
     <React.Fragment>
       {/* <button
-        style={{ position: 'absolute', zIndex: 100 }}
+        className='filter-toggle'
         onClick={() => {
           toggleVisible(!visible)
         }}
       >
-        {visible ? <ArrowLeft /> : null}
+        {visible ? <X /> : null}
         <Filter />
       </button> */}
       {visible && (
@@ -35,11 +37,15 @@ const Sidebar = props => {
             <input type='text' value='2019-07-20T12:20:38.000Z' /> */}
             <div className='data-toggle'>
               <button
+                className={range === 'day' ? 'btn-active' : ''}
                 onClick={() => {
                   dispatch({
                     type: 'filterDataSet',
                     newFilter: {
-                      date: `/?startTime=${yesterday}&endTime=${now}`
+                      date: {
+                        range: 'day',
+                        query: `/?startTime=${yesterday}&endTime=${now}`
+                      }
                     }
                   })
                 }}
@@ -49,11 +55,15 @@ const Sidebar = props => {
             </div>
             <div className='data-toggle'>
               <button
+                className={range === 'week' ? 'btn-active' : ''}
                 onClick={() => {
                   dispatch({
                     type: 'filterDataSet',
                     newFilter: {
-                      date: `/?startTime=${lastWeek}&endTime=${now}`
+                      date: {
+                        range: 'week',
+                        query: `/?startTime=${lastWeek}&endTime=${now}`
+                      }
                     }
                   })
                 }}
@@ -63,11 +73,15 @@ const Sidebar = props => {
             </div>
             <div className='data-toggle'>
               <button
+                className={range === 'month' ? 'btn-active' : ''}
                 onClick={() => {
                   dispatch({
                     type: 'filterDataSet',
                     newFilter: {
-                      date: `/?startTime=${lastMonth}&endTime=${now}`
+                      date: {
+                        range: 'month',
+                        query: `/?startTime=${lastMonth}&endTime=${now}`
+                      }
                     }
                   })
                 }}

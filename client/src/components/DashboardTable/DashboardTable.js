@@ -114,7 +114,7 @@ const DashboardTable = props => {
                       }}
                     >
                       <Download />
-                      {/* csv */}
+                      csv
                     </button>
                   </div>
                   <hr />
