@@ -13,7 +13,8 @@ docker-compose -f docker-compose.yml -f docker-compose.local.yml build
 docker-compose -f docker-compose.yml -f docker-compose.local.yml up
 ```
 
-The API will be availible on port 8080.
+The API will be available on port 8080
+The website will be available on port localhost:3000
 
 ### Stopping
 ```
@@ -32,6 +33,14 @@ The data folder is kept locally, and not included in git.
 ## Running on a server.
 The passwords and extra config should be hidden. Therefore, you can have a docker-compose.override.yml file, which is ignored by git.
 
+In the docker-compose.override.yml you must include the endpoint for the api like this
+```
+services:
+  website:
+    build:
+      args:
+        - "REACT_APP_API_DOMAIN=https://api.verkeersdatamonitor.nl"
+```
 ### Building
 
 The first time you need to build your backend.
@@ -87,7 +96,7 @@ services:
 ```
 Running
 ```
-docker-compose -f docker-compose.yml -f docker-compose.local.yml -f docker-compose.dev.yml -f docker-compose.override.yml up -d  # will start in daemon mode
+docker-compose -f docker-compose.yml -f docker-compose.local.yml -f docker-compose.dev.yml up -f docker-compose.override.yml -d  # will start in daemon mode
 docker-compose -f docker-compose.yml -f docker-compose.local.yml -f docker-compose.dev.yml -f docker-compose.override.yml up logs -f --tail=200 # will tail logs
 docker-compose -f docker-compose.yml -f docker-compose.local.yml -f docker-compose.dev.yml -f docker-compose.override.yml restart api # if you want to restart a service, better do it in another terminal
 ```
