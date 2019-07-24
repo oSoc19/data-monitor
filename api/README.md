@@ -1,5 +1,8 @@
 # Backend API
 
+The API is the service that allows the frontend to communicate and get the informations it needs from the backend.
+The endpoints are consistent for each datasets.
+
 ## GET calls
 
 ### Bridge Openings
@@ -116,16 +119,3 @@ ___
 /api/download/accidents/summary/cities/:city
 ```
 CSV export for the specified city
-___
-## PUT calls
-
-```
-/api/qa/bridge_openings/:id
-```
-Allow to manually modified something with the following body:
-```
-{
-  manualIntervention: req.body.manualIntervention,
-  comment: req.body.comment
-}
-```

@@ -14,18 +14,6 @@ let app = express();
   fetchData.loadMaintenanceWorks();
 })();
 
-app.get("/import/bridges", (req, res) => {
-  console.log(`Loading bridges ${new Date().toISOString()}`);
-  fetchData.loadBridges();
-  console.log(`Loading road maintenance ${new Date().toISOString()}`);
-  fetchData.loadMaintenanceWorks();
-  console.log(`Loading accidents ${new Date().toISOString()}`);
-  fetchData.loadAccident();
-  return res.send({
-    "Loading": "Ok"
-  });
-});
-
 const CRON_FREQUENCY = process.env.CRON_PATTERN || '0 */60 * * * *';
 
 new cron.CronJob(CRON_FREQUENCY, async function() {
