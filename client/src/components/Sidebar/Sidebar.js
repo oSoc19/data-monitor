@@ -77,6 +77,7 @@ const Sidebar = props => {
                       name: 'bridges',
                       summary: bridgeOpenings.summary,
                       map: bridgeOpenings.map,
+                      fetchEvent: bridgeOpenings.fetchEvent,
                       download: bridgeOpenings.csv,
                       icon: 'bridge'
                     }
@@ -94,6 +95,7 @@ const Sidebar = props => {
                       name: 'maintenance',
                       summary: maintenanceWorks.summary,
                       map: maintenanceWorks.map,
+                      fetchEvent: maintenanceWorks.fetchEvent,
                       download: maintenanceWorks.csv,
                       icon: 'maintenance'
                     }
@@ -111,6 +113,7 @@ const Sidebar = props => {
                       name: 'accidents',
                       summary: accidents.summary,
                       map: accidents.map,
+                      fetchEvent: accidents.fetchEvent,
                       download: accidents.csv,
                       icon: 'accident'
                     }

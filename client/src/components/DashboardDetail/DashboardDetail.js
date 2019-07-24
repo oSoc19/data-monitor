@@ -40,19 +40,11 @@ const DashboardDetail = props => {
           >
             <X />
           </button>
-          <h4>{eventDetails.id}</h4>
-          <p>{eventDetails.version}</p>
-          <p>{eventDetails.source}</p>
-          {/* <p>{eventDetails.location[0]}</p> */}
-          {/* <p>{eventDetails.location[1]}</p> */}
-          <p>{eventDetails.situationRecordVersionTime}</p>
-          <p>{eventDetails.startTime}</p>
-          <p>{eventDetails.endTime}</p>
-          <p>{eventDetails.probabilityOfOccurence}</p>
-          <p>{eventDetails.generalNetworkManagementType}</p>
-          <p>{eventDetails.createdAt}</p>
-          <p>{eventDetails.updatedAt}</p>
-          <p>{eventDetails.bridgeId}</p>
+          <ul>
+            {Object.keys(eventDetails).map((key) => {
+              return(<li>{`${key} : ${eventDetails[key]}`}</li>)
+            })}
+          </ul>
         </div>
       ) : (
         <table>
@@ -70,7 +62,6 @@ const DashboardDetail = props => {
               <tbody>
                 <tr>
                   {Object.keys(event).map(key => {
-                    console.log(key, typeof(event[key]))
                     if(key === 'nextUrl') {
                       return
                     }

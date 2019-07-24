@@ -1,5 +1,7 @@
 version: "3.4"
 services:
+  website:
+    build: ./client
   api:
     build: ./api
     links:

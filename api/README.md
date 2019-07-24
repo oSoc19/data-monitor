@@ -5,18 +5,17 @@
 ### Bridge Openings
 
 ```
-/api/bridges?startTime=DATE&endTime=DATE
+/api/bridge_openings/?startTime=something&endTime=later
 ```
-This api call will return a GeoJSON feature collection that contains all the bridges that contains a event between startTime and endTime
+Send all the bridge openings data in geoJSON between the optional parameters startTime and endTime
 
----
-
-```
-/api/bridge_openings/?id=1&startTime=something&endTime=later
-```
-This api call will send you all the bridge openings for the bridge that have the id specified. It is also possible to add an endTime and a startTime to the call, but it is optional.
 ___
+```
+/api/bridge_openings/:id
+```
+Send details on a the particular event that has the id specified.
 
+___
 ```
 /api/qa/bridge_openings/summary/
 ```

@@ -37,7 +37,6 @@ const DashboardTable = props => {
   const fetchSummary = async () => {
     let res = await fetch(dataSet.summary)
     let summary = await res.json()
-    console.log(summary)
     setState({ ...state, summary, loading: false })
   }
 
@@ -97,12 +96,10 @@ const DashboardTable = props => {
                       type='submit'
                       onClick={e => {
                         e.stopPropagation()
-                        console.log(item.nextUrl)
                         const downloadUrlEndpoint = item.nextUrl.replace(
                           '/qa/',
                           '/download/'
                         )
-                        // console.log(downloadUrlEndpoint)
                         const downloadUrl = `${apiUrl}${downloadUrlEndpoint}`
                         window.open(downloadUrl)
                       }}

@@ -69,18 +69,6 @@ const bridgeOpening = (sequelize, DataTypes) => {
       }
     });
 
-    /* Try to find the bridge associate to the bridge event. If the bridge doesn't
-     * exist, a new one is created.
-     */
-    let bridge = await models.Bridge.findOne({
-      where: {
-        location: [location.longitude, location.latitude]
-      }
-    });
-    if (!bridge) {
-      bridge = await models.Bridge.createBridge(location.longitude, location.latitude, models);
-    }
-
     let bridgeOpeningEntry = {
       id: situationRecord['$'].id,
       version: situationRecord['$'].version,
@@ -94,7 +82,6 @@ const bridgeOpening = (sequelize, DataTypes) => {
         Point: ['latitude', 'longitude']
       }).geometry,
       generalNetworkManagementType: get(['generalNetworkManagementType'], situationRecord),
-      bridgeId: bridge.id
     };
     if (!bridgeOpening) {
       bridgeOpening = await BridgeOpening.create(bridgeOpeningEntry);
