@@ -1,28 +1,27 @@
-const api = {
-  domain: 'http://82.196.10.230',
-  port: 8080,
-  endPoint: '/api/'
-}
-
-const apiUrl = `${api.domain}:${api.port}${api.endPoint}`
+export const apiUrl = process.env.API_DOMAIN ?
+  process.env.API_DOMAIN :
+  'http://localhost:8080'
 
 export const bridgeOpenings = {
-  summary: `${apiUrl}qa/bridge_openings/summary`,
-  map: `${apiUrl}bridges`,
-  csv: `${apiUrl}download/bridge_openings/summary`,
-  modify: `${apiUrl}qa/bridge_openings/:id`,
+  summary: `${apiUrl}/api/qa/bridge_openings/summary`,
+  fetchEvent: `${apiUrl}/api/bridge_openings/`,
+  map: `${apiUrl}/api/bridge_openings`,
+  csv: `${apiUrl}/api/download/bridge_openings/summary`,
+  modify: `${apiUrl}/api/qa/bridge_openings/:id`,
   query: ``
 }
 
 export const maintenanceWorks = {
-  summary: `${apiUrl}qa/maintenance_works/summary`,
-  map: `${apiUrl}maintenance_works`,
-  csv: `${apiUrl}download/maintenance_works/summary`,
-  query: `/?startTime=2019-07-08T12:20:38.000Z&endTime=2019-07-20T12:20:38.000Z`
+  summary: `${apiUrl}/api/qa/maintenance_works/summary`,
+  fetchEvent: `${apiUrl}/api/maintenance_works/`,
+  map: `${apiUrl}/api/maintenance_works`,
+  csv: `${apiUrl}/api/download/maintenance_works/summary`,
+  query: `/api/?startTime=2019-07-08T12:20:38.000Z&endTime=2019-07-20T12:20:38.000Z`
 }
 
 export const accidents = {
-  summary: `${apiUrl}qa/accidents/summary/`,
-  map: `${apiUrl}accidents`,
-  csv: `${apiUrl}download/accidents/summary/`
+  summary: `${apiUrl}/api/qa/accidents/summary/`,
+  fetchEvent: `${apiUrl}/api/accidents/`,
+  map: `${apiUrl}/api/accidents`,
+  csv: `${apiUrl}/api/download/accidents/summary/`
 }

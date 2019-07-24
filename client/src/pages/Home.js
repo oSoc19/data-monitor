@@ -7,13 +7,11 @@ const Home = () => {
   // userType = localStorage.getItem('userType')
   return (
     <LayoutWrapper>
-      <div className='grid-wrapper'>
-        <h2>Choose a dataset</h2>
-        <div className='grid-item'>Bridges</div>
-        <div className='grid-item'>Maintenance</div>
-        <div className='grid-item'>Incidents</div>
-        <div className='grid-item'>Logistics</div>
-      </div>
+      <h2>Choose a dataset</h2>
+      <div className='grid-item'>Bridges</div>
+      <div className='grid-item'>Maintenance</div>
+      <div className='grid-item'>Incidents</div>
+      <div className='grid-item'>Logistics</div>
       <Redirect
         to={{
           pathname: '/mapbox'
