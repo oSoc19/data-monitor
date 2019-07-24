@@ -67,6 +67,14 @@ Also note: debugging API service and fetch_data service is difficult at the same
 ### Before developing
 You will need to make a docker-compose.override.yml, where local config will be stored.
 
+### Website
+In development mode, the website is not handled by docker-compose and it must be launch aside.
+```
+cd client
+npm install
+npm start
+```
+
 ### Dev api service
 Config docker-compose.override.yml:
 ```
