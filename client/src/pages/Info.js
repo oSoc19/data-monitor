@@ -55,7 +55,7 @@ const Info = () => {
           <li>Click on "Bridges" on the sidebar.</li>
           <li>Click on the dashboard icon on the header of the webpage.</li>
           <li>Click on the "Noth Holland" tile.</li>
-          <li>Click on "Amsterdam.csv" on the Amsterdam tile.</li>
+          <li>Click on the CSV button on the Amsterdam tile.</li>
         </ol>
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           <hr />
