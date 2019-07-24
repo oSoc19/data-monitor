@@ -2,6 +2,7 @@
 
 .hero {
 	background-color: #164475;
+	background-image: url("../img/osoc-screen.png");
 	margin-bottom: 5rem;
 }
 
@@ -34,7 +35,7 @@
 	top: 1.5rem;
 	padding: 1rem 0.5rem 0;
 	background-color: white;
-	box-shadow: 0 2px 20px rgba(76,95,92,0.2);
+	box-shadow: 0 2px 20px rgba(76, 95, 92, 0.5);
 }
 
 	@media only screen and (min-width: 30em) {
