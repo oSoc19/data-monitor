@@ -2,7 +2,11 @@ import React from 'react'
 import { Redirect } from 'react-router-dom'
 import LayoutWrapper from '../components/LayoutWrapper'
 
+/**
+ * First time user dataset selection page
+ */
 const Home = () => {
+  // TODO: screen to select initialState dataset for first time users
   // localStorage.setItem('userType', 'bridge')
   // userType = localStorage.getItem('userType')
   return (

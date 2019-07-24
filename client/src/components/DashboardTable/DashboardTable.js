@@ -66,6 +66,11 @@ const DashboardTable = props => {
               const { numberOfGoodEvents, numberOfBadEvents } = item.summary
               return (
                 <div
+                  /**
+                   * Go to next region level
+                   * - fetch data for next level
+                   * - set state to next level
+                   */
                   onClick={async () => {
                     fetch(`${apiUrl}${item.nextUrl}`)
                       .then(res => res.json())
@@ -145,6 +150,9 @@ const DashboardTable = props => {
               )
             })
           ) : (
+            /**
+             * Render summary for events overview
+             */
             <DashboardDetail summary={summary} />
           )}
         </div>

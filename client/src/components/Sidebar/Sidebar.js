@@ -13,6 +13,9 @@ import maintenanceIcon from '../../assets/icons/maintenance.png'
 import accidentIcon from '../../assets/icons/incident.png'
 
 const Sidebar = props => {
+  /**
+   * Get objects from global state
+   */
   const [{ dataSet, filter }, dispatch] = useGlobalState()
   const [visible, toggleVisible] = useState(true)
 

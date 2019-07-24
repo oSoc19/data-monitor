@@ -4,6 +4,9 @@ import { bridgeOpenings, maintenanceWorks, accidents } from '../config/api'
 
 import LayoutWrapper from '../components/LayoutWrapper'
 
+/**
+ * About page
+ */
 const Info = () => {
   return (
     <LayoutWrapper>

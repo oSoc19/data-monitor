@@ -14,6 +14,9 @@ import Loader from '../../components/Loader'
 import { useGlobalState } from '../../utilities/state'
 
 const Map = props => {
+  /**
+   * Get objects from global state
+  */
   const [{ dataSet, filter }] = useGlobalState()
   const [state, setState] = useState({
     dataFeatures: [],
@@ -54,6 +57,9 @@ const Map = props => {
     setState({ ...state, bridgeEvents })
   }
 
+  /**
+   * @return icon for current dataset
+   */
   const getIcon = () => {
     switch (dataSet.icon) {
       case 'bridge':
@@ -68,6 +74,10 @@ const Map = props => {
   }
 
   // TODO: refactor to map layer component
+
+  /**
+   * Render map icon layer with popups
+   */
   const renderIconLayer = () => {
     const { dataFeatures } = state
     const data = dataFeatures.map(feature => {
@@ -128,10 +138,16 @@ const Map = props => {
     })
   }
 
+  /**
+   * update map style
+   */
   const onStyleChange = style => {
     setState({ ...state, style })
   }
 
+  /**
+   * update map viewport
+   */
   const _onViewportChange = viewport => {
     setState({
       ...state,

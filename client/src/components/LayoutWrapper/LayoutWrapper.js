@@ -2,7 +2,7 @@ import React from 'react'
 
 import Header from '../Header'
 import Sidebar from '../Sidebar'
-import BottomActions from '../BottomActions'
+// import BottomActions from '../BottomActions'
 
 /**
  * Wrap content with ui components & container style
