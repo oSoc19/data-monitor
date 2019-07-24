@@ -32,7 +32,8 @@ const Map = props => {
       bearing: 0,
       pitch: 0,
       minZoom: 6
-    }
+    },
+    icon: 'bridge'
   })
 
   /**
@@ -47,7 +48,7 @@ const Map = props => {
   const getData = async () => {
     let res = await fetch(dataSet.map + filter.date.query)
     res = await res.json()
-    setState({ ...state, dataFeatures: res.features })
+    setState({ ...state, dataFeatures: res.features, icon: dataSet.icon })
   }
 
   // TODO: refactor to fetch util
@@ -61,7 +62,7 @@ const Map = props => {
    * @return icon for current dataset
    */
   const getIcon = () => {
-    switch (dataSet.icon) {
+    switch (state.icon) {
       case 'bridge':
         return bridgeOpenIcon
       case 'maintenance':
