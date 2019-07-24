@@ -4,9 +4,7 @@
  * - endpoints for different data sets
  */
 
-export const apiUrl = process.env.API_DOMAIN ?
-  process.env.API_DOMAIN :
-  'http://localhost:8080'
+export const apiUrl = process.env.REACT_APP_API_DOMAIN || 'http://localhost:8080'
 
  
 export const bridgeOpenings = {

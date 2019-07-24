@@ -171,6 +171,7 @@ const Map = props => {
         {dataFeatures.length > 0 ? (
           <ReactMapGL
             {...viewport}
+            onClick={() => setState({ ...state, showPopup: false })}
             onViewportChange={viewport => _onViewportChange(viewport)}
             mapboxApiAccessToken={Mapbox.token}
             mapStyle={style}

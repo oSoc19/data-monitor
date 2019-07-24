@@ -2,6 +2,8 @@ version: "3.4"
 services:
   website:
     entrypoint: ["echo", "Website is disabled in dev mode"]
+    ports:
+      - 3001:3000
   api:
     volumes:
       - ./api:/usr/src/app
