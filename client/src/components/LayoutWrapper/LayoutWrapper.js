@@ -14,7 +14,7 @@ const LayoutWrapper = props => {
         {props.header && <Header />}
         <div className='content-container'>
           {props.sidebar && <Sidebar />}
-          <div className='content'> {props.children}</div>
+          <div className='content'>{props.children}</div>
         </div>
       </div>
     </React.Fragment>

@@ -59,7 +59,7 @@ const DashboardTable = props => {
   if (!loading) {
     return (
       <React.Fragment>
-        <h4>Overview {dataSet.name}</h4>
+        <h4>Overview {dataSet.name} datapoints</h4>
         <div className='dashboard-container'>
           {summary && level < 3 ? (
             summary.map(item => {
